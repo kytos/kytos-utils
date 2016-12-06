@@ -54,15 +54,22 @@ class KytosClient():
 
     def upload_napp(self, *args):
         endpoint = urljoin(self.api_uri, '/api/napps/')
-        filename = 'kytos.json'
+        json_filename = 'kytos.json'
+        readme_filename = 'README.rst'
 
-        if not os.path.isfile(filename):
+        if not os.path.isfile(json_filename):
             print("ERROR: Could not access kytos.json file.")
             sys.exit(1)
- 
-        with open(filename) as json_file:
+
+        with open(json_filename) as json_file:
             metadata = json.load(json_file)
             metadata['token'] = self.token
+
+        try:
+            with open(readme_filename) as readme_file:
+                metadata['readme'] = readme_file.read()
+        except:
+            metadata['readme'] = ''
 
         print(metadata)
         request = requests.post(endpoint, json=metadata)
