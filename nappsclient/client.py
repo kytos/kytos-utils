@@ -52,39 +52,93 @@ class KytosClient():
         self.set_token(json)
         return json
 
+    def list_napps(self, *args):
+        endpoint = urljoin(self.api_uri, '/api/napps/')
+        metadata = self.create_metadata(ignore_json=True)
+        author = args[0].author
+
+        if author:
+            endpoint = urljoin(endpoint,author+"/")
+
+        request = self.make_request(endpoint, json=metadata)
+
+        if request.status_code != 200:
+            print("ERROR: %d: %s" % (request.status_code, request.reason))
+            sys.exit(1)
+
+        if author:
+            napps = json.loads(request.content)
+        else:
+            napps = json.loads(request.content)['napps']
+
+        self.print_napps_list(napps)
+
+    def print_napps_list(self, napps):
+        msg = "{:<30}|{:<25}|{:<50}|{:<25}|{:<10}"
+        print(msg.format('Name', 'Author', 'Git', 'Branch', 'Version'))
+
+        for napp in napps:
+            if napp is str:
+                continue
+            author = napp.get('author', '')
+            name = napp.get('name', '')
+            git = napp.get('git', '')
+            branch = napp.get('branch', '')
+            version = napp.get('version', '')
+
+            print(msg.format(name, author, git, branch, version))
+
     def upload_napp(self, *args):
         endpoint = urljoin(self.api_uri, '/api/napps/')
         metadata = self.create_metadata()
 
-        request = requests.post(endpoint, json=metadata)
-        if request.status_code != 201:
+        request = self.make_request(endpoint, json=metadata, method="POST")
+
+        if request is None and request.status_code != 201:
             print("ERROR: %d: %s" % (request.status_code, request.reason))
-            sys.exit()
+            sys.exit(1)
         print('SUCCESS: Napp was uploaded.')
 
     def delete_napp(self, *args):
         endpoint = urljoin(self.api_uri, '/api/napps/{}/{}/')
-
         metadata = self.create_metadata()
-        endpoint = endpoint.format(metadata['author'],metadata['name'])
 
-        request = requests.delete(endpoint, json=metadata)
+        endpoint = endpoint.format(metadata['author'], metadata['name'])
+
+        request = self.make_request(endpoint, json=metadata, method="DELETE")
+
         if request.status_code != 200:
             print('Error %d: %s' % (request.status_code, request.reason))
             sys.exit(1)
-
         print('SUCCESS: Napp was deleted.')
 
-    def create_metadata(self, json_filename='kytos.json',
-                        readme_filename = 'README.rst'):
+    def make_request(self, endpoint, **kwargs):
+        json = kwargs.get('json',[])
+        method = kwargs.get('method','GET')
 
-        if not os.path.isfile(json_filename):
-            print("ERROR: Could not access kytos.json file.")
+        try:
+            function = getattr(requests,method.lower())
+            request = function(endpoint, json=json)
+        except requests.exceptions.ConnectionError:
+            print('Server Not found.')
             sys.exit(1)
+        return request
 
-        with open(json_filename) as json_file:
-            metadata = json.load(json_file)
-            metadata['token'] = self.token.get('hash')
+    def create_metadata(self, **kwargs):
+        json_filename = kwargs.get('json_filename','kytos.json')
+        readme_filename =kwargs.get('readme_filename', 'README.rst')
+        ignore_json = kwargs.get('ignore_json', False)
+        metadata = {}
+
+        if ignore_json == False:
+            try:
+                with open(json_filename) as json_file:
+                    metadata = json.load(json_file)
+            except FileNotFoundError:
+                print("ERROR: Could not access kytos.json file.")
+                sys.exit(1)
+
+        metadata['token'] = self.token.get('hash')
 
         try:
             with open(readme_filename) as readme_file:

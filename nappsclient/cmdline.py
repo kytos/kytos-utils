@@ -61,13 +61,24 @@ class KytosCmdLine():
                                                     description=description)
         napps_upload.set_defaults(func=api.upload_napp)
 
-        help = "Delete a current napp from Kytos repository."
+        help = "Delete a current napp from Kytos Napps repository."
         description = "This will delete the current napp from"
         description += " Kytos Napps repository."
         napps_delete = napps_subparsers.add_parser('delete',
                                                    help=help,
                                                    description=description)
         napps_delete.set_defaults(func=api.delete_napp)
+
+        help = "List all napps from Kytos Napps repository."
+        description = "This command will list all napps from"
+        description += "Kytos Napps repository."
+        napps_list = napps_subparsers.add_parser('list',
+                                                 help=help,
+                                                 description=description)
+
+        napps_list.set_defaults(func=api.list_napps)
+        napps_list.add_argument('-a', '--author',
+                                  help="List napps by Author Name")
 
 
     def help(self, namespace):
