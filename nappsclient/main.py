@@ -57,10 +57,11 @@ def main():
 
     # Load global section and token, if token is not found, ask for
     # credentials and get a new token
-    if config.token is None:
+    if config.token is None or config.token_expired():
         print("Token not found in your %s" % config.config_file)
         print("Creating a new one...")
         token = client.request_token(config.user, config.password)
+
         if token is None:
             print("Error: Could not get token.")
             print("Aborting...")
