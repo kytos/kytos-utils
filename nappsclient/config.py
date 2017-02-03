@@ -97,11 +97,13 @@ class KytosConfig():
             self.save()
 
     def token_expired(self):
+        if self.token is None:
+            return True
         now = datetime.now()
         date = datetime.now()
         date = date.strptime(self.token.get('created_at'),
                                             '%a, %d %b %Y %H:%M:%S GMT')
-        time =  timedelta(seconds=int(self.token.get('expiration_time')))
+        time = timedelta(seconds=int(self.token.get('expiration_time')))
 
         return date + time <= now
 

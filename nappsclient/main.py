@@ -33,7 +33,7 @@ def main():
     if config.user is None:
         config.save_user(input("Enter the username: "))
 
-    if config.password is None and config.token is None:
+    if config.password is None and config.token_expired():
         config.password = getpass.getpass("Enter the password for %s: " % config.user)
 
     if not config.napps_uri or not config.user or (not config.password and not config.token):
@@ -57,15 +57,15 @@ def main():
 
     # Load global section and token, if token is not found, ask for
     # credentials and get a new token
-    if config.token is None or config.token_expired():
-        print("Token not found in your %s" % config.config_file)
+    if config.token_expired():
+        print("Token valid not found in your %s" % config.config_file)
         print("Creating a new one...")
         token = client.request_token(config.user, config.password)
 
         if token is None:
             print("Error: Could not get token.")
             print("Aborting...")
-            sys.exit()
+            sys.exit(1)
 
         config.save_token(token)
 
