@@ -19,6 +19,7 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 from configparser import ConfigParser, NoOptionError
+from datetime import datetime, timedelta
 import os
 import sys
 
@@ -64,13 +65,22 @@ class KytosConfig():
             pass
 
     def load_auth(self):
+        self.load_user()
+        self.load_token()
+
+    def load_user(self):
         try:
             self.user = self.config.get("auth", "user")
         except NoOptionError:
             pass
 
+    def load_token(self):
         try:
-            self.token = self.config.get("auth", "token")
+            self.token = {'hash': self.config.get("token", "hash"),
+                          'created_at': self.config.get("token", "created_at"),
+                          'expiration_time': self.config.get("token",
+                                                             "expiration_time")
+            }
         except NoOptionError:
             pass
 
@@ -86,16 +96,29 @@ class KytosConfig():
             self.config.set("auth", "user", user)
             self.save()
 
+    def token_expired(self):
+        now = datetime.now()
+        date = datetime.now()
+        date = date.strptime(self.token.get('created_at'),
+                                            '%a, %d %b %Y %H:%M:%S GMT')
+        time =  timedelta(seconds=int(self.token.get('expiration_time')))
+
+        return date + time <= now
+
     def save_token(self, token):
         self.token = token
         if self.token:
-            self.config.set("auth", "token", token)
+            self.config.set("token", "hash", token.get('hash'))
+            self.config.set("token", "created_at", token.get('created_at'))
+            self.config.set("token", "expiration_time",
+                             str(token.get('expiration_time')))
             self.save()
 
     def create(self):
         """ Creates a empty config file."""
         self.config.add_section("global")
         self.config.add_section("auth")
+        self.config.add_section("token")
 
     def save(self):
         filename = os.path.expanduser(self.config_file)

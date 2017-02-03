@@ -37,25 +37,46 @@ class KytosClient():
     def set_debug(self):
         self.debug = sys.stderr
 
+    def set_token(self, token):
+        self.token = token
+
     def request_token(self, username, password):
         endpoint = urljoin(self.api_uri, '/api/auth/')
+
         request = requests.post(endpoint, auth=(username, password))
         if request.status_code != 201:
             print("ERROR: %d: %s" % (request.status_code, request.reason))
             sys.exit()
 
         json = request.json()
-        token = json['hash']
-        self.set_token(token)
-        return token
-
-    def set_token(self, token):
-        self.token = token
+        self.set_token(json)
+        return json
 
     def upload_napp(self, *args):
         endpoint = urljoin(self.api_uri, '/api/napps/')
-        json_filename = 'kytos.json'
-        readme_filename = 'README.rst'
+        metadata = self.create_metadata()
+
+        request = requests.post(endpoint, json=metadata)
+        if request.status_code != 201:
+            print("ERROR: %d: %s" % (request.status_code, request.reason))
+            sys.exit()
+        print('SUCCESS: Napp was uploaded.')
+
+    def delete_napp(self, *args):
+        endpoint = urljoin(self.api_uri, '/api/napps/{}/{}/')
+
+        metadata = self.create_metadata()
+        endpoint = endpoint.format(metadata['author'],metadata['name'])
+
+        request = requests.delete(endpoint, json=metadata)
+        if request.status_code != 200:
+            print('Error %d: %s' % (request.status_code, request.reason))
+            sys.exit(1)
+
+        print('SUCCESS: Napp was deleted.')
+
+    def create_metadata(self, json_filename='kytos.json',
+                        readme_filename = 'README.rst'):
 
         if not os.path.isfile(json_filename):
             print("ERROR: Could not access kytos.json file.")
@@ -63,7 +84,7 @@ class KytosClient():
 
         with open(json_filename) as json_file:
             metadata = json.load(json_file)
-            metadata['token'] = self.token
+            metadata['token'] = self.token.get('hash')
 
         try:
             with open(readme_filename) as readme_file:
@@ -71,8 +92,4 @@ class KytosClient():
         except:
             metadata['readme'] = ''
 
-        print(metadata)
-        request = requests.post(endpoint, json=metadata)
-        if request.status_code != 201:
-            print("ERROR: %d: %s" % (request.status_code, request.reason))
-            sys.exit()
+        return metadata

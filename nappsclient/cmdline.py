@@ -30,7 +30,7 @@ class KytosCmdLine():
                         epilog=textwrap.dedent('''
                         Environment Variables:
 
-                        NAPPS_API_URI    = Server API endpoing
+                        NAPPS_API_URI    = Server API endpoint
                         NAPPS_USER       = User to authenticate
                         NAPPS_PASSWORD   = Password used only to get API token
 
@@ -54,10 +54,21 @@ class KytosCmdLine():
 
         # apps list
         help = "Upload current napp to Kytos repository."
+        description = "This will upload to Kytos Napps repository"
+        description += " a napp on current directory."
         napps_upload = napps_subparsers.add_parser('upload',
                                                     help=help,
-                                                    description="This will upload to Kytos Napps repository a napp on current directory.")
+                                                    description=description)
         napps_upload.set_defaults(func=api.upload_napp)
+
+        help = "Delete a current napp from Kytos repository."
+        description = "This will delete the current napp from"
+        description += " Kytos Napps repository."
+        napps_delete = napps_subparsers.add_parser('delete',
+                                                   help=help,
+                                                   description=description)
+        napps_delete.set_defaults(func=api.delete_napp)
+
 
     def help(self, namespace):
         print("Invalid syntax")
