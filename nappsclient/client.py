@@ -41,7 +41,7 @@ class KytosClient():
         self.token = token
 
     def request_token(self, username, password):
-        endpoint = urljoin(self.api_uri, '/auth/')
+        endpoint = urljoin(self.api_uri, '/api/auth/')
 
         request = requests.post(endpoint, auth=(username, password))
         if request.status_code != 201:
@@ -53,7 +53,7 @@ class KytosClient():
         return json
 
     def upload_napp(self, *args):
-        endpoint = urljoin(self.api_uri, '/napps/')
+        endpoint = urljoin(self.api_uri, '/api/napps/')
         metadata = self.create_metadata()
 
         request = requests.post(endpoint, json=metadata)
@@ -63,7 +63,7 @@ class KytosClient():
         print('SUCCESS: Napp was uploaded.')
 
     def delete_napp(self, *args):
-        endpoint = urljoin(self.api_uri, '/napps/{}/{}/')
+        endpoint = urljoin(self.api_uri, '/api/napps/{}/{}/')
 
         metadata = self.create_metadata()
         endpoint = endpoint.format(metadata['author'],metadata['name'])
