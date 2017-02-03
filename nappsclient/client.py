@@ -94,7 +94,7 @@ class KytosClient():
 
         request = self.make_request(endpoint, json=metadata, method="POST")
 
-        if request is None and request.status_code != 201:
+        if request.status_code != 201:
             print("ERROR: %d: %s" % (request.status_code, request.reason))
             sys.exit(1)
         print('SUCCESS: Napp was uploaded.')
