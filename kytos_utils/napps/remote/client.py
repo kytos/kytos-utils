@@ -19,12 +19,15 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from urllib.parse import urljoin
-
 import json
+import os
+import re
 import requests
 import sys
-import os
+import tarfile
+
+from urllib.parse import urljoin
+
 
 class KytosClient():
     def __init__(self, api_uri, debug=False):
@@ -90,9 +93,14 @@ class KytosClient():
 
     def upload_napp(self, *args):
         endpoint = urljoin(self.api_uri, '/api/napps/')
+        headers = {'Content-type': 'multipart/form-data'}
+
         metadata = self.create_metadata()
 
-        request = self.make_request(endpoint, json=metadata, method="POST")
+        payload = self.build_package(metadata['name'])
+
+        request = self.make_request(endpoint, json=metadata, file=payload,
+                                    method="POST")
 
         if request.status_code != 201:
             print("ERROR: %d: %s" % (request.status_code, request.reason))
@@ -117,7 +125,7 @@ class KytosClient():
         method = kwargs.get('method','GET')
 
         try:
-            function = getattr(requests,method.lower())
+            function = getattr(requests, method.lower())
             request = function(endpoint, json=json)
         except requests.exceptions.ConnectionError:
             print('Server Not found.')
@@ -126,7 +134,7 @@ class KytosClient():
 
     def create_metadata(self, **kwargs):
         json_filename = kwargs.get('json_filename','kytos.json')
-        readme_filename =kwargs.get('readme_filename', 'README.rst')
+        readme_filename = kwargs.get('readme_filename', 'README.rst')
         ignore_json = kwargs.get('ignore_json', False)
         metadata = {}
 
@@ -147,3 +155,27 @@ class KytosClient():
             metadata['readme'] = ''
 
         return metadata
+
+    def build_package(self, napp_name):
+        ignored_extensions = ['.swp', '.pyc', '.napp']
+        ignored_dirs = ['__pycache__']
+        files = os.listdir()
+        for filename in files:
+            if os.path.isfile(filename) and '.' in filename and \
+                    filename.rsplit('.', 1)[1] in ignored_extensions:
+                files.remove(filename)
+            elif os.path.isdir(filename) and filename in ignored_dirs:
+                files.remove(filename)
+
+        # Create the '.napp' package
+        napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
+        [napp_file.add(f) for f in files]
+        napp_file.close()
+
+        # Get the binary payload of the package
+        file_payload = open(napp_name + '.napp', 'rb')
+
+        # remove the created package from the filesystem
+        os.remove(napp_name + '.napp')
+
+        return file_payload
