@@ -18,9 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #
-from nappsclient.client import KytosClient
-from nappsclient.config import KytosConfig
-from nappsclient.cmdline import KytosCmdLine
+from kytos_utils.napps.remote.client import KytosClient
+from kytos_utils.cli.config import KytosConfig
+from kytos_utils.cli.cmdline import KytosCmdLine
 
 import getpass
 import sys

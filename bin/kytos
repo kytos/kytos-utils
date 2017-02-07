@@ -20,7 +20,7 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from nappsclient.main import main
+from kytos_utils.napps.remote.main import main
 
 if __name__ == '__main__':
     main()
