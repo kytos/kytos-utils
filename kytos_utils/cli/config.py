@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
-from configparser import ConfigParser, NoOptionError
+from configparser import ConfigParser, NoOptionError, NoSectionError
 from datetime import datetime, timedelta
 import os
 import sys
@@ -87,6 +87,8 @@ class KytosConfig():
                           'expiration_time': self.config.get("token",
                                                              "expiration_time")
             }
+        except NoSectionError:
+            self.config.add_section('token')
         except NoOptionError:
             pass
 
@@ -116,6 +118,8 @@ class KytosConfig():
     def save_token(self, token):
         self.token = token
         if self.token:
+            if not self.config.has_section('token'):
+                self.config.add_section('token')
             self.config.set("token", "hash", token.get('hash'))
             self.config.set("token", "created_at", token.get('created_at'))
             self.config.set("token", "expiration_time",
