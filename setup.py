@@ -10,6 +10,22 @@ from pip.req import parse_requirements
 from setuptools import Command, find_packages, setup
 from setuptools.command.test import test as TestCommand
 
+if 'VIRTUAL_ENV' in os.environ:
+    BASE_ENV = os.environ['VIRTUAL_ENV']
+else:
+    BASE_ENV = '/'
+
+AUTHOR_PATH = 'etc/skel/kytos/napp-structure/author'
+NAPP_PATH = os.path.join(AUTHOR_PATH, 'napp')
+ETC_FILES = [(os.path.join(BASE_ENV, AUTHOR_PATH),
+              [os.path.join(AUTHOR_PATH, '__init__.py')]),
+             (os.path.join(BASE_ENV, NAPP_PATH),
+              [os.path.join(NAPP_PATH, '__init__.py'),
+               os.path.join(NAPP_PATH, 'kytos.json.template'),
+               os.path.join(NAPP_PATH, 'main.py.template'),
+               os.path.join(NAPP_PATH, 'README.rst.template'),
+               os.path.join(NAPP_PATH, 'settings.py.template')])
+             ]
 
 class Linter(Command):
     """Code linters."""
@@ -63,6 +79,7 @@ setup(name='kytos-utils',
       license='MIT',
       test_suite='tests',
       scripts=['bin/kytos'],
+      data_files=ETC_FILES,
       packages=find_packages(exclude=['tests']),
       cmdclass={
           'lint': Linter,
