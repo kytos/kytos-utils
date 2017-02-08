@@ -5,56 +5,50 @@ descriptions.
 """
 import os
 import sys
-from subprocess import call
+from subprocess import CalledProcessError, call, check_call
 from pip.req import parse_requirements
 from setuptools import Command, find_packages, setup
+from setuptools.command.test import test as TestCommand
+
 
 class Linter(Command):
-    """Run several code linters."""
+    """Code linters."""
 
-    description = 'Run many code linters. It may take a while'
+    description = 'run Pylama on Python files'
     user_options = []
 
-    def __init__(self, *args, **kwargs):
-        """Define linters and a message about them."""
-        super().__init__(*args, **kwargs)
-        self.linters = ['pep257', 'pyflakes', 'mccabe', 'isort', 'pep8',
-                        'pylint']
-        self.extra_msg = 'It may take a while. For a faster version (and ' \
-                         'less checks), run "quick_lint".'
+    def run(self):
+        """Run linter."""
+        self.lint()
+
+    @staticmethod
+    def lint():
+        """Run pylama and radon."""
+        files = 'tests setup.py kytos_utils'
+        print('Pylama is running. It may take several seconds...')
+        cmd = 'pylama {}'.format(files)
+        try:
+            check_call(cmd, shell=True)
+        except CalledProcessError as e:
+            print('FAILED: please, fix the error(s) above.')
+            sys.exit(e.returncode)
 
     def initialize_options(self):
-        """For now, options are ignored."""
+        """Set defa ult values for options."""
         pass
 
     def finalize_options(self):
-        """For now, options are ignored."""
+        """Post-process options."""
         pass
 
+
+class Test(TestCommand):
+    """Run doctest and linter besides tests/*."""
+
     def run(self):
-        """Run pylama and radon."""
-        files = 'tests setup.py pyof'
-        print('running pylama with {}. {}'.format(', '.join(self.linters),
-                                                  self.extra_msg))
-        cmd = 'pylama -l {} {}'.format(','.join(self.linters), files)
-        call(cmd, shell=True)
-        print('Low grades (<= C) for Cyclomatic Complexity:')
-        call('radon cc --min=C ' + files, shell=True)
-        print('Low grades (<= C) for Maintainability Index:')
-        call('radon mi --min=C ' + files, shell=True)
-
-
-class FastLinter(Linter):
-    """Same as Linter, but without the slow pylint."""
-
-    description = 'Same as "lint", but much faster (no pylama_pylint).'
-
-    def __init__(self, *args, **kwargs):
-        """Remove slow linters and redefine the message about the rest."""
-        super().__init__(*args, **kwargs)
-        self.linters.remove('pylint')
-        self.extra_msg = 'This a faster version of "lint", without pylint. ' \
-                         'Run the slower "lint" after solving these issues:'
+        """First, tests/*."""
+        super().run()
+        Linter.lint()
 
 
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
@@ -70,10 +64,8 @@ setup(name='kytos-utils',
       test_suite='tests',
       scripts=['bin/kytos'],
       packages=find_packages(exclude=['tests']),
-#      install_requires=[str(ir.req) for ir in requirements],
       cmdclass={
           'lint': Linter,
-          'quick_lint': FastLinter,
-#          'clean': CleanCommand,
+          'test': Test
       },
       zip_safe=False)
