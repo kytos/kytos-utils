@@ -1,4 +1,6 @@
-"""{{ description }}"""
+"""Main module of {{author}}/{{napp}} Kytos Network Application.
+
+{{ description }}"""
 
 from kyco.core.napps import KycoNApp
 
@@ -8,13 +10,13 @@ log = settings.log
 
 
 class Main(KycoNApp):
-    """Main class of this NApp.
+    """Main class of {{author}}/{{napp}} NApp.
 
     This class is the entry point for this napp.
     """
 
     def setup(self):
-        """Replace the '__init__' method for the KycoNApp subclass.
+        """Replaces the '__init__' method for the KycoNApp subclass.
 
         The setup method is automatically called by the controller when your
         application is loaded.
