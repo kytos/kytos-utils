@@ -93,13 +93,9 @@ class KytosClient():
 
     def upload_napp(self, *args):
         endpoint = urljoin(self.api_uri, '/api/napps/')
-        headers = {'Content-type': 'multipart/form-data'}
-
         metadata = self.create_metadata()
-
-        payload = self.build_package(metadata['name'])
-
-        request = self.make_request(endpoint, json=metadata, file=payload,
+        package = self.build_package(metadata['name'])
+        request = self.make_request(endpoint, json=metadata, package=package,
                                     method="POST")
 
         if request.status_code != 201:
@@ -110,9 +106,7 @@ class KytosClient():
     def delete_napp(self, *args):
         endpoint = urljoin(self.api_uri, '/api/napps/{}/{}/')
         metadata = self.create_metadata()
-
         endpoint = endpoint.format(metadata['author'], metadata['name'])
-
         request = self.make_request(endpoint, json=metadata, method="DELETE")
 
         if request.status_code != 200:
@@ -121,16 +115,23 @@ class KytosClient():
         print('SUCCESS: Napp was deleted.')
 
     def make_request(self, endpoint, **kwargs):
-        json = kwargs.get('json',[])
+        data = kwargs.get('json',[])
+        package = kwargs.get('package', None)
         method = kwargs.get('method','GET')
 
+        function = getattr(requests, method.lower())
+
         try:
-            function = getattr(requests, method.lower())
-            request = function(endpoint, json=json)
-        except requests.exceptions.ConnectionError:
+            if package:
+                response = function(endpoint, data=data,
+                                    files={'file': package})
+            else:
+                response = function(endpoint, json=data)
+        except response.exceptions.ConnectionError:
             print('Server Not found.')
             sys.exit(1)
-        return request
+
+        return response
 
     def create_metadata(self, **kwargs):
         json_filename = kwargs.get('json_filename','kytos.json')
