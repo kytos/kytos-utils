@@ -19,8 +19,26 @@
 # You should have received a copy of the GNU General Public License
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #
+import sys
 
+from kytos_utils.cli.argparser import ArgParser
+from kytos_utils.napps.argparser import NAppsArgParser
 from kytos_utils.napps.remote.main import main
 
+
 if __name__ == '__main__':
-    main()
+    # "if" to separate different ways of parsing
+    if len(sys.argv) > 2 and sys.argv[1] == 'napps' and sys.argv[2] in \
+            ('enable', 'disable', 'list'):
+        parser = ArgParser('Kytos command-line utilities.')
+        parser.set_subparsers_args(help='sub-command help')
+
+        parser.add_subparser(NAppsArgParser())
+        # Example on how to add more ArgSubParser's
+        # for cls in (NAppsArgParser, ...):
+        #     parser.add_subparser(cls())
+
+        args = parser.parse_args()
+        args.func(args)
+    else:
+        main()
