@@ -4,6 +4,7 @@
 #
 # Authors:
 #    Beraldo Leal <beraldo AT ncc DOT unesp DOT br>
+#    Diego rabatone Oliveira <diraol AT ncc DOT unesp DOT br>
 #
 # kytos-utils is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,23 +23,25 @@ import sys
 import argparse
 import textwrap
 
+
 class KytosCmdLine():
     def __init__(self, api):
-        self.parser = argparse.ArgumentParser(prog='kytos',
-                        formatter_class=argparse.RawDescriptionHelpFormatter,
-                        description=textwrap.dedent('Kytos Napps client command line.'),
-                        epilog=textwrap.dedent('''
-                        Environment Variables:
+        self.parser = argparse.ArgumentParser(
+            prog='kytos',
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            description=textwrap.dedent('Kytos Napps client command line'),
+            epilog=textwrap.dedent('''
+               Environment Variables:
 
-                        NAPPS_API_URI    = Server API endpoint
-                        NAPPS_USER       = User to authenticate
-                        NAPPS_PASSWORD   = Password used only to get API token
+               NAPPS_API_URI    = Server API endpoint
+               NAPPS_USER       = User to authenticate
+               NAPPS_PASSWORD   = Password used only to get API token
 
-                        Use it or configure your config file.'''))
+               Use it or configure your config file.'''))
 
         self.parser.add_argument('-v', '--version',
-                            action='version',
-                            version='%(prog)s 0.1.0')
+                                 action='version',
+                                 version='%(prog)s 0.1.0')
 
         self.parser.add_argument('-d', '--debug',
                                  action='store_true',
@@ -49,16 +52,23 @@ class KytosCmdLine():
 
         # napps
         napps = subparsers.add_parser('napps', help='napps help')
-        napps_subparsers = napps.add_subparsers(title='napps command' )
-
+        napps_subparsers = napps.add_subparsers(title='napps command')
 
         # apps list
+        help = "Bootstrap a new Network Application."
+        description = "This will create the basic structure of a Kytos NApp"
+        description += " for you to build your own NApp."
+        napps_create = napps_subparsers.add_parser('create',
+                                                   help=help,
+                                                   description=description)
+        napps_create.set_defaults(func=api.create_napp)
+
         help = "Upload current napp to Kytos repository."
         description = "This will upload to Kytos Napps repository"
         description += " a napp on current directory."
         napps_upload = napps_subparsers.add_parser('upload',
-                                                    help=help,
-                                                    description=description)
+                                                   help=help,
+                                                   description=description)
         napps_upload.set_defaults(func=api.upload_napp)
 
         help = "Delete a current napp from Kytos Napps repository."
@@ -78,8 +88,7 @@ class KytosCmdLine():
 
         napps_list.set_defaults(func=api.list_napps)
         napps_list.add_argument('-a', '--author',
-                                  help="List napps by Author Name")
-
+                                help="List napps by Author Name")
 
     def help(self, namespace):
         print("Invalid syntax")
