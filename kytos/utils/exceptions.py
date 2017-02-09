@@ -1,0 +1,2 @@
+class KytosException(Exception):
+  pass
