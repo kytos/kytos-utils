@@ -69,10 +69,10 @@ class KytosCmdLine():
                                                    description=description)
         napps_delete.set_defaults(func=api.delete_napp)
 
-        help = "List all napps from Kytos Napps repository."
+        help = "Search napps in Kytos Napps repository."
         description = "This command will list all napps from"
         description += "Kytos Napps repository."
-        napps_list = napps_subparsers.add_parser('list',
+        napps_list = napps_subparsers.add_parser('search',
                                                  help=help,
                                                  description=description)
 
