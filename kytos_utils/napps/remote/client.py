@@ -29,7 +29,14 @@ import tarfile
 from jinja2 import Environment, FileSystemLoader
 from urllib.parse import urljoin
 
-TEMPLATES_PATH = '/etc/skel/kytos/napp-structure/author/napp'
+
+if 'VIRTUAL_ENV' in os.environ:
+    BASE_ENV = os.environ['VIRTUAL_ENV']
+else:
+    BASE_ENV = '/'
+
+TEMPLATES_PATH = os.path.join(BASE_ENV,
+                              'etc/skel/kytos/napp-structure/author/napp')
 
 
 class KytosClient():
