@@ -160,12 +160,12 @@ class KytosClient():
                    'description': description}
 
         #: Creating the directory structure (author/name)
-        os.makedirs(os.path.join(author, napp_name))
-
+        os.makedirs(author, exist_ok=True)
         #: Creating ``__init__.py`` files
         with open(os.path.join(author, '__init__.py'), 'w'):
             pass
 
+        os.makedirs(os.path.join(author, napp_name))
         with open(os.path.join(author, napp_name, '__init__.py'), 'w'):
             pass
 
