@@ -54,6 +54,8 @@ class KytosConfig():
 
     def load_global(self):
         # Try to read global section
+        if "global" not in self.config:
+            self.config["global"] = {}
         try:
             self.debug = self.config.getboolean("global", "debug")
         except NoOptionError:
@@ -70,11 +72,15 @@ class KytosConfig():
 
     def load_user(self):
         try:
+            if "auth" not in self.config:
+                self.config["auth"] = {}
             self.user = self.config.get("auth", "user")
         except NoOptionError:
             pass
 
     def load_token(self):
+        if "token" not in self.config:
+            self.config["token"] = {}
         try:
             self.token = {'hash': self.config.get("token", "hash"),
                           'created_at': self.config.get("token", "created_at"),

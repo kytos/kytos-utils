@@ -80,6 +80,10 @@ class KytosCmdLine():
         napps_list.add_argument('-a', '--author',
                                   help="List napps by Author Name")
 
+        # This is only for displaying help. The implementation of the commands
+        # below are in another parser. Check bin/kytos for details
+        napps_subparsers.add_parser('enable', help='Enable a NApp.')
+        napps_subparsers.add_parser('disable', help='Disable a NApp.')
 
     def help(self, namespace):
         print("Invalid syntax")
