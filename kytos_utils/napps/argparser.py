@@ -23,8 +23,8 @@ class NAppsArgParser(ArgSubParser):
     def add_arguments(self, parser):
         """Add subparsers."""
         self._set_subparsers(parser)
-        self._add_subparser(EnableArgParser())
-        self._add_subparser(DisableArgParser())
+        for cls in EnableArgParser, DisableArgParser, ListArgParser:
+            self._add_subparser(cls())
 
 
 class EnableArgParser(ArgSubParser):
@@ -55,3 +55,16 @@ class DisableArgParser(ArgSubParser):
         parser.add_argument('NApp', help='NApp to be disable in the format '
                             'napp_author/napp_name')
         parser.set_defaults(func=NAppsAPI.disable)
+
+
+class ListArgParser(ArgSubParser):
+    """Argument parser for the _disable_ action."""
+
+    def __init__(self):
+        super().__init__('list')
+
+    def get_parser_args(self):
+        return {'help': 'List all installed NApps.'}
+
+    def add_arguments(self, parser):
+        parser.set_defaults(func=NAppsAPI.list)

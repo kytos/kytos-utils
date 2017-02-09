@@ -29,7 +29,7 @@ from kytos_utils.napps.remote.main import main
 if __name__ == '__main__':
     # "if" to separate different ways of parsing
     if len(sys.argv) > 2 and sys.argv[1] == 'napps' and sys.argv[2] in \
-            ('enable', 'disable'):
+            ('enable', 'disable', 'list'):
         parser = ArgParser('Kytos command-line utilities.')
         parser.set_subparsers_args(help='sub-command help')
 

@@ -81,3 +81,34 @@ class NAppsAPI:
             return path.join(base, 'var', 'lib', 'kytos', 'napps')
 
         return self._config.setdefault('enabled_path', default, warn=True)
+
+    @classmethod
+    def list(cls, args):
+        """List all installed NApps and inform whether they are installed."""
+        obj = cls(args)
+        mgr = NAppsManager(install_path=obj.get_install_path(),
+                           enabled_path=obj.get_enabled_path())
+        # Adding status
+        napps = [napp + ('[IE]',) for napp in mgr.get_enabled()]
+        napps += [napp + ('[ID]',) for napp in mgr.get_disabled()]
+        napps.sort()
+
+        # After sorting, format NApp name and move status to the first position
+        napps = [(n[2], n[0] + '/' + n[1]) for n in napps]
+        titles = 'Status', 'NApp'
+
+        # Calculate maximum width of columns to be printed
+        widths = [max(len(napp[col]) for napp in napps) for col in range(2)]
+        widths = [max(w, len(t)) for w, t in zip(widths, titles)]
+        widths = tuple(widths)
+
+        header = '\n{:^%d} {:^%d}' % widths
+        sep = '{:=^%d} {:=^%d}' % widths
+        row = '{:^%d} {}' % widths[:-1]
+
+        print(header.format(*titles))
+        print(sep.format('', ''))
+        for napp in napps:
+            print(row.format(*napp))
+
+        print('\nStatus: (I)nstalled, (E)nabled, (D)isabled\n')
