@@ -1,7 +1,7 @@
 """Translate cli commands to non-cli code."""
 from os import environ, path
 
-from kytos.utils.config import Config
+from kytos.utils.config import KytosConfig as Config
 from kytos.utils.exceptions import KytosException
 from kytos.utils.napps import NAppsManager
 
@@ -40,7 +40,7 @@ class NAppsAPI:
             args (dict): Parsed arguments from cli.
         """
         self.napps = args['<napp>'] if '<napp>' in args else []
-        self._config = Config('napps')
+        self._config = Config().config['napps']
 
     def assert_napp(self):
         """Make sure that user provided at least one NApp in cli."""
@@ -49,22 +49,12 @@ class NAppsAPI:
 
     def get_install_path(self):
         """Get install_path from config. Create if necessary."""
-        def default():
-            """Append "/.installed" to the enabled_path."""
-            # Set the enabled_path for interpolation
-            self.get_enabled_path()
-            return '%(enabled_path)s/.installed'
-
-        return self._config.setdefault('install_path', default, warn=True)
+        print(self._config.get('installed_path'))
+        return self._config.get('installed_path')
 
     def get_enabled_path(self):
         """Get enabled_path from config. Create if necessary."""
-        def default():
-            """Based on kyco-core-napps/setup.py."""
-            base = environ['VIRTUAL_ENV'] if 'VIRTUAL_ENV' in environ else '/'
-            return path.join(base, 'var', 'lib', 'kytos', 'napps')
-
-        return self._config.setdefault('enabled_path', default, warn=True)
+        return self._config.get('enabled_path')
 
     @classmethod
     def uninstall(cls, args):

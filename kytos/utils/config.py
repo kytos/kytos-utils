@@ -1,107 +1,158 @@
-"""Manage config file."""
+# This file is part of kytos-utils.
+#
+# Copyright (c) 2016 Kytos Team
+#
+# Authors:
+#    Beraldo Leal <beraldo AT ncc DOT unesp DOT br>
+#
+# kytos-utils is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# kytos-utils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+from configparser import ConfigParser, NoOptionError, NoSectionError
+from datetime import datetime, timedelta
 import logging
-from configparser import ConfigParser
-from os import path
+from os import environ
+import os
 
-log = logging.getLogger('kytos.config')
+log = logging.getLogger(__name__)
 
 
-class Config:
-    """Manage the config file with automatic saving.
+class KytosConfig():
+    def __init__(self, config_file='~/.kytosrc'):
+        self.config_file = os.path.expanduser(config_file)
+        self.debug = False
 
-    This class works like a shortcut to several :class:`ConfigParser`
-    operations. You don't have to worry about saving the file or creating new
-    sections if they don't exist yet. There's also an option to warn the user
-    if a configuration is not found a default value is created. For any method
-    not implemented here, use the attributes directly.
+        # allow_no_value=True is used to keep the comments on the config file.
+        self.config = ConfigParser(allow_no_value=True)
 
-    Note:
-        If you modify the config using the attributes directly, you must call
-        :meth:`save` to save the modifications.
+        # Parse the config file. If no config file was found, then create some
+        # default sections on the config variable.
+        self.config.read(self.config_file)
+        self.check_sections(self.config)
 
-    Attributes:
-        config (ConfigParser): The whole config, result of
-            :meth:`ConfigParser.read`
-        section (configparser.SectionProxy): The config section or None if not
-            set yet.
-    """
+        if not os.path.exists(self.config_file):
+            log.warn("Config file %s not found.", self.config_file)
+            log.warn("Creating a new empty config file.")
+            with open(self.config_file, 'w') as f:
+                os.chmod(self.config_file, 0o0600)
+                self.config.write(f)
 
-    FILE = path.expanduser('~/.kytosrc')
+        self.set_env_or_defaults()
+        self.save_token('diego', 'meutokenéúniconessemundo')
 
-    def __init__(self, section=None):
-        """Optionally set the desired section.
+    def set_env_or_defaults(self):
+        """Read some environment variables and set them on the config.
 
-        Args:
-            section (str, optional): Section to use. If not specified, call
-                :meth:`set_section` later.
+        If no environment variable is found and the config section/key is
+        empty, then set some default values.
         """
-        self.config = ConfigParser()
-        if path.exists(self.FILE):
-            self.config.read(self.FILE)
-        self.set_section(section)
+        napps_uri = os.environ.get('NAPPS_API_URI')
+        user = os.environ.get('NAPPS_USER')
+        token = os.environ.get('NAPPS_TOKEN')
+        napps_path = os.environ.get('NAPPS_PATH')
 
-    def set_section(self, section):
-        """Set the desired section to use values from. Create if needed.
+        self.config.set('global', 'debug', self.debug)
 
-        Args:
-            section (str): Section to use.
-        """
-        if section not in self.config:
-            self.config[section] = {}
-        self.section = self.config[section]
+        if user is not None:
+            self.config.set('auth', 'user', user)
 
-    def has(self, key):
-        """Whether the section has a key."""
-        return key in self.section
+        if token is not None:
+            self.config.set('auth', 'token', token)
 
-    def get(self, key):
-        """Return key's value or exception if not found.
+        if napps_uri is not None:
+            self.config.set('napps', 'uri', napps_uri)
+        elif self.config.has_option('napps', 'uri'):
+            self.config.set('napps', 'uri', 'https://napps.kytos.io/api')
 
-        To avoid exception, use :meth:`has`. Requires a section already set.
+        if napps_path is not None:
+            self.config.set('napps', 'enabled_path', napps_path)
+            self.config.set('napps', 'installed_path',
+                            os.path.join(napps_path, '.installed'))
+        elif not self.config.has_option('napps', 'enabled_path'):
+            base = environ['VIRTUAL_ENV'] if 'VIRTUAL_ENV' in environ else '/'
+            path = os.path.join(base, 'var', 'lib', 'kytos', 'napps')
+            self.config.set('napps', 'enabled_path', path)
+            self.config.set('napps', 'installed_path',
+                            os.path.join(path, '.installed'))
 
-        Raises:
-            KeyError: If there's no such key.
-        """
-        return self.section[key]
+    @staticmethod
+    def check_sections(config):
+        """ Creates a empty config file."""
+        default_sections = ['global', 'auth', 'napps']
+        for section in default_sections:
+            if not config.has_section(section):
+                config.add_section(section)
 
-    def setdefault(self, key, default, warn=False):
-        """If a key is not found, set the default value and return it.
+    def save_token(self, user, token):
+        # allow_no_value=True is used to keep the comments on the config file.
+        new_config = ConfigParser(allow_no_value=True)
 
-        This method works like :meth:`dict.setdefault`. To warn a user that a
-        default value has been crated, use ``warn=True``.
+        # Parse the config file. If no config file was found, then create some
+        # default sections on the config variable.
+        new_config.read(self.config_file)
+        self.check_sections(new_config)
 
-        Args:
-            key (str): Value's key.
-            default (str, function): Default value to set and return if key is
-                not found. The value string or a function that returns it.
-            warn (bool): Whether or not to warn the user when the default value
-                is set (and created in the config file).
-        """
-        if key in self.section:
-            return self.section[key]
-        else:
-            return self.set(key, default, warn)
+        new_config.set('auth', 'user', user)
+        new_config.set('auth', 'token', token)
+        filename = os.path.expanduser(self.config_file)
+        with open(filename, 'w') as f:
+            os.chmod(filename, 0o0600)
+            new_config.write(f)
 
-    def set(self, key, value, warn=False):
-        """Set a value for a key and updates the config file.
-
-        Args:
-            key (str): Value's key.
-            value (str, function): Default value to set and return if key is
-                not found. The value string or a function that returns it.
-            warn (bool): Whether or not to warn the user when the default value
-                is set (and created in the config file).
-        """
-        _value = value() if callable(value) else value
-        self.section[key] = _value
-        self.save()
-        if warn:
-            log.warning('Configuration "%s" not found in %s and the value "%s"'
-                        ' was added.', key, self.FILE, _value)
-        # If we return _value, interpolation is lost
-        return self.section[key]
-
-    def save(self):
-        """Save the file. No need to save after ``set`` or ``setdefault``."""
-        with open(self.FILE, 'w') as f:
-            self.config.write(f)
+# class KytosAuth:
+#
+#     def legacy():
+#         config = KytosConfig()
+#         if config.napps_uri is None:
+#             config.save_napps_uri(input("Enter the kytos napps server address: "))
+#
+#         if config.user is None:
+#             config.save_user(input("Enter the username: "))
+#
+#         if config.password is None and config.token_expired():
+#             config.password = getpass.getpass("Enter the password for %s: " % config.user)
+#
+#         if not config.napps_uri or not config.user or (not config.password and not config.token):
+#             print("Missing information necessary to connect to napps repository.")
+#             print("kytos-utils uses theses variables:")
+#             print("")
+#             print("NAPPS_API_URI    = Server API endpoing")
+#             print("NAPPS_USER       = User to authenticate")
+#             print("NAPPS_PASSWORD   = Password used only to get API token")
+#             print("")
+#             print("Use it or configure your config file.")
+#             print("Aborting...")
+#             sys.exit()
+#
+#         client = KytosClient(config.napps_uri, config.debug)
+#         cmd = KytosCmdLine(client)
+#         cmd.parse_args()
+#
+#         if cmd.args.debug:
+#             client.set_debug()
+#
+#         # Load global section and token, if token is not found, ask for
+#         # credentials and get a new token
+#         if config.token_expired():
+#             print("Token valid not found in your %s" % config.config_file)
+#             print("Creating a new one...")
+#             token = client.request_token(config.user, config.password)
+#
+#             if token is None:
+#                 print("Error: Could not get token.")
+#                 print("Aborting...")
+#                 sys.exit(1)
+#
+#             config.save_token(token)
+#
+#         client.set_token(config.token)

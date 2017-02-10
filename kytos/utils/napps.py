@@ -65,7 +65,7 @@ class NAppsManager:
         try:
             enabled.unlink()
             # TODO: Clean authors dir in a correct manner
-            #self._clean_author(enabled.parent)
+            # self._clean_author(enabled.parent)
             log.info('Disabled NApp %s/%s', author, napp_name)
 
             if self.controller is not None:
@@ -108,7 +108,7 @@ class NAppsManager:
             installed = self._installed / author / napp_name
             shutil.rmtree(str(installed))
             # TODO: Clean authors dir in a correct manner
-            #self._clean_author(installed.parent)
+            # self._clean_author(installed.parent)
             log.info('Uninstalled NApp %s/%s')
         else:
             log.warning('NApp %s/%s was not installed', author, napp_name)
@@ -116,4 +116,4 @@ class NAppsManager:
     def _clean_author(self, author_dir):
         """Remove author folder if there's no NApps inside."""
         if not self._get_napps(author_dir):
-            shutil.rmtree(author_dir)
+            shutil.rmtree(str(author_dir))
