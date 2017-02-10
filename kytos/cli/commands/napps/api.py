@@ -18,10 +18,8 @@ class NAppsAPI:
     def disable(cls, args):
         """Disable subcommand."""
         obj = cls(args)
-        enabled_path = obj.get_enabled_path()
-        mgr = NAppsManager(enabled_path=enabled_path)
-        if not obj.napps:
-            raise KytosException("Missing napps.")
+        obj.assert_napp()
+        mgr = NAppsManager(enabled_path=obj.get_enabled_path())
         for napp in obj.napps:
             mgr.disable(*napp)
 
@@ -29,11 +27,9 @@ class NAppsAPI:
     def enable(cls, args):
         """Enable subcommand."""
         obj = cls(args)
-        i_path = obj.get_install_path()
-        e_path = obj.get_enabled_path()
-        mgr = NAppsManager(install_path=i_path, enabled_path=e_path)
-        if not obj.napps:
-            raise KytosException("Missing napps.")
+        obj.assert_napp()
+        mgr = NAppsManager(install_path=obj.get_install_path(),
+                           enabled_path=obj.get_enabled_path())
         for napp in obj.napps:
             mgr.enable(*napp)
 
@@ -45,6 +41,11 @@ class NAppsAPI:
         """
         self.napps = args['<napp>'] if '<napp>' in args else []
         self._config = Config('napps')
+
+    def assert_napp(self):
+        """Make sure that user provided at least one NApp in cli."""
+        if not self.napps:
+            raise KytosException("Missing NApps.")
 
     def get_install_path(self):
         """Get install_path from config. Create if necessary."""
@@ -64,6 +65,20 @@ class NAppsAPI:
             return path.join(base, 'var', 'lib', 'kytos', 'napps')
 
         return self._config.setdefault('enabled_path', default, warn=True)
+
+    @classmethod
+    def uninstall(cls, args):
+        """Uninstall and delete NApps.
+
+        For local installations, do not delete code outside install_path and
+        enabled_path.
+        """
+        obj = cls(args)
+        obj.assert_napp()
+        mgr = NAppsManager(install_path=obj.get_install_path(),
+                           enabled_path=obj.get_enabled_path())
+        for napp in obj.napps:
+            mgr.uninstall(*napp)
 
     @classmethod
     def list(cls, args):
