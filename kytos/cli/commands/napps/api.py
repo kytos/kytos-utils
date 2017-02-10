@@ -67,6 +67,20 @@ class NAppsAPI:
         return self._config.setdefault('enabled_path', default, warn=True)
 
     @classmethod
+    def uninstall(cls, args):
+        """Uninstall and delete NApps.
+
+        For local installations, do not delete code outside install_path and
+        enabled_path.
+        """
+        obj = cls(args)
+        obj.assert_napp()
+        mgr = NAppsManager(install_path=obj.get_install_path(),
+                           enabled_path=obj.get_enabled_path())
+        for napp in obj.napps:
+            mgr.uninstall(*napp)
+
+    @classmethod
     def list(cls, args):
         """List all installed NApps and inform whether they are installed."""
         obj = cls(args)

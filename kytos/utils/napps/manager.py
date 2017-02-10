@@ -99,6 +99,17 @@ class NAppsManager:
             if self.controller is not None:
                 self.controller.load_napp(author, napp_name)
 
+    def uninstall(self, author, napp_name):
+        """Disable and delete code inside kyto's var directory."""
+        self.disable(author, napp_name)
+        if self.is_installed(author, napp_name):
+            installed = self._installed / author / napp_name
+            shutil.rmtree(installed)
+            self._clean_author(installed.parent)
+            log.info('Uninstalled NApp %s/%s')
+        else:
+            log.warning('NApp %s/%s was not installed', author, napp_name)
+
     def _clean_author(self, author_dir):
         """Remove author folder if there's no NApps inside."""
         if not self._get_napps(author_dir):
