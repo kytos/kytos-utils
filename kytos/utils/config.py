@@ -72,16 +72,14 @@ class KytosConfig():
         elif self.config.has_option('napps', 'uri'):
             self.config.set('napps', 'uri', 'https://napps.kytos.io/api')
 
-        if napps_path is not None:
+        # Set paths if NAPPS_PATH is given or if not found in config
+        if napps_path or not self.config.has_option('napps', 'enabled_path'):
+            if not napps_path:  # default paths
+                base = os.environ.get('VIRTUAL_ENV') or '/'
+                napps_path = os.path.join(base, 'var', 'lib', 'kytos', 'napps')
             self.config.set('napps', 'enabled_path', napps_path)
             self.config.set('napps', 'installed_path',
                             os.path.join(napps_path, '.installed'))
-        elif not self.config.has_option('napps', 'enabled_path'):
-            base = os.environ.get('VIRTUAL_ENV') or '/'
-            path = os.path.join(base, 'var', 'lib', 'kytos', 'napps')
-            self.config.set('napps', 'enabled_path', path)
-            self.config.set('napps', 'installed_path',
-                            os.path.join(path, '.installed'))
 
     @staticmethod
     def check_sections(config):
