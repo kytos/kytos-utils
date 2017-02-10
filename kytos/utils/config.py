@@ -1,3 +1,4 @@
+"""Kytos Configuration."""
 # This file is part of kytos-utils.
 #
 # Copyright (c) 2016 Kytos Team
@@ -18,9 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
-from configparser import ConfigParser
 import logging
 import os
+from configparser import ConfigParser
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +47,6 @@ class KytosConfig():
                 self.config.write(output_file)
 
         self.set_env_or_defaults()
-        self.save_token('diego', 'meutokenéúniconessemundo')
 
     def set_env_or_defaults(self):
         """Read some environment variables and set them on the config.
@@ -69,8 +69,8 @@ class KytosConfig():
 
         if napps_uri is not None:
             self.config.set('napps', 'uri', napps_uri)
-        elif self.config.has_option('napps', 'uri'):
-            self.config.set('napps', 'uri', 'https://napps.kytos.io/api')
+        elif not self.config.has_option('napps', 'uri'):
+            self.config.set('napps', 'uri', 'https://napps.kytos.io/api/')
 
         # Set paths if NAPPS_PATH is given or if not found in config
         if napps_path or not self.config.has_option('napps', 'enabled_path'):
@@ -83,7 +83,7 @@ class KytosConfig():
 
     @staticmethod
     def check_sections(config):
-        """ Creates a empty config file."""
+        """Create a empty config file."""
         default_sections = ['global', 'auth', 'napps']
         for section in default_sections:
             if not config.has_section(section):
