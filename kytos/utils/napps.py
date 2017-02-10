@@ -64,8 +64,8 @@ class NAppsManager:
         enabled = self._enabled / author / napp_name
         try:
             enabled.unlink()
-            self._clean_author(enabled.parent)
-            print(enabled.parents[1])
+            # TODO: Clean authors dir in a correct manner
+            #self._clean_author(enabled.parent)
             log.info('Disabled NApp %s/%s', author, napp_name)
 
             if self.controller is not None:
@@ -89,23 +89,26 @@ class NAppsManager:
             init = author / '__init__.py'
             try:
                 init.touch()
+                # Create symlink
+                enabled.symlink_to(installed)
+
+                log.info('Enabled NApp %s/%s', author, napp_name)
+                if self.controller is not None:
+                    self.controller.load_napp(author, napp_name)
             except FileExistsError:
                 pass  # No need to change the file modification time
+            except PermissionError:
+                log.error("You need permission to enable NApps")
 
-            # Create symlink
-            enabled.symlink_to(installed)
-
-            log.info('Enabled NApp %s/%s', author, napp_name)
-            if self.controller is not None:
-                self.controller.load_napp(author, napp_name)
 
     def uninstall(self, author, napp_name):
-        """Disable and delete code inside kyto's var directory."""
+        """Disable and delete code inside NApp directory."""
         self.disable(author, napp_name)
         if self.is_installed(author, napp_name):
             installed = self._installed / author / napp_name
-            shutil.rmtree(installed)
-            self._clean_author(installed.parent)
+            shutil.rmtree(str(installed))
+            # TODO: Clean authors dir in a correct manner
+            #self._clean_author(installed.parent)
             log.info('Uninstalled NApp %s/%s')
         else:
             log.warning('NApp %s/%s was not installed', author, napp_name)

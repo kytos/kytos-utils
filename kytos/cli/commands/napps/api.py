@@ -3,7 +3,7 @@ from os import environ, path
 
 from kytos.utils.config import Config
 from kytos.utils.exceptions import KytosException
-from kytos.utils.napps.manager import NAppsManager
+from kytos.utils.napps import NAppsManager
 
 
 class NAppsAPI:
@@ -86,13 +86,15 @@ class NAppsAPI:
         obj = cls(args)
         mgr = NAppsManager(install_path=obj.get_install_path(),
                            enabled_path=obj.get_enabled_path())
+
         # Adding status
-        napps = [napp + ('[IE]',) for napp in mgr.get_enabled()]
-        napps += [napp + ('[ID]',) for napp in mgr.get_disabled()]
+        napps = [napp + ('[ie]',) for napp in mgr.get_enabled()]
+        napps += [napp + ('[i-]',) for napp in mgr.get_disabled()]
         napps.sort()
 
         # After sorting, format NApp name and move status to the first position
         napps = [(n[2], n[0] + '/' + n[1]) for n in napps]
+
         titles = 'Status', 'NApp'
 
         # Calculate maximum width of columns to be printed
@@ -109,4 +111,4 @@ class NAppsAPI:
         for napp in napps:
             print(row.format(*napp))
 
-        print('\nStatus: (I)nstalled, (E)nabled, (D)isabled\n')
+        print('\nStatus: (i)nstalled, (e)nabled\n')

@@ -32,7 +32,7 @@ def parse(argv):
         call(args['<subcommand>'], args)
     except KytosException as e:
         print("Error parsing args: {}".format(e))
-        exit(__doc__)
+        exit()
 
 
 def call(subcommand, args):
@@ -60,7 +60,7 @@ def parse_napps(napp_args):
         napp = arg.split('/')
         if len(napp) != 2 or len(napp[0]) == 0 or len(napp[1]) == 0:
             msg = '"{}" is not a valid NApp name. A NApp has the form' \
-                  'author/napp_name.'.format(arg)
+                  ' author/napp_name.'.format(arg)
             raise KytosException(msg)
         return tuple(napp)
 
