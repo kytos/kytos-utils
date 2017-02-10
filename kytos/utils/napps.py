@@ -146,9 +146,9 @@ class NAppsManager:
         filling some contents on this structure.
         """
 
-        env = os.environ['VIRTUAL_ENV'] if 'VIRTUAL_ENV' in os.environ else '/'
+        base = os.environ.get('VIRTUAL_ENV') or '/'
 
-        templates_path = os.path.join(env, 'etc', 'skel', 'kytos',
+        templates_path = os.path.join(base, 'etc', 'skel', 'kytos',
                                       'napp-structure', 'author', 'napp')
         author = None
         napp_name = None

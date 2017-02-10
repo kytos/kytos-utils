@@ -1,7 +1,5 @@
 """Translate cli commands to non-cli code."""
-from os import environ, path
-
-from kytos.utils.config import KytosConfig as Config
+from kytos.utils.config import KytosConfig
 from kytos.utils.exceptions import KytosException
 from kytos.utils.napps import NAppsManager
 
@@ -40,7 +38,7 @@ class NAppsAPI:
             args (dict): Parsed arguments from cli.
         """
         self.napps = args['<napp>'] if '<napp>' in args else []
-        self._config = Config().config['napps']
+        self._config = KytosConfig().config['napps']
 
     def assert_napp(self):
         """Make sure that user provided at least one NApp in cli."""

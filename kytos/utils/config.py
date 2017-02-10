@@ -18,10 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
-from configparser import ConfigParser, NoOptionError, NoSectionError
-from datetime import datetime, timedelta
+from configparser import ConfigParser
 import logging
-from os import environ
 import os
 
 log = logging.getLogger(__name__)
@@ -41,11 +39,11 @@ class KytosConfig():
         self.check_sections(self.config)
 
         if not os.path.exists(self.config_file):
-            log.warn("Config file %s not found.", self.config_file)
-            log.warn("Creating a new empty config file.")
-            with open(self.config_file, 'w') as f:
+            log.warning("Config file %s not found.", self.config_file)
+            log.warning("Creating a new empty config file.")
+            with open(self.config_file, 'w') as output_file:
                 os.chmod(self.config_file, 0o0600)
-                self.config.write(f)
+                self.config.write(output_file)
 
         self.set_env_or_defaults()
         self.save_token('diego', 'meutokenéúniconessemundo')
@@ -79,7 +77,7 @@ class KytosConfig():
             self.config.set('napps', 'installed_path',
                             os.path.join(napps_path, '.installed'))
         elif not self.config.has_option('napps', 'enabled_path'):
-            base = environ['VIRTUAL_ENV'] if 'VIRTUAL_ENV' in environ else '/'
+            base = os.environ.get('VIRTUAL_ENV') or '/'
             path = os.path.join(base, 'var', 'lib', 'kytos', 'napps')
             self.config.set('napps', 'enabled_path', path)
             self.config.set('napps', 'installed_path',
@@ -105,54 +103,6 @@ class KytosConfig():
         new_config.set('auth', 'user', user)
         new_config.set('auth', 'token', token)
         filename = os.path.expanduser(self.config_file)
-        with open(filename, 'w') as f:
+        with open(filename, 'w') as out_file:
             os.chmod(filename, 0o0600)
-            new_config.write(f)
-
-# class KytosAuth:
-#
-#     def legacy():
-#         config = KytosConfig()
-#         if config.napps_uri is None:
-#             config.save_napps_uri(input("Enter the kytos napps server address: "))
-#
-#         if config.user is None:
-#             config.save_user(input("Enter the username: "))
-#
-#         if config.password is None and config.token_expired():
-#             config.password = getpass.getpass("Enter the password for %s: " % config.user)
-#
-#         if not config.napps_uri or not config.user or (not config.password and not config.token):
-#             print("Missing information necessary to connect to napps repository.")
-#             print("kytos-utils uses theses variables:")
-#             print("")
-#             print("NAPPS_API_URI    = Server API endpoing")
-#             print("NAPPS_USER       = User to authenticate")
-#             print("NAPPS_PASSWORD   = Password used only to get API token")
-#             print("")
-#             print("Use it or configure your config file.")
-#             print("Aborting...")
-#             sys.exit()
-#
-#         client = KytosClient(config.napps_uri, config.debug)
-#         cmd = KytosCmdLine(client)
-#         cmd.parse_args()
-#
-#         if cmd.args.debug:
-#             client.set_debug()
-#
-#         # Load global section and token, if token is not found, ask for
-#         # credentials and get a new token
-#         if config.token_expired():
-#             print("Token valid not found in your %s" % config.config_file)
-#             print("Creating a new one...")
-#             token = client.request_token(config.user, config.password)
-#
-#             if token is None:
-#                 print("Error: Could not get token.")
-#                 print("Aborting...")
-#                 sys.exit(1)
-#
-#             config.save_token(token)
-#
-#         client.set_token(config.token)
+            new_config.write(out_file)
