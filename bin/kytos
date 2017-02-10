@@ -19,8 +19,39 @@
 # You should have received a copy of the GNU General Public License
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""kytos - The kytos command line.
 
-from kytos_utils.napps.remote.main import main
+Usage: kytos [-c <file>|--config <file>] <command> [<args>...]
+       kytos [-v|--version]
+       kytos [-h|--help]
+
+Options:
+  -c <file>, --config <file>    Load config file [default: ~/.kytosrc]
+  -h, --help                    Show this screen.
+  -v, --version                 Show version.
+
+The most commonly used kytos commands are:
+   napps      Create, list, enable, install (and other actions) NApps.
+   server     Start, Stop your Kytos Controller (Kyco)
+
+See 'kytos <command> -h|--help' for more information on a specific command.
+"""
+import sys
+
+from docopt import docopt
+
 
 if __name__ == '__main__':
-    main()
+    args = docopt(__doc__,
+                  version='kytos command line, version 0.1.0',
+                  options_first=True)
+    command = args['<command>']
+    command_args = args['<args>']
+    argv = [command] + command_args
+
+    if command == 'napps':
+        from kytos.cli.commands.napps.parser import parse
+        parse(argv)
+    else:
+        print("Error: Invalid syntax")
+        exit(__doc__)
