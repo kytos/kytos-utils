@@ -1,6 +1,9 @@
 """Manage Network Application files."""
 import logging
+import os
+import re
 import shutil
+from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -100,7 +103,6 @@ class NAppsManager:
             except PermissionError:
                 log.error("You need permission to enable NApps")
 
-
     def uninstall(self, author, napp_name):
         """Disable and delete code inside NApp directory."""
         self.disable(author, napp_name)
@@ -117,3 +119,85 @@ class NAppsManager:
         """Remove author folder if there's no NApps inside."""
         if not self._get_napps(author_dir):
             shutil.rmtree(str(author_dir))
+
+    @staticmethod
+    def valid_name(name):
+        """Check the validity of the given 'name'.
+
+        The following checks are done:
+        - name starts with a letter
+        - name contains only letters, numbers or underscores
+        """
+        return name is not None and re.match(r'[a-zA-Z][a-zA-Z0-9_]{2,}$',
+                                             name)
+
+    @staticmethod
+    def render_template(templates_path, template_filename, context):
+        """Renders Jinja2 template for a NApp structure."""
+        TEMPLATE_ENV = Environment(autoescape=False, trim_blocks=False,
+                                   loader=FileSystemLoader(templates_path))
+        return TEMPLATE_ENV.get_template(template_filename).render(context)
+
+    @classmethod
+    def create_napp(cls):
+        """Bootstrap a basic NApp strucutre for you to develop your NApp.
+
+        This will create, on the current folder, a clean structure of a NAPP,
+        filling some contents on this structure.
+        """
+
+        env = os.environ['VIRTUAL_ENV'] if 'VIRTUAL_ENV' in os.environ else '/'
+
+        templates_path = os.path.join(env, 'etc', 'skel', 'kytos',
+                                      'napp-structure', 'author', 'napp')
+        author = None
+        napp_name = None
+        description = None
+        print('--------------------------------------------------------------')
+        print('Welcome to the bootstrap process of your NApp.')
+        print('--------------------------------------------------------------')
+        print('In order to answer both the author name and the napp name,')
+        print('You must follow this naming rules:')
+        print(' - name starts with a letter')
+        print(' - name contains only letters, numbers or underscores')
+        print(' - at least three characters')
+        print('--------------------------------------------------------------')
+        print('')
+        msg = 'Please, insert you author name (username on the Napps Server): '
+        while not cls.valid_name(author):
+            author = input(msg)
+
+        while not cls.valid_name(napp_name):
+            napp_name = input('Please, insert you NApp name: ')
+
+        msg = 'Please, insert a brief description for your NApp [optional]: '
+        description = input(msg)
+        if not description:
+            description = '# TODO: <<<< Insert here your NApp description >>>>'
+
+        context = {'author': author, 'napp': napp_name,
+                   'description': description}
+
+        #: Creating the directory structure (author/name)
+        os.makedirs(author, exist_ok=True)
+        #: Creating ``__init__.py`` files
+        with open(os.path.join(author, '__init__.py'), 'w'):
+            pass
+
+        os.makedirs(os.path.join(author, napp_name))
+        with open(os.path.join(author, napp_name, '__init__.py'), 'w'):
+            pass
+
+        #: Creating the other files based on the templates
+        templates = os.listdir(templates_path)
+        templates.remove('__init__.py')
+        for tmp in templates:
+            fname = os.path.join(author, napp_name, tmp.rsplit('.template')[0])
+            with open(fname, 'w') as file:
+                content = cls.render_template(templates_path, tmp, context)
+                file.write(content)
+
+        msg = '\nCongratulations! Your NApp have been bootsrapped!\nNow you '
+        msg += 'can go to the directory {}/{} and begin to code your NApp.'
+        print(msg.format(author, napp_name))
+        print('Have fun!')

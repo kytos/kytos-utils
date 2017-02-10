@@ -57,6 +57,11 @@ class NAppsAPI:
         return self._config.get('enabled_path')
 
     @classmethod
+    def create(cls, args):
+        """Bootstrap a basic NApp structure on the current folder."""
+        NAppsManager.create_napp()
+
+    @classmethod
     def uninstall(cls, args):
         """Uninstall and delete NApps.
 
