@@ -3,7 +3,14 @@
 You are at the "napps" command.
 
 Usage:
-       kytos napps <subcommand> [<napp>...]
+       kytos napps create
+       kytos napps upload
+       kytos napps list
+       kytos napps install   <napp>...
+       kytos napps uninstall <napp>...
+       kytos napps enable    <napp>...
+       kytos napps disable   <napp>...
+       kytos napps search    <pattern>
        kytos napps -h | --help
 
 Options:
@@ -19,8 +26,11 @@ Common napps subcommands:
   uninstall     Remove a NApp from your controller.
   enable        Enable a installed NApp.
   disable       Disable a NApp.
+  search        Search for NApps in NApps Server.
 
 """
+import sys
+
 from docopt import docopt
 from kytos.cli.commands.napps.api import NAppsAPI
 from kytos.utils.exceptions import KytosException
@@ -29,7 +39,7 @@ from kytos.utils.exceptions import KytosException
 def parse(argv):
     args = docopt(__doc__, argv=argv)
     try:
-        call(args['<subcommand>'], args)
+        call(sys.argv[2], args)
     except KytosException as e:
         print("Error parsing args: {}".format(e))
         exit()
@@ -59,8 +69,7 @@ def parse_napps(napp_args):
         """Parse one argument."""
         napp = arg.split('/')
         if len(napp) != 2 or len(napp[0]) == 0 or len(napp[1]) == 0:
-            msg = '"{}" is not a valid NApp name. A NApp has the form' \
-                  ' author/napp_name.'.format(arg)
+            msg = '"{}" NApp has not the form username/napp_name.'.format(arg)
             raise KytosException(msg)
         return tuple(napp)
 

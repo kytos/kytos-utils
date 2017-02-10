@@ -1,6 +1,5 @@
 """Translate cli commands to non-cli code."""
 from kytos.utils.config import KytosConfig
-from kytos.utils.exceptions import KytosException
 from kytos.utils.napps import NAppsManager
 
 
@@ -15,39 +14,25 @@ class NAppsAPI:
     @classmethod
     def disable(cls, args):
         """Disable subcommand."""
-        obj = cls(args)
-        obj.assert_napp()
-        mgr = obj.get_napps_manager()
-        for napp in obj.napps:
+        napps = args['<napp>']
+        mgr = napps.get_napps_manager()
+        for napp in napps:
             mgr.disable(*napp)
 
     @classmethod
     def enable(cls, args):
         """Enable subcommand."""
-        obj = cls(args)
-        obj.assert_napp()
-        mgr = obj.get_napps_manager()
-        for napp in obj.napps:
+        napps = args['<napp>']
+        mgr = cls.get_napps_manager()
+        for napp in napps:
             mgr.enable(*napp)
 
-    def __init__(self, args=None):
-        """Require parsed arguments.
-
-        Args:
-            args (dict): Parsed arguments from cli.
-        """
-        self.napps = args['<napp>'] if args and '<napp>' in args else []
-        self._config = KytosConfig().config['napps']
-
-    def assert_napp(self):
-        """Make sure that user provided at least one NApp in cli."""
-        if not self.napps:
-            raise KytosException("Missing NApps.")
-
-    def get_napps_manager(self):
+    @staticmethod
+    def get_napps_manager():
         """Instance of NAppsManager with settings from config file."""
-        return NAppsManager(install_path=self._config['installed_path'],
-                            enabled_path=self._config['enabled_path'])
+        config = KytosConfig().config['napps']
+        return NAppsManager(install_path=config['installed_path'],
+                            enabled_path=config['enabled_path'])
 
     @classmethod
     def create(cls, args):
@@ -61,17 +46,15 @@ class NAppsAPI:
         For local installations, do not delete code outside install_path and
         enabled_path.
         """
-        obj = cls(args)
-        obj.assert_napp()
-        mgr = obj.get_napps_manager()
-        for napp in obj.napps:
+        napps = args['<napp>']
+        mgr = cls.get_napps_manager()
+        for napp in napps:
             mgr.uninstall(*napp)
 
     @classmethod
     def list(cls, args):
         """List all installed NApps and inform whether they are installed."""
-        obj = cls()
-        mgr = obj.get_napps_manager()
+        mgr = cls.get_napps_manager()
 
         # Adding status
         napps = [napp + ('[ie]',) for napp in mgr.get_enabled()]
