@@ -41,17 +41,26 @@ import sys
 from docopt import docopt
 
 
-if __name__ == '__main__':
-    args = docopt(__doc__,
-                  version='kytos command line, version 0.1.0',
-                  options_first=True)
-    command = args['<command>']
-    command_args = args['<args>']
-    argv = [command] + command_args
+def use_new_code():
+    return len(sys.argv) > 2 and sys.argv[1] == 'napps' and sys.argv[2] in \
+        ('enable', 'disable', 'list', 'uninstall')
 
-    if command == 'napps':
-        from kytos.cli.commands.napps.parser import parse
-        parse(argv)
+
+if __name__ == '__main__':
+    if use_new_code():
+        args = docopt(__doc__,
+                      version='kytos command line, version 0.1.0',
+                      options_first=True)
+        command = args['<command>']
+        command_args = args['<args>']
+        argv = [command] + command_args
+
+        if command == 'napps':
+            from kytos.cli.commands.napps.parser import parse
+            parse(argv)
+        else:
+            print("Error: Invalid syntax")
+            exit(__doc__)
     else:
-        print("Error: Invalid syntax")
-        exit(__doc__)
+        from kytos_utils.napps.remote.main import main
+        main()

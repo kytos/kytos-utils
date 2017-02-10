@@ -84,6 +84,8 @@ class KytosCmdLine():
         # below are in another parser. Check bin/kytos for details
         napps_subparsers.add_parser('enable', help='Enable a NApp.')
         napps_subparsers.add_parser('disable', help='Disable a NApp.')
+        napps_subparsers.add_parser('list', help='List local NApps.')
+        napps_subparsers.add_parser('uninstall', help='Remove a NApp.')
 
     def help(self, namespace):
         print("Invalid syntax")
