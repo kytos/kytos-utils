@@ -62,6 +62,15 @@ class NAppsAPI:
         NAppsManager.create_napp()
 
     @classmethod
+    def upload(cls, args):
+        """Upload the NApp to the NApps server.
+
+        Create the NApp package and upload it to the NApp server.
+        """
+        mgr = cls.get_napps_manager()
+        mgr.upload()
+
+    @classmethod
     def uninstall(cls, args):
         """Uninstall and delete NApps.
 
