@@ -84,13 +84,19 @@ class DevelopMode(develop):
     def _create_data_files_directory(self):
         current_directory = os.path.abspath(os.path.dirname(__file__))
 
+        etc_dir = os.path.join(BASE_ENV, 'etc')
+        if not os.path.exists(etc_dir):
+            os.mkdir(etc_dir)
+
         dst_dir = os.path.join(BASE_ENV, SKEL_PATH)
-        os.mkdir(dst_dir)
+        if not os.path.exists(dst_dir):
+            os.mkdir(dst_dir)
 
         src = os.path.join(current_directory, KYTOS_SKEL_PATH)
         dst = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
 
-        os.symlink(src, dst)
+        if not os.path.exists(dst):
+            os.symlink(src, dst)
 
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
 requirements = parse_requirements('requirements.txt', session=False)
