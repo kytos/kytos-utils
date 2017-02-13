@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import shutil
+import sys
 import tarfile
 import tempfile
 import urllib
@@ -330,3 +331,65 @@ class NAppsManager:
         if not folder.exists():
             folder.mkdir()
             (folder / '__init__.py').touch()
+
+    def build_napp_package(napp_identifier):
+        """Builds the .napp file to be sent to the napps server.
+
+        Args:
+            napp_identifier (str): Identifier formatted as <author>/<napp_name>
+
+        Return:
+            file_payload (binary): The binary representation of the napp
+                package that will be POSTed to the napp server.
+        """
+        ignored_extensions = ['.swp', '.pyc', '.napp']
+        ignored_dirs = ['__pycache__']
+        files = os.listdir()
+        for filename in files:
+            if os.path.isfile(filename) and '.' in filename and \
+                    filename.rsplit('.', 1)[1] in ignored_extensions:
+                files.remove(filename)
+            elif os.path.isdir(filename) and filename in ignored_dirs:
+                files.remove(filename)
+
+        # Create the '.napp' package
+        napp_file = tarfile.open(napp_identifier + '.napp', 'x:xz')
+        [napp_file.add(f) for f in files]
+        napp_file.close()
+
+        # Get the binary payload of the package
+        file_payload = open(napp_identifier + '.napp', 'rb')
+
+        # remove the created package from the filesystem
+        os.remove(napp_identifier + '.napp')
+
+        return file_payload
+
+    def create_metadata(self, *args, **kwargs):
+        """Generate the metadata to send the napp package."""
+        json_filename = kwargs.get('json_filename', 'kytos.json')
+        readme_filename = kwargs.get('readme_filename', 'README.rst')
+        ignore_json = kwargs.get('ignore_json', False)
+        metadata = {}
+
+        if not ignore_json:
+            try:
+                with open(json_filename) as json_file:
+                    metadata = json.load(json_file)
+            except FileNotFoundError:
+                print("ERROR: Could not access kytos.json file.")
+                sys.exit(1)
+
+        try:
+            with open(readme_filename) as readme_file:
+                metadata['readme'] = readme_file.read()
+        except FileNotFoundError:
+            metadata['readme'] = ''
+
+        return metadata
+
+    def upload(self, *args, **kwargs):
+        metadata = self.create_metadata(*args, **kwargs)
+        package = self.build_napp_package(metadata['name'])
+
+        KytosClient().upload_napp(metadata, package)
