@@ -22,7 +22,7 @@ Common napps subcommands:
   create        Create a bootstrap NApp structure for development.
   upload        Upload current NApp to Kytos repository.
   list          List all NApps installed into your system.
-  install       Install a NApp into a controller.
+  install       Install a local or remote NApp into a controller.
   uninstall     Remove a NApp from your controller.
   enable        Enable a installed NApp.
   disable       Disable a NApp.

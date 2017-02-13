@@ -36,9 +36,10 @@ The most commonly used kytos commands are:
 
 See 'kytos <command> -h|--help' for more information on a specific command.
 """
-import sys
+import logging
 from docopt import docopt
 
+logging.basicConfig(format='%(levelname)-5s %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
     args = docopt(__doc__,
