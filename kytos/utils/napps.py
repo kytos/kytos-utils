@@ -332,7 +332,7 @@ class NAppsManager:
             folder.mkdir()
             (folder / '__init__.py').touch()
 
-    def build_napp_package(napp_identifier):
+    def build_napp_package(self, napp_name):
         """Builds the .napp file to be sent to the napps server.
 
         Args:
@@ -353,15 +353,15 @@ class NAppsManager:
                 files.remove(filename)
 
         # Create the '.napp' package
-        napp_file = tarfile.open(napp_identifier + '.napp', 'x:xz')
+        napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
         [napp_file.add(f) for f in files]
         napp_file.close()
 
         # Get the binary payload of the package
-        file_payload = open(napp_identifier + '.napp', 'rb')
+        file_payload = open(napp_name + '.napp', 'rb')
 
         # remove the created package from the filesystem
-        os.remove(napp_identifier + '.napp')
+        os.remove(napp_name + '.napp')
 
         return file_payload
 
@@ -392,4 +392,4 @@ class NAppsManager:
         metadata = self.create_metadata(*args, **kwargs)
         package = self.build_napp_package(metadata['name'])
 
-        KytosClient().upload_napp(metadata, package)
+        NAppsClient().upload_napp(metadata, package)
