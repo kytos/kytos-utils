@@ -29,6 +29,7 @@ import requests
 
 from kytos.utils.exceptions import KytosException
 from kytos.utils.config import KytosConfig
+from kytos.utils.decorators import kytos_auth
 
 
 log = logging.getLogger(__name__)
@@ -64,6 +65,22 @@ class NAppsClient():
             raise KytosException('Error getting %s/%s from server: (%d) - %s',
                                  username, name, res.status_code, res.reason)
         return json.loads(res.content)
+
+    @kytos_auth
+    def upload_napp(self, metadata, package):
+        """Upload the napp from the current directory to the napps server."""
+        endpoint = urljoin(self._config.get('napps', 'uri'), 'napps/')
+
+        metadata['token'] = self._config.get('auth', 'token')
+
+        request = self.make_request(endpoint, json=metadata, package=package,
+                                    method="POST")
+        if request.status_code != 201:
+            log.error("ERROR: %s: %s", request.status_code, request.reason)
+            sys.exit(1)
+
+        print("SUCCESS: NApp {}/{} uploaded.".format(metadata['author'],
+                                                     metadata['name']))
 
     @staticmethod
     def make_request(endpoint, **kwargs):
