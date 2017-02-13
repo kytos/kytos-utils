@@ -1,6 +1,8 @@
 """Translate cli commands to non-cli code."""
+import os
+import re
+
 from kytos.utils.config import KytosConfig
-from kytos.utils.exceptions import KytosException
 from kytos.utils.napps import NAppsManager
 
 
@@ -15,39 +17,25 @@ class NAppsAPI:
     @classmethod
     def disable(cls, args):
         """Disable subcommand."""
-        obj = cls(args)
-        obj.assert_napp()
-        mgr = obj.get_napps_manager()
-        for napp in obj.napps:
+        napps = args['<napp>']
+        mgr = cls.get_napps_manager()
+        for napp in napps:
             mgr.disable(*napp)
 
     @classmethod
     def enable(cls, args):
         """Enable subcommand."""
-        obj = cls(args)
-        obj.assert_napp()
-        mgr = obj.get_napps_manager()
-        for napp in obj.napps:
+        napps = args['<napp>']
+        mgr = cls.get_napps_manager()
+        for napp in napps:
             mgr.enable(*napp)
 
-    def __init__(self, args=None):
-        """Require parsed arguments.
-
-        Args:
-            args (dict): Parsed arguments from cli.
-        """
-        self.napps = args['<napp>'] if args and '<napp>' in args else []
-        self._config = KytosConfig().config['napps']
-
-    def assert_napp(self):
-        """Make sure that user provided at least one NApp in cli."""
-        if not self.napps:
-            raise KytosException("Missing NApps.")
-
-    def get_napps_manager(self):
+    @staticmethod
+    def get_napps_manager():
         """Instance of NAppsManager with settings from config file."""
-        return NAppsManager(install_path=self._config['installed_path'],
-                            enabled_path=self._config['enabled_path'])
+        config = KytosConfig().config['napps']
+        return NAppsManager(install_path=config['installed_path'],
+                            enabled_path=config['enabled_path'])
 
     @classmethod
     def create(cls, args):
@@ -61,40 +49,76 @@ class NAppsAPI:
         For local installations, do not delete code outside install_path and
         enabled_path.
         """
-        obj = cls(args)
-        obj.assert_napp()
-        mgr = obj.get_napps_manager()
-        for napp in obj.napps:
+        napps = args['<napp>']
+        mgr = cls.get_napps_manager()
+        for napp in napps:
             mgr.uninstall(*napp)
+
+    @classmethod
+    def search(cls, args):
+        """Search for NApps in NApps server matching a pattern."""
+        safe_shell_pat = re.escape(args['<pattern>']).replace(r'\*', '.*')
+        pat_str = '.*{}.*'.format(safe_shell_pat)
+        pattern = re.compile(pat_str, re.IGNORECASE)
+        remote_json = NAppsManager.search(pattern)
+
+        mgr = cls.get_napps_manager()
+        enabled = mgr.get_enabled()
+        disabled = mgr.get_disabled()
+        remote = (((n['author'], n['name']), n['description'])
+                  for n in remote_json)
+
+        napps = []
+        for napp, desc in remote:
+            if napp in enabled:
+                status = 'ie'
+            elif napp in disabled:
+                status = 'i-'
+            else:
+                status = '--'
+            status = '[{}]'.format(status)
+            name = '{}/{}'.format(*napp)
+            napps.append((status, name, desc))
+
+        cls.print_napps(napps)
 
     @classmethod
     def list(cls, args):
         """List all installed NApps and inform whether they are installed."""
-        obj = cls()
-        mgr = obj.get_napps_manager()
+        mgr = cls.get_napps_manager()
 
-        # Adding status
+        # Add status
         napps = [napp + ('[ie]',) for napp in mgr.get_enabled()]
         napps += [napp + ('[i-]',) for napp in mgr.get_disabled()]
+
+        # Sort, add description and reorder coloumns
         napps.sort()
+        napps = [(s, '{}/{}'.format(u, n), mgr.get_description(u, n))
+                 for u, n, s in napps]
 
-        # After sorting, format NApp name and move status to the first position
-        napps = [(n[2], n[0] + '/' + n[1]) for n in napps]
+        cls.print_napps(napps)
 
-        titles = 'Status', 'NApp'
+    @staticmethod
+    def print_napps(napps):
+        """Print status, name and description."""
+        if not napps:
+            print('No NApps found.')
+            return
 
-        # Calculate maximum width of columns to be printed
-        widths = [max(len(napp[col]) for napp in napps) for col in range(2)]
-        widths = [max(w, len(t)) for w, t in zip(widths, titles)]
-        widths = tuple(widths)
+        stat_w = 6  # We already know the size of Status col
+        name_w = max(len(n[1]) for n in napps)
+        desc_w = max(len(n[2]) for n in napps)
+        term_w = os.popen('stty size', 'r').read().split()[1]
+        remaining = int(term_w) - stat_w - name_w - 6
+        desc_w = min(desc_w, remaining)
+        widths = (stat_w, name_w, desc_w)
 
-        header = '\n{:^%d} {:^%d}' % widths
-        sep = '{:=^%d} {:=^%d}' % widths
-        row = '{:^%d} {}' % widths[:-1]
-
-        print(header.format(*titles))
-        print(sep.format('', ''))
-        for napp in napps:
-            print(row.format(*napp))
+        header = '\n{:^%d} | {:^%d} | {:^%d}' % widths
+        row = '{:^%d} | {:<%d} | {:<%d}' % widths
+        print(header.format('Status', 'NApp', 'Description'))
+        print('=+='.join('=' * w for w in widths))
+        for user, name, desc in napps:
+            desc = (desc[:desc_w-3] + '...') if len(desc) > desc_w else desc
+            print(row.format(user, name, desc))
 
         print('\nStatus: (i)nstalled, (e)nabled\n')

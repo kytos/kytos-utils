@@ -1,10 +1,14 @@
 """Manage Network Application files."""
+import json
 import logging
 import os
 import re
 import shutil
-from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
+
+from jinja2 import Environment, FileSystemLoader
+
+from kytos.utils.client import KytosClient
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +65,16 @@ class NAppsManager:
         installed = set(self.get_installed())
         enabled = set(self.get_enabled())
         return sorted(installed - enabled)
+
+    def get_description(self, username, name):
+        """Return the description from kytos.json."""
+        kj = self._installed / username / name / 'kytos.json'
+        try:
+            with kj.open() as f:
+                meta = json.load(f)
+                return meta['description']
+        except (FileNotFoundError, json.JSONDecodeError, KeyError):
+            return ''
 
     def disable(self, author, napp_name):
         """Disable a NApp by removing its symbolic link."""
@@ -137,6 +151,25 @@ class NAppsManager:
         TEMPLATE_ENV = Environment(autoescape=False, trim_blocks=False,
                                    loader=FileSystemLoader(templates_path))
         return TEMPLATE_ENV.get_template(template_filename).render(context)
+
+    @staticmethod
+    def search(pattern):
+        """Search all server NApps matching pattern.
+
+        Args:
+            pattern (str): Python regular expression.
+        """
+        def match(napp):
+            """Whether a NApp metadata matches the pattern."""
+            strings = ['{}/{}'.format(napp['author'], napp['name']),
+                       napp['description']] + napp['tags']
+            for string in strings:
+                if pattern.match(string):
+                    return True
+            return False
+
+        napps = KytosClient().get_napps()
+        return [napp for napp in napps if match(napp)]
 
     @classmethod
     def create_napp(cls):
