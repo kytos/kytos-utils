@@ -8,6 +8,7 @@ import sys
 from subprocess import CalledProcessError, call, check_call
 from pip.req import parse_requirements
 from setuptools import Command, find_packages, setup
+from setuptools.command.develop import develop
 from setuptools.command.test import test as TestCommand
 
 if 'VIRTUAL_ENV' in os.environ:
@@ -15,7 +16,9 @@ if 'VIRTUAL_ENV' in os.environ:
 else:
     BASE_ENV = '/'
 
-AUTHOR_PATH = 'etc/skel/kytos/napp-structure/author'
+SKEL_PATH = 'etc/skel'
+KYTOS_SKEL_PATH = os.path.join(SKEL_PATH,'kytos')
+AUTHOR_PATH = os.path.join(KYTOS_SKEL_PATH,'napp-structure/author')
 NAPP_PATH = os.path.join(AUTHOR_PATH, 'napp')
 ETC_FILES = [(os.path.join(BASE_ENV, AUTHOR_PATH),
               [os.path.join(AUTHOR_PATH, '__init__.py')]),
@@ -66,6 +69,28 @@ class Test(TestCommand):
         super().run()
         Linter.lint()
 
+class DevelopMode(develop):
+    """Recommended setup for kytos-utils developers.
+
+    Instead of copying the files to the expected directories, a symlink is
+    created on the system aiming the current source code.
+    """
+
+    def run(self):
+        """Install the package in a developer mode."""
+        super().run()
+        self._create_data_files_directory()
+
+    def _create_data_files_directory(self):
+        current_directory = os.path.abspath(os.path.dirname(__file__))
+
+        dst_dir = os.path.join(BASE_ENV, SKEL_PATH)
+        os.mkdir(dst_dir)
+
+        src = os.path.join(current_directory, KYTOS_SKEL_PATH)
+        dst = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
+
+        os.symlink(src, dst)
 
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
 requirements = parse_requirements('requirements.txt', session=False)
@@ -82,6 +107,7 @@ setup(name='kytos-utils',
       data_files=ETC_FILES,
       packages=find_packages(exclude=['tests']),
       cmdclass={
+          'develop': DevelopMode,
           'lint': Linter,
           'test': Test
       },

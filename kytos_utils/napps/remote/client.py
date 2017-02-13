@@ -51,9 +51,9 @@ class KytosClient():
             print("ERROR: %d: %s" % (request.status_code, request.reason))
             sys.exit()
 
-        json = request.json()
-        self.set_token(json)
-        return json
+        data = request.json()
+        self.set_token(data)
+        return data
 
     def list_napps(self, *args):
         endpoint = urljoin(self.api_uri, '/api/napps/')
