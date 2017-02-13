@@ -1,9 +1,12 @@
 """Translate cli commands to non-cli code."""
+import logging
 import os
 import re
+from urllib.error import HTTPError
 
-from kytos.utils.config import KytosConfig
 from kytos.utils.napps import NAppsManager
+
+log = logging.getLogger(__name__)
 
 
 class NAppsAPI:
@@ -18,24 +21,40 @@ class NAppsAPI:
     def disable(cls, args):
         """Disable subcommand."""
         napps = args['<napp>']
-        mgr = cls.get_napps_manager()
+        mgr = NAppsManager()
         for napp in napps:
-            mgr.disable(*napp)
+            mgr.set_napp(*napp)
+            log.info('NApp %s:', mgr.napp_id)
+            cls.disable_napp(mgr)
+
+    @staticmethod
+    def disable_napp(mgr):
+        """Disable a NApp."""
+        if mgr.is_enabled():
+            log.info('  Disabling...')
+            mgr.disable()
+        log.info('  Disabled.')
 
     @classmethod
     def enable(cls, args):
         """Enable subcommand."""
         napps = args['<napp>']
-        mgr = cls.get_napps_manager()
+        mgr = NAppsManager()
         for napp in napps:
-            mgr.enable(*napp)
+            mgr.set_napp(*napp)
+            log.info('NApp %s:', mgr.napp_id)
+            cls.enable_napp(mgr)
 
     @staticmethod
-    def get_napps_manager():
-        """Instance of NAppsManager with settings from config file."""
-        config = KytosConfig().config['napps']
-        return NAppsManager(install_path=config['installed_path'],
-                            enabled_path=config['enabled_path'])
+    def enable_napp(mgr):
+        """Install one NApp using NAppManager object."""
+        try:
+            if not mgr.is_enabled():
+                log.info('  Enabling...')
+                mgr.enable()
+            log.info('  Enabled.')
+        except (FileNotFoundError, PermissionError) as e:
+            log.error('  %s', e)
 
     @classmethod
     def create(cls, args):
@@ -50,9 +69,47 @@ class NAppsAPI:
         enabled_path.
         """
         napps = args['<napp>']
-        mgr = cls.get_napps_manager()
+        mgr = NAppsManager()
         for napp in napps:
-            mgr.uninstall(*napp)
+            mgr.set_napp(*napp)
+            log.info('NApp %s:', mgr.napp_id)
+            if mgr.is_installed():
+                log.info('  Uninstalling...')
+                mgr.uninstall()
+                cls.disable_napp(mgr)
+            log.info('  Uninstalled.')
+
+    @classmethod
+    def install(cls, args):
+        """Install local or remote NApps."""
+        mgr = NAppsManager()
+        for napp in args['<napp>']:
+            mgr.set_napp(*napp)
+            log.info('NApp %s:', mgr.napp_id)
+            if not mgr.is_installed():
+                cls.install_napp(mgr)
+            else:
+                log.info('  Installed.')
+
+    @classmethod
+    def install_napp(cls, mgr):
+        """Install a NApp."""
+        try:
+            log.info('  Searching local NApp...')
+            mgr.install_local()
+            log.info('  Installed.')
+            cls.enable_napp(mgr)
+        except FileNotFoundError:
+            log.info('  Downloading from NApps Server...')
+            try:
+                mgr.install_remote()
+                log.info('  Installed.')
+                cls.enable_napp(mgr)
+            except HTTPError as e:
+                if e.code == 404:
+                    log.error('  NApp not found.')
+                else:
+                    log.error('  NApps Server error: %s', e)
 
     @classmethod
     def search(cls, args):
@@ -62,30 +119,25 @@ class NAppsAPI:
         pattern = re.compile(pat_str, re.IGNORECASE)
         remote_json = NAppsManager.search(pattern)
 
-        mgr = cls.get_napps_manager()
+        mgr = NAppsManager()
         enabled = mgr.get_enabled()
-        disabled = mgr.get_disabled()
+        installed = mgr.get_installed()
         remote = (((n['author'], n['name']), n['description'])
                   for n in remote_json)
 
         napps = []
-        for napp, desc in remote:
-            if napp in enabled:
-                status = 'ie'
-            elif napp in disabled:
-                status = 'i-'
-            else:
-                status = '--'
+        for napp, desc in sorted(remote):
+            status = 'i' if napp in installed else '-'
+            status += 'e' if napp in enabled else '-'
             status = '[{}]'.format(status)
             name = '{}/{}'.format(*napp)
             napps.append((status, name, desc))
-
         cls.print_napps(napps)
 
     @classmethod
     def list(cls, args):
         """List all installed NApps and inform whether they are installed."""
-        mgr = cls.get_napps_manager()
+        mgr = NAppsManager()
 
         # Add status
         napps = [napp + ('[ie]',) for napp in mgr.get_enabled()]
@@ -115,7 +167,7 @@ class NAppsAPI:
 
         header = '\n{:^%d} | {:^%d} | {:^%d}' % widths
         row = '{:^%d} | {:<%d} | {:<%d}' % widths
-        print(header.format('Status', 'NApp', 'Description'))
+        print(header.format('Status', 'NApp ID', 'Description'))
         print('=+='.join('=' * w for w in widths))
         for user, name, desc in napps:
             desc = (desc[:desc_w-3] + '...') if len(desc) > desc_w else desc

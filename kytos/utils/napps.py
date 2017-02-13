@@ -4,11 +4,15 @@ import logging
 import os
 import re
 import shutil
+import tarfile
+import tempfile
+import urllib
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-from kytos.utils.client import KytosClient
+from kytos.utils.client import NAppsClient
+from kytos.utils.config import KytosConfig
 
 log = logging.getLogger(__name__)
 
@@ -16,7 +20,7 @@ log = logging.getLogger(__name__)
 class NAppsManager:
     """Deal with NApps at filesystem level and ask Kyco to (un)load NApps."""
 
-    def __init__(self, controller=None, install_path=None, enabled_path=None):
+    def __init__(self, controller=None):
         """If controller is not informed, the necessary paths must be.
 
         If ``controller`` is available, NApps will be (un)loaded at runtime and
@@ -30,14 +34,28 @@ class NAppsManager:
             enabled_path (str): Folder where enabled NApps are stored. If None,
                 use the controller's configuration.
         """
-        self.controller = controller
-        if controller is not None:
-            if install_path is None:
-                install_path = controller.options.installed_napps
-            if enabled_path is None:
-                enabled_path = controller.options.napps
-        self._installed = Path(install_path) if install_path else None
-        self._enabled = Path(enabled_path) if enabled_path else None
+        self._controller = controller
+        self._config = KytosConfig().config
+        self._installed = Path(self._config.get('napps', 'installed_path'))
+        self._enabled = Path(self._config.get('napps', 'enabled_path'))
+
+        self.user = None
+        self.napp = None
+
+    def set_napp(self, user, napp):
+        """Set info about NApp.
+
+        Args:
+            user (str): NApps Server username.
+            napp (str): NApp name.
+        """
+        self.user = user
+        self.napp = napp
+
+    @property
+    def napp_id(self):
+        """Identifier of NApp."""
+        return '/'.join((self.user, self.napp))
 
     @staticmethod
     def _get_napps(napps_dir):
@@ -53,9 +71,9 @@ class NAppsManager:
         """Sorted list of (author, napp_name) of installed napps."""
         return self._get_napps(self._installed)
 
-    def is_installed(self, author, napp_name):
+    def is_installed(self):
         """Whether a NApp is installed."""
-        return (author, napp_name) in self.get_installed()
+        return (self.user, self.napp) in self.get_installed()
 
     def get_disabled(self):
         """Sorted list of (author, napp_name) of disabled napps.
@@ -66,9 +84,13 @@ class NAppsManager:
         enabled = set(self.get_enabled())
         return sorted(installed - enabled)
 
-    def get_description(self, username, name):
+    def get_description(self, user=None, napp=None):
         """Return the description from kytos.json."""
-        kj = self._installed / username / name / 'kytos.json'
+        if user is None:
+            user = self.user
+        if napp is None:
+            napp = self.napp
+        kj = self._installed / user / napp / 'kytos.json'
         try:
             with kj.open() as f:
                 meta = json.load(f)
@@ -76,78 +98,68 @@ class NAppsManager:
         except (FileNotFoundError, json.JSONDecodeError, KeyError):
             return ''
 
-    def disable(self, author, napp_name):
-        """Disable a NApp by removing its symbolic link."""
-        enabled = self._enabled / author / napp_name
+    def disable(self):
+        """Disable a NApp if it is enabled."""
+        enabled = self._enabled / self.user / self.napp
         try:
             enabled.unlink()
-            # TODO: Clean authors dir in a correct manner
-            # self._clean_author(enabled.parent)
-            log.info('Disabled NApp %s/%s', author, napp_name)
-
-            if self.controller is not None:
-                self.controller.unload_napp(author, napp_name)
+            if self._controller is not None:
+                self._controller.unload_napp(self.user, self.napp)
         except FileNotFoundError:
-            log.warning('NApp %s/%s was not enabled', author, napp_name)
+            pass  # OK, it was already disabled
 
-    def enable(self, author, napp_name):
-        """Enable a NApp by creating the a symbolic link."""
-        enabled = self._enabled / author / napp_name
-        installed = self._installed / author / napp_name
+    def enable(self):
+        """Enable a NApp if not already enabled.
+
+        Raises:
+            FileNotFoundError: If NApp is not installed.
+            PermissionError: No filesystem permission to enable NApp.
+        """
+        enabled = self._enabled / self.user / self.napp
+        installed = self._installed / self.user / self.napp
 
         if not installed.is_dir():
-            log.error('Install NApp %s/%s first', author, napp_name)
-        elif enabled.exists():
-            log.warning('NApp %s/%s was already enabled', author, napp_name)
-        else:
-            # Make sure the enabled author/__init__.py exists.
-            author = enabled.parent
-            author.mkdir(exist_ok=True)
-            init = author / '__init__.py'
+            raise FileNotFoundError('Install NApp {} first.'.format(
+                self.napp_id))
+        elif not enabled.exists():
+            self._check_module(installed.parent)
             try:
-                init.touch()
                 # Create symlink
                 enabled.symlink_to(installed)
-
-                log.info('Enabled NApp %s/%s', author, napp_name)
-                if self.controller is not None:
-                    self.controller.load_napp(author, napp_name)
+                if self._controller is not None:
+                    self._controller.load_napp(self.user, self.napp)
             except FileExistsError:
-                pass  # No need to change the file modification time
+                pass  # OK, NApp was already enabled
             except PermissionError:
-                log.error("You need permission to enable NApps")
+                raise PermissionError('Permission error on enabling NApp. Try '
+                                      'with sudo.')
 
-    def uninstall(self, author, napp_name):
-        """Disable and delete code inside NApp directory."""
-        self.disable(author, napp_name)
-        if self.is_installed(author, napp_name):
-            installed = self._installed / author / napp_name
-            shutil.rmtree(str(installed))
-            # TODO: Clean authors dir in a correct manner
-            # self._clean_author(installed.parent)
-            log.info('Uninstalled NApp %s/%s')
-        else:
-            log.warning('NApp %s/%s was not installed', author, napp_name)
+    def is_enabled(self):
+        """Whether a NApp is enabled."""
+        return (self.user, self.napp) in self.get_enabled()
 
-    def _clean_author(self, author_dir):
-        """Remove author folder if there's no NApps inside."""
-        if not self._get_napps(author_dir):
-            shutil.rmtree(str(author_dir))
+    def uninstall(self):
+        """Delete code inside NApp directory, if existent."""
+        if self.is_installed():
+            installed = self._installed / self.user / self.napp
+            if installed.is_symlink():
+                installed.unlink()
+            else:
+                shutil.rmtree(str(installed))
 
     @staticmethod
-    def valid_name(name):
+    def valid_name(username):
         """Check the validity of the given 'name'.
 
         The following checks are done:
         - name starts with a letter
         - name contains only letters, numbers or underscores
         """
-        return name is not None and re.match(r'[a-zA-Z][a-zA-Z0-9_]{2,}$',
-                                             name)
+        return username and re.match(r'[a-zA-Z][a-zA-Z0-9_]{2,}$', username)
 
     @staticmethod
     def render_template(templates_path, template_filename, context):
-        """Renders Jinja2 template for a NApp structure."""
+        """Render Jinja2 template for a NApp structure."""
         TEMPLATE_ENV = Environment(autoescape=False, trim_blocks=False,
                                    loader=FileSystemLoader(templates_path))
         return TEMPLATE_ENV.get_template(template_filename).render(context)
@@ -163,13 +175,86 @@ class NAppsManager:
             """Whether a NApp metadata matches the pattern."""
             strings = ['{}/{}'.format(napp['author'], napp['name']),
                        napp['description']] + napp['tags']
-            for string in strings:
-                if pattern.match(string):
-                    return True
-            return False
+            return any(pattern.match(string) for string in strings)
 
-        napps = KytosClient().get_napps()
+        napps = NAppsClient().get_napps()
         return [napp for napp in napps if match(napp)]
+
+    def install_local(self):
+        """Make a symlink in install folder to a local NApp.
+
+        Raises:
+            FileNotFoundError: If NApp is not found.
+        """
+        folder = self._get_local_folder()
+        installed = self._installed / self.user / self.napp
+        self._check_module(installed.parent)
+        installed.symlink_to(folder.resolve())
+
+    def _get_local_folder(self, root=None):
+        """Return local NApp root folder.
+
+        Search for kytos.json in _./_ folder and _./user/napp_.
+
+        Args:
+            root (pathlib.Path): Where to begin searching.
+
+        Raises:
+            FileNotFoundError: If there is no such local NApp.
+
+        Return:
+            pathlib.Path: NApp root folder.
+        """
+        if root is None:
+            root = Path()
+        for folders in ['.'], [self.user, self.napp]:
+            kytos_json = root / Path(*folders) / 'kytos.json'
+            if kytos_json.exists():
+                return kytos_json.parent
+        raise FileNotFoundError('kytos.json not found.')
+
+    def install_remote(self):
+        """Download, extract and install NApp."""
+        package, pkg_folder = None, None
+        try:
+            package = self._download()
+            pkg_folder = self._extract(package)
+            napp_folder = self._get_local_folder(pkg_folder)
+            dst = self._installed / self.user / self.napp
+            self._check_module(dst.parent)
+            shutil.move(str(napp_folder), str(dst))
+        finally:
+            # Delete temporary files
+            if package:
+                Path(package).unlink()
+            if pkg_folder and pkg_folder.exists():
+                shutil.rmtree(str(pkg_folder))
+
+    def _download(self):
+        """Download NApp package from server.
+
+        Raises:
+            urllib.error.HTTPError: If download is not successful.
+
+        Return:
+            str: Downloaded temp filename.
+        """
+        api = self._config.get('napps', 'uri')
+        uri = urllib.parse.urljoin(api, '/repo/{}/{}-latest.napp'.format(
+            self.user, self.napp))
+        return urllib.request.urlretrieve(uri)[0]
+
+    @staticmethod
+    def _extract(filename):
+        """Extract package to a temporary folder.
+
+        Return:
+            pathlib.Path: Temp dir with package contents.
+        """
+        tmp = tempfile.mkdtemp(prefix='kytos')
+        with tarfile.open(filename, 'r:xz') as tar:
+            tar.extractall(tmp)
+        return Path(tmp)
 
     @classmethod
     def create_napp(cls):
@@ -178,7 +263,6 @@ class NAppsManager:
         This will create, on the current folder, a clean structure of a NAPP,
         filling some contents on this structure.
         """
-
         base = os.environ.get('VIRTUAL_ENV') or '/'
 
         templates_path = os.path.join(base, 'etc', 'skel', 'kytos',
@@ -196,7 +280,7 @@ class NAppsManager:
         print(' - at least three characters')
         print('--------------------------------------------------------------')
         print('')
-        msg = 'Please, insert you author name (username on the Napps Server): '
+        msg = 'Please, insert your NApps Server username: '
         while not cls.valid_name(author):
             author = input(msg)
 
@@ -206,6 +290,7 @@ class NAppsManager:
         msg = 'Please, insert a brief description for your NApp [optional]: '
         description = input(msg)
         if not description:
+            # pylint: disable=W0511
             description = '# TODO: <<<< Insert here your NApp description >>>>'
 
         context = {'author': author, 'napp': napp_name,
@@ -234,3 +319,14 @@ class NAppsManager:
         msg += 'can go to the directory {}/{} and begin to code your NApp.'
         print(msg.format(author, napp_name))
         print('Have fun!')
+
+    @staticmethod
+    def _check_module(folder):
+        """Create module folder with empty __init__.py if it doesn't exist.
+
+        Args:
+            folder (pathlib.Path): Module path.
+        """
+        if not folder.exists():
+            folder.mkdir()
+            (folder / '__init__.py').touch()
