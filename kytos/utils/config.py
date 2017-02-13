@@ -90,6 +90,8 @@ class KytosConfig():
                 config.add_section(section)
 
     def save_token(self, user, token):
+        self.config.set('auth', 'user', user)
+        self.config.set('auth', 'token', token)
         # allow_no_value=True is used to keep the comments on the config file.
         new_config = ConfigParser(allow_no_value=True)
 
