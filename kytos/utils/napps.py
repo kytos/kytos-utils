@@ -389,6 +389,11 @@ class NAppsManager:
         return metadata
 
     def upload(self, *args, **kwargs):
+        """Create package and upload it to NApps Server.
+
+        Raises:
+            FileNotFoundError: If kytos.json is not found.
+        """
         metadata = self.create_metadata(*args, **kwargs)
         package = self.build_napp_package(metadata['name'])
 
