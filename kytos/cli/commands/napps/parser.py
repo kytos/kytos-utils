@@ -5,6 +5,7 @@ You are at the "napps" command.
 Usage:
        kytos napps create
        kytos napps upload
+       kytos napps delete    <napp>...
        kytos napps list
        kytos napps install   <napp>...
        kytos napps uninstall <napp>...
@@ -21,6 +22,7 @@ Common napps subcommands:
 
   create        Create a bootstrap NApp structure for development.
   upload        Upload current NApp to Kytos repository.
+  delete        Delete NApps from NApps Server.
   list          List all NApps installed into your system.
   install       Install a local or remote NApp into a controller.
   uninstall     Remove a NApp from your controller.

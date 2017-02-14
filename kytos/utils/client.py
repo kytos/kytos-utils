@@ -84,6 +84,19 @@ class NAppsClient():
         print("SUCCESS: NApp {}/{} uploaded.".format(metadata['author'],
                                                      metadata['name']))
 
+    @kytos_auth
+    def delete(self, username, napp):
+        """Delete a NApp.
+
+        Raises:
+            requests.HTTPError: If 400 <= status < 600.
+        """
+        api = self._config.get('napps', 'uri')
+        endpoint = urljoin(api, 'napps/{}/{}/'.format(username, napp))
+        content = {'token': self._config.get('auth', 'token')}
+        response = self.make_request(endpoint, json=content, method='DELETE')
+        response.raise_for_status()
+
     @staticmethod
     def make_request(endpoint, **kwargs):
         """Send a request to server."""
