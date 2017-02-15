@@ -123,7 +123,7 @@ class NAppsManager:
             raise FileNotFoundError('Install NApp {} first.'.format(
                 self.napp_id))
         elif not enabled.exists():
-            self._check_module(installed.parent)
+            self._check_module(enabled.parent)
             try:
                 # Create symlink
                 enabled.symlink_to(installed)
