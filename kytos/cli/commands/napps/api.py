@@ -20,9 +20,8 @@ class NAppsAPI:
     @classmethod
     def disable(cls, args):
         """Disable subcommand."""
-        napps = args['<napp>']
         mgr = NAppsManager()
-        for napp in napps:
+        for napp in args['<napp>']:
             mgr.set_napp(*napp)
             log.info('NApp %s:', mgr.napp_id)
             cls.disable_napp(mgr)
@@ -38,9 +37,8 @@ class NAppsAPI:
     @classmethod
     def enable(cls, args):
         """Enable subcommand."""
-        napps = args['<napp>']
         mgr = NAppsManager()
-        for napp in napps:
+        for napp in args['<napp>']:
             mgr.set_napp(*napp)
             log.info('NApp %s:', mgr.napp_id)
             cls.enable_napp(mgr)
@@ -67,7 +65,10 @@ class NAppsAPI:
 
         Create the NApp package and upload it to the NApp server.
         """
-        NAppsManager().upload()
+        try:
+            NAppsManager().upload()
+        except FileNotFoundError:
+            log.error("Couldn't find kytos.json in current directory.")
 
     @classmethod
     def uninstall(cls, args):
@@ -76,15 +77,15 @@ class NAppsAPI:
         For local installations, do not delete code outside install_path and
         enabled_path.
         """
-        napps = args['<napp>']
         mgr = NAppsManager()
-        for napp in napps:
+        for napp in args['<napp>']:
             mgr.set_napp(*napp)
             log.info('NApp %s:', mgr.napp_id)
             if mgr.is_installed():
+                if mgr.is_enabled():
+                    cls.disable_napp(mgr)
                 log.info('  Uninstalling...')
                 mgr.uninstall()
-                cls.disable_napp(mgr)
             log.info('  Uninstalled.')
 
     @classmethod
@@ -105,13 +106,13 @@ class NAppsAPI:
         try:
             log.info('  Searching local NApp...')
             mgr.install_local()
-            log.info('  Installed.')
+            log.info('  Found and installed.')
             cls.enable_napp(mgr)
         except FileNotFoundError:
-            log.info('  Downloading from NApps Server...')
+            log.info('  Not found. Downloading from NApps Server...')
             try:
                 mgr.install_remote()
-                log.info('  Installed.')
+                log.info('  Downloaded and installed.')
                 cls.enable_napp(mgr)
             except HTTPError as e:
                 if e.code == 404:

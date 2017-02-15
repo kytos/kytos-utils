@@ -27,9 +27,9 @@ from urllib.parse import urljoin
 
 import requests
 
-from kytos.utils.exceptions import KytosException
 from kytos.utils.config import KytosConfig
 from kytos.utils.decorators import kytos_auth
+from kytos.utils.exceptions import KytosException
 
 
 log = logging.getLogger(__name__)
@@ -38,9 +38,11 @@ log = logging.getLogger(__name__)
 class NAppsClient():
     """Client for the NApps Server."""
 
-    def __init__(self):
-        """Get Kytos config."""
-        self._config = KytosConfig().config
+    def __init__(self, config=None):
+        """Set Kytos config."""
+        if config is None:
+            config = KytosConfig().config
+        self._config = config
 
     def get_napps(self):
         """Get all NApps from the server."""
@@ -102,66 +104,3 @@ class NAppsClient():
             sys.exit(1)
 
         return response
-
-
-class Downloader:
-    """Download napps to be installed."""
-
-    def __init__(self):
-        """Keep record of temporary files."""
-        self._tmp_paths = []
-        api = KytosConfig().config.get('napps', 'uri')
-        self._repo = urljoin(api, '/repo')
-
-    def extract_server_napp(self, username, name):
-        """Download, extract NApp and return the folder with kytos.json.
-
-        Raise:
-            urllib.error.HTTPError: If download does not succeed
-        """
-        log.info('Downloading %s...', url)
-
-        filename = self._download(url)
-        if zipfile.is_zipfile(filename):
-            folder = self.unzip(filename)
-        else:
-            folder = filename
-        return self._find_napp(folder, author, napp_name)
-
-    def _download(self, url):
-        filename, _ = urlretrieve(url)
-        log.info('Download successful')
-        self._tmp_paths.append(filename)
-        return filename
-
-    def _extract(self, filename):
-        """Unzip ``filename`` and return its root folder."""
-        log.info('Unzipping downloaded file')
-        folder = mkdtemp(prefix='kytos')
-        zipfile.ZipFile.extractall(folder, path=folder)
-        self._tmp_paths.append(folder)
-        return folder
-
-    @staticmethod
-    def _find_napp(folder, author, napp_name):
-        folder = Path(napp_name)
-        meta = None
-        for meta in folder.glob('**/kytos.json'):
-            with meta.open() as f:
-                napp = json.load(f)
-                if napp['author'] == author and napp['name'] == napp_name:
-                    break
-        if meta is None:
-            raise FileNotFoundError('NApp not found after download')
-        return meta.parent
-
-    def cleanup(self):
-        """Remove temporary files."""
-        for entry in self._tmp_paths:
-            if path.exists(entry):
-                if isdir(entry):
-                    shutil.rmtree(entry)
-                else:
-                    os.unlink(entry)
-
-# https://napps.kytos.io/repo/kytos/of_ipv6drop-latest.napp
