@@ -211,7 +211,11 @@ class NAppsManager:
         for folders in ['.'], [self.user, self.napp]:
             kytos_json = root / Path(*folders) / 'kytos.json'
             if kytos_json.exists():
-                return kytos_json.parent
+                with kytos_json.open() as f:
+                    meta = json.load(f)
+                    if meta['author'] == self.user and \
+                            meta['name'] == self.napp:
+                        return kytos_json.parent
         raise FileNotFoundError('kytos.json not found.')
 
     def install_remote(self):
