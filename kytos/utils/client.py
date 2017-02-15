@@ -78,7 +78,8 @@ class NAppsClient():
         request = self.make_request(endpoint, json=metadata, package=package,
                                     method="POST")
         if request.status_code != 201:
-            log.error("ERROR: %s: %s", request.status_code, request.reason)
+            KytosConfig().clear_token()
+            log.error("%s: %s", request.status_code, request.reason)
             sys.exit(1)
 
         print("SUCCESS: NApp {}/{} uploaded.".format(metadata['author'],

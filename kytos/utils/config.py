@@ -106,3 +106,20 @@ class KytosConfig():
         with open(filename, 'w') as out_file:
             os.chmod(filename, 0o0600)
             new_config.write(out_file)
+
+
+    def clear_token(self):
+        # allow_no_value=True is used to keep the comments on the config file.
+        new_config = ConfigParser(allow_no_value=True)
+
+        # Parse the config file. If no config file was found, then create some
+        # default sections on the config variable.
+        new_config.read(self.config_file)
+        self.check_sections(new_config)
+
+        new_config.remove_option('auth', 'user')
+        new_config.remove_option('auth', 'token')
+        filename = os.path.expanduser(self.config_file)
+        with open(filename, 'w') as out_file:
+            os.chmod(filename, 0o0600)
+            new_config.write(out_file)
