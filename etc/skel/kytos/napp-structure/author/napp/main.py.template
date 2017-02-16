@@ -1,6 +1,7 @@
 """Main module of {{author}}/{{napp}} Kytos Network Application.
 
-{{ description }}"""
+{{ description }}
+"""
 
 from kyco.core.napps import KycoNApp
 
@@ -16,12 +17,12 @@ class Main(KycoNApp):
     """
 
     def setup(self):
-        """Replaces the '__init__' method for the KycoNApp subclass.
+        """Replace the '__init__' method for the KycoNApp subclass.
 
         The setup method is automatically called by the controller when your
         application is loaded.
 
-        So, if you have any setup routine, insert here.
+        So, if you have any setup routine, insert it here.
         """
         pass
 
@@ -29,7 +30,7 @@ class Main(KycoNApp):
         """This method is executed right after the setup method execution.
 
         You can also use this method in loop mode if you add to the above setup
-        method the following line, for example:
+        method a line like the following example:
 
             self.execute_as_loop(30)  # 30-second interval.
         """
