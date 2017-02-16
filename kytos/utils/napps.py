@@ -290,7 +290,7 @@ class NAppsManager:
             author = input(msg)
 
         while not cls.valid_name(napp_name):
-            napp_name = input('Please, insert you NApp name: ')
+            napp_name = input('Please, insert your NApp name: ')
 
         msg = 'Please, insert a brief description for your NApp [optional]: '
         description = input(msg)
