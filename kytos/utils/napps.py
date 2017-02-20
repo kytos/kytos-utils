@@ -320,7 +320,7 @@ class NAppsManager:
                 content = cls.render_template(templates_path, tmp, context)
                 file.write(content)
 
-        msg = '\nCongratulations! Your NApp have been bootsrapped!\nNow you '
+        msg = '\nCongratulations! Your NApp have been bootstrapped!\nNow you '
         msg += 'can go to the directory {}/{} and begin to code your NApp.'
         print(msg.format(author, napp_name))
         print('Have fun!')
