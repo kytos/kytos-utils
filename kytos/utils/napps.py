@@ -402,3 +402,12 @@ class NAppsManager:
         package = self.build_napp_package(metadata['name'])
 
         NAppsClient().upload_napp(metadata, package)
+
+    def delete(self):
+        """Delete a NApp.
+
+        Raises:
+            requests.HTTPError: When there's a server error.
+        """
+        client = NAppsClient(self._config)
+        client.delete(self.user, self.napp)

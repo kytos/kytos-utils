@@ -1,8 +1,11 @@
 """Translate cli commands to non-cli code."""
+import json
 import logging
 import os
 import re
 from urllib.error import HTTPError
+
+import requests
 
 from kytos.utils.napps import NAppsManager
 
@@ -183,3 +186,17 @@ class NAppsAPI:
             print(row.format(user, name, desc))
 
         print('\nStatus: (i)nstalled, (e)nabled\n')
+
+    @staticmethod
+    def delete(args):
+        """Delete NApps from server."""
+        mgr = NAppsManager()
+        for napp in args['<napp>']:
+            mgr.set_napp(*napp)
+            log.info('Deleting NApp %s from server...', mgr.napp_id)
+            try:
+                mgr.delete()
+                log.info('  Deleted.')
+            except requests.HTTPError as e:
+                msg = json.loads(e.response.content)
+                log.error('  Server error: %s - ', msg['error'])
