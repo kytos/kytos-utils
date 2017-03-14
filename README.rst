@@ -2,7 +2,7 @@
 Overview
 ########
 
-This is a command line interface (cli) for Kytos SDN controller. With this
+This is a command line interface (cli) for Kytos SDN controller. With these
 utilities you can interact with Kytos daemon and manage Network Applications
 (NApps) on your controller.
 
