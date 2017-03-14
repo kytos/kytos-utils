@@ -33,6 +33,15 @@ procedure:
    $ cd kytos-utils
    $ sudo python3 setup.py install
 
+Usage
+*****
+
+In order to execute *kytos* command line, please run:
+
+.. code-block:: shell
+
+   $ kytos --help
+
 Authors
 *******
 
