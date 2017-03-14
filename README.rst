@@ -16,7 +16,7 @@ We are doing a huge effort to make Kytos and its components available on all
 common distros. So, we recommend you to download it from your distro repository.
 
 But if you are trying to test, develop or just want a more recent version of
-our software no problem: Download now, the latest Kytos release (it still a beta
+our software no problem: Download now, the latest release (it still a beta
 software), from our repository:
 
 First you need to clone *kytos-utils* repository:
