@@ -3,21 +3,21 @@
 {{ description }}
 """
 
-from kyco.core.napps import KycoNApp
+from kytos.core.napps import KytosNApp
 
 from napps.{{author}}.{{napp}} import settings
 
 log = settings.log
 
 
-class Main(KycoNApp):
+class Main(KytosNApp):
     """Main class of {{author}}/{{napp}} NApp.
 
     This class is the entry point for this napp.
     """
 
     def setup(self):
-        """Replace the '__init__' method for the KycoNApp subclass.
+        """Replace the '__init__' method for the KytosNApp subclass.
 
         The setup method is automatically called by the controller when your
         application is loaded.

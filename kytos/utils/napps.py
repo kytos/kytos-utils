@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class NAppsManager:
-    """Deal with NApps at filesystem level and ask Kyco to (un)load NApps."""
+    """Deal with NApps at filesystem level and ask Kytos to (un)load NApps."""
 
     def __init__(self, controller=None):
         """If controller is not informed, the necessary paths must be.
@@ -29,7 +29,7 @@ class NAppsManager:
         required paths for the methods called.
 
         Args:
-            controller (kyco.Controller): Controller to (un)load NApps.
+            controller (kytos.Controller): Controller to (un)load NApps.
             install_path (str): Folder where NApps should be installed. If
                 None, use the controller's configuration.
             enabled_path (str): Folder where enabled NApps are stored. If None,
