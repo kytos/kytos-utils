@@ -71,7 +71,8 @@ class KytosConfig():
         If no environment variable is found and the config section/key is
         empty, then set some default values.
         """
-        napps_uri = os.environ.get('NAPPS_API_URI')
+        napps_api = os.environ.get('NAPPS_API_URI')
+        napps_repo = os.environ.get('NAPPS_REPO_URI')
         user = os.environ.get('NAPPS_USER')
         token = os.environ.get('NAPPS_TOKEN')
         napps_path = os.environ.get('NAPPS_PATH')
@@ -84,10 +85,15 @@ class KytosConfig():
         if token is not None:
             self.config.set('auth', 'token', token)
 
-        if napps_uri is not None:
-            self.config.set('napps', 'uri', napps_uri)
-        elif not self.config.has_option('napps', 'uri'):
-            self.config.set('napps', 'uri', 'https://napps.kytos.io/api/')
+        if napps_api is not None:
+            self.config.set('napps', 'api', napps_api)
+        elif not self.config.has_option('napps', 'api'):
+            self.config.set('napps', 'api', 'https://napps.kytos.io/api/')
+
+        if napps_repo is not None:
+            self.config.set('napps', 'repo', napps_repo)
+        elif not self.config.has_option('napps', 'repo'):
+            self.config.set('napps', 'repo', 'https://napps.kytos.io/repo/')
 
         # Set paths if NAPPS_PATH is given or if not found in config
         if napps_path or not self.config.has_option('napps', 'enabled_path'):
