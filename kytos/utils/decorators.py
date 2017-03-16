@@ -58,7 +58,7 @@ class kytos_auth:
         endpoint = os.path.join(self.config.get('napps', 'uri'), 'auth', '')
         username = self.config.get('auth', 'user')
         password = getpass("Enter the password for {}: ".format(username))
-        response = requests.post(endpoint, auth=(username, password))
+        response = requests.get(endpoint, auth=(username, password))
         if response.status_code != 201:
             log.error(response.content)
             log.error('ERROR: %s: %s', response.status_code, response.reason)
