@@ -25,11 +25,12 @@ from configparser import ConfigParser
 
 log = logging.getLogger(__name__)
 
-
 class KytosConfig():
     def __init__(self, config_file='~/.kytosrc'):
         self.config_file = os.path.expanduser(config_file)
         self.debug = False
+        if self.debug:
+            log.setLevel(logging.DEBUG)
 
         # allow_no_value=True is used to keep the comments on the config file.
         self.config = ConfigParser(allow_no_value=True)
@@ -39,6 +40,8 @@ class KytosConfig():
         self.config.read(self.config_file)
         self.check_sections(self.config)
 
+        self.set_env_or_defaults()
+
         if not os.path.exists(self.config_file):
             log.warning("Config file %s not found.", self.config_file)
             log.warning("Creating a new empty config file.")
@@ -46,7 +49,9 @@ class KytosConfig():
                 os.chmod(self.config_file, 0o0600)
                 self.config.write(output_file)
 
-        self.set_env_or_defaults()
+    def log_configs(self):
+        for sec in self.config.sections():
+            log.debug('   %s: %s', sec, self.config.options(sec))
 
     def set_env_or_defaults(self):
         """Read some environment variables and set them on the config.
@@ -59,7 +64,7 @@ class KytosConfig():
         token = os.environ.get('NAPPS_TOKEN')
         napps_path = os.environ.get('NAPPS_PATH')
 
-        self.config.set('global', 'debug', self.debug)
+        self.config.set('global', 'debug', str(self.debug))
 
         if user is not None:
             self.config.set('auth', 'user', user)
