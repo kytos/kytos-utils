@@ -42,7 +42,7 @@ class Linter(Command):
     @staticmethod
     def lint():
         """Run pylama and radon."""
-        files = 'tests setup.py kytos_utils'
+        files = 'tests setup.py kytos'
         print('Pylama is running. It may take several seconds...')
         cmd = 'pylama {}'.format(files)
         try:
@@ -52,7 +52,7 @@ class Linter(Command):
             sys.exit(exception.returncode)
 
     def initialize_options(self):
-        """Set defa ult values for options."""
+        """Set default values for options."""
         pass
 
     def finalize_options(self):
