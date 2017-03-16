@@ -39,7 +39,7 @@ class KytosConfig():
         Receive the confi_file as argument.
         """
         self.config_file = os.path.expanduser(config_file)
-        self.debug = True
+        self.debug = False
         if self.debug:
             log.setLevel(logging.DEBUG)
 
