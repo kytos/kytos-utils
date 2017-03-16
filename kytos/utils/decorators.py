@@ -5,7 +5,6 @@ import sys
 from urllib.parse import urljoin
 
 import requests
-
 from kytos.utils.config import KytosConfig
 
 log = logging.getLogger(__name__)

@@ -11,7 +11,6 @@ import urllib
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
-
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 

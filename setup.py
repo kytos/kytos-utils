@@ -5,7 +5,7 @@ descriptions.
 """
 import os
 import sys
-from subprocess import CalledProcessError, call, check_call
+from subprocess import CalledProcessError, check_call
 from setuptools import Command, find_packages, setup
 from setuptools.command.develop import develop
 from setuptools.command.test import test as TestCommand
@@ -16,8 +16,8 @@ else:
     BASE_ENV = '/'
 
 SKEL_PATH = 'etc/skel'
-KYTOS_SKEL_PATH = os.path.join(SKEL_PATH,'kytos')
-AUTHOR_PATH = os.path.join(KYTOS_SKEL_PATH,'napp-structure/author')
+KYTOS_SKEL_PATH = os.path.join(SKEL_PATH, 'kytos')
+AUTHOR_PATH = os.path.join(KYTOS_SKEL_PATH, 'napp-structure/author')
 NAPP_PATH = os.path.join(AUTHOR_PATH, 'napp')
 ETC_FILES = [(os.path.join(BASE_ENV, AUTHOR_PATH),
               [os.path.join(AUTHOR_PATH, '__init__.py')]),
@@ -26,8 +26,8 @@ ETC_FILES = [(os.path.join(BASE_ENV, AUTHOR_PATH),
                os.path.join(NAPP_PATH, 'kytos.json.template'),
                os.path.join(NAPP_PATH, 'main.py.template'),
                os.path.join(NAPP_PATH, 'README.rst.template'),
-               os.path.join(NAPP_PATH, 'settings.py.template')])
-             ]
+               os.path.join(NAPP_PATH, 'settings.py.template')])]
+
 
 class Linter(Command):
     """Code linters."""
@@ -47,9 +47,9 @@ class Linter(Command):
         cmd = 'pylama {}'.format(files)
         try:
             check_call(cmd, shell=True)
-        except CalledProcessError as e:
+        except CalledProcessError as exception:
             print('FAILED: please, fix the error(s) above.')
-            sys.exit(e.returncode)
+            sys.exit(exception.returncode)
 
     def initialize_options(self):
         """Set defa ult values for options."""
@@ -68,6 +68,7 @@ class Test(TestCommand):
         super().run()
         Linter.lint()
 
+
 class DevelopMode(develop):
     """Recommended setup for kytos-utils developers.
 
@@ -80,7 +81,8 @@ class DevelopMode(develop):
         super().run()
         self._create_data_files_directory()
 
-    def _create_data_files_directory(self):
+    @staticmethod
+    def _create_data_files_directory():
         current_directory = os.path.abspath(os.path.dirname(__file__))
 
         etc_dir = os.path.join(BASE_ENV, 'etc')
@@ -97,9 +99,11 @@ class DevelopMode(develop):
         if not os.path.exists(dst):
             os.symlink(src, dst)
 
+
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
-#requirements = parse_requirements('requirements.txt', session=False)
-requirements = [i.strip() for i in open("requirements.txt").readlines()]
+# requirements = parse_requirements('requirements.txt', session=False)
+REQS = [i.strip() for i in open("requirements.txt").readlines()]
+
 
 setup(name='kytos-utils',
       version='0.1.0',
@@ -110,7 +114,7 @@ setup(name='kytos-utils',
       license='MIT',
       test_suite='tests',
       scripts=['bin/kytos'],
-      install_requires=requirements,
+      install_requires=REQS,
       data_files=ETC_FILES,
       packages=find_packages(exclude=['tests']),
       cmdclass={

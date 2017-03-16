@@ -26,11 +26,9 @@ import sys
 from urllib.parse import urljoin
 
 import requests
-
 from kytos.utils.config import KytosConfig
 from kytos.utils.decorators import kytos_auth
 from kytos.utils.exceptions import KytosException
-
 
 log = logging.getLogger(__name__)
 
