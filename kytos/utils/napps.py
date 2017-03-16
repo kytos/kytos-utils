@@ -11,7 +11,6 @@ import urllib
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
-
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 
@@ -245,8 +244,8 @@ class NAppsManager:
             str: Downloaded temp filename.
         """
         api = self._config.get('napps', 'uri')
-        uri = urllib.parse.urljoin(api, '/repo/{}/{}-latest.napp'.format(
-            self.user, self.napp))
+        uri = os.path.join(api, 'repo', self.user, '{}-latest.napp'.format(
+            self.napp), '')
         return urllib.request.urlretrieve(uri)[0]
 
     @staticmethod
@@ -336,8 +335,9 @@ class NAppsManager:
             folder.mkdir()
             (folder / '__init__.py').touch()
 
-    def build_napp_package(self, napp_name):
-        """Builds the .napp file to be sent to the napps server.
+    @staticmethod
+    def build_napp_package(napp_name):
+        """Build the .napp file to be sent to the napps server.
 
         Args:
             napp_identifier (str): Identifier formatted as <author>/<napp_name>
@@ -358,7 +358,8 @@ class NAppsManager:
 
         # Create the '.napp' package
         napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
-        [napp_file.add(f) for f in files]
+        for local_f in files:
+            napp_file.add(local_f)
         napp_file.close()
 
         # Get the binary payload of the package
@@ -369,7 +370,8 @@ class NAppsManager:
 
         return file_payload
 
-    def create_metadata(self, *args, **kwargs):
+    @staticmethod
+    def create_metadata(*args, **kwargs):
         """Generate the metadata to send the napp package."""
         json_filename = kwargs.get('json_filename', 'kytos.json')
         readme_filename = kwargs.get('readme_filename', 'README.rst')

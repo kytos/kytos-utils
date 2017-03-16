@@ -22,15 +22,13 @@
 
 import json
 import logging
+import os
 import sys
-from urllib.parse import urljoin
 
 import requests
-
 from kytos.utils.config import KytosConfig
 from kytos.utils.decorators import kytos_auth
 from kytos.utils.exceptions import KytosException
-
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +44,7 @@ class NAppsClient():
 
     def get_napps(self):
         """Get all NApps from the server."""
-        endpoint = urljoin(self._config.get('napps', 'uri'), 'napps')
+        endpoint = os.path.join(self._config.get('napps', 'uri'), 'napps', '')
         res = self.make_request(endpoint)
 
         if res.status_code != 200:
@@ -71,7 +69,7 @@ class NAppsClient():
     @kytos_auth
     def upload_napp(self, metadata, package):
         """Upload the napp from the current directory to the napps server."""
-        endpoint = urljoin(self._config.get('napps', 'uri'), 'napps/')
+        endpoint = os.path.join(self._config.get('napps', 'uri'), 'napps', '')
 
         metadata['token'] = self._config.get('auth', 'token')
 
@@ -93,7 +91,7 @@ class NAppsClient():
             requests.HTTPError: If 400 <= status < 600.
         """
         api = self._config.get('napps', 'uri')
-        endpoint = urljoin(api, 'napps/{}/{}/'.format(username, napp))
+        endpoint = os.path.join(api, 'napps', username, napp, '')
         content = {'token': self._config.get('auth', 'token')}
         response = self.make_request(endpoint, json=content, method='DELETE')
         response.raise_for_status()

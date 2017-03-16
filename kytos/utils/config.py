@@ -1,4 +1,4 @@
-"""Kytos Configuration."""
+"""Kytos utils configuration."""
 # This file is part of kytos-utils.
 #
 # Copyright (c) 2016 Kytos Team
@@ -27,9 +27,21 @@ log = logging.getLogger(__name__)
 
 
 class KytosConfig():
+    """Kytos Configs.
+
+    Read the config file for kytos utils and/or request data for the user in
+    order to get the correct paths and links.
+    """
+
     def __init__(self, config_file='~/.kytosrc'):
+        """Init method.
+
+        Receive the confi_file as argument.
+        """
         self.config_file = os.path.expanduser(config_file)
         self.debug = False
+        if self.debug:
+            log.setLevel(logging.DEBUG)
 
         # allow_no_value=True is used to keep the comments on the config file.
         self.config = ConfigParser(allow_no_value=True)
@@ -39,6 +51,8 @@ class KytosConfig():
         self.config.read(self.config_file)
         self.check_sections(self.config)
 
+        self.set_env_or_defaults()
+
         if not os.path.exists(self.config_file):
             log.warning("Config file %s not found.", self.config_file)
             log.warning("Creating a new empty config file.")
@@ -46,7 +60,10 @@ class KytosConfig():
                 os.chmod(self.config_file, 0o0600)
                 self.config.write(output_file)
 
-        self.set_env_or_defaults()
+    def log_configs(self):
+        """Log the read configs if debug is enabled."""
+        for sec in self.config.sections():
+            log.debug('   %s: %s', sec, self.config.options(sec))
 
     def set_env_or_defaults(self):
         """Read some environment variables and set them on the config.
@@ -59,7 +76,7 @@ class KytosConfig():
         token = os.environ.get('NAPPS_TOKEN')
         napps_path = os.environ.get('NAPPS_PATH')
 
-        self.config.set('global', 'debug', self.debug)
+        self.config.set('global', 'debug', str(self.debug))
 
         if user is not None:
             self.config.set('auth', 'user', user)
@@ -90,6 +107,7 @@ class KytosConfig():
                 config.add_section(section)
 
     def save_token(self, user, token):
+        """Save the token on the config file."""
         self.config.set('auth', 'user', user)
         self.config.set('auth', 'token', token)
         # allow_no_value=True is used to keep the comments on the config file.
@@ -107,8 +125,8 @@ class KytosConfig():
             os.chmod(filename, 0o0600)
             new_config.write(out_file)
 
-
     def clear_token(self):
+        """Clear Token information on config file."""
         # allow_no_value=True is used to keep the comments on the config file.
         new_config = ConfigParser(allow_no_value=True)
 

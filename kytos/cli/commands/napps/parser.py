@@ -39,6 +39,7 @@ from kytos.utils.exceptions import KytosException
 
 
 def parse(argv):
+    """Parse cli args."""
     args = docopt(__doc__, argv=argv)
     try:
         call(sys.argv[2], args)
@@ -48,6 +49,7 @@ def parse(argv):
 
 
 def call(subcommand, args):
+    """Call a subcommand passing the args."""
     args['<napp>'] = parse_napps(args['<napp>'])
     func = getattr(NAppsAPI, subcommand)
     func(args)
