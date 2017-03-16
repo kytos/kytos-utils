@@ -44,7 +44,7 @@ class NAppsClient():
 
     def get_napps(self):
         """Get all NApps from the server."""
-        endpoint = os.path.join(self._config.get('napps', 'uri'), 'napps', '')
+        endpoint = os.path.join(self._config.get('napps', 'api'), 'napps', '')
         res = self.make_request(endpoint)
 
         if res.status_code != 200:
@@ -56,9 +56,9 @@ class NAppsClient():
 
     def get_napp(self, username, name):
         """Return napp metadata or None if not found."""
-        api = self._config.get('napps', 'uri')
-        napp_uri = '{}{}/{}/{}/'.format(api, 'napps', username, name)
-        res = self.make_request(napp_uri)
+        endpoint = os.path.join(self._config.get('napps', 'api'), 'napps',
+                                username, name, '')
+        res = self.make_request(endpoint)
         if res.status_code == 404:  # We need to know if NApp is not found
             return None
         elif res.status_code != 200:
@@ -69,10 +69,8 @@ class NAppsClient():
     @kytos_auth
     def upload_napp(self, metadata, package):
         """Upload the napp from the current directory to the napps server."""
-        endpoint = os.path.join(self._config.get('napps', 'uri'), 'napps', '')
-
+        endpoint = os.path.join(self._config.get('napps', 'api'), 'napps', '')
         metadata['token'] = self._config.get('auth', 'token')
-
         request = self.make_request(endpoint, json=metadata, package=package,
                                     method="POST")
         if request.status_code != 201:
@@ -90,7 +88,7 @@ class NAppsClient():
         Raises:
             requests.HTTPError: If 400 <= status < 600.
         """
-        api = self._config.get('napps', 'uri')
+        api = self._config.get('napps', 'api')
         endpoint = os.path.join(api, 'napps', username, napp, '')
         content = {'token': self._config.get('auth', 'token')}
         response = self.make_request(endpoint, json=content, method='DELETE')

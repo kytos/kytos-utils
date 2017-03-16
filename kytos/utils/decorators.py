@@ -23,9 +23,11 @@ class kytos_auth:
 
     def __call__(self, *args, **kwargs):
         """Code run when func is called."""
-        if not self.config.has_option('napps', 'uri'):
-            self.config.set('napps', 'uri',
-                            input("Enter the kytos napps server address: "))
+        if not (self.config.has_option('napps', 'api') and
+                self.config.has_option('napps', 'repo')):
+            uri = input("Enter the kytos napps server address: ")
+            self.config.set('napps', 'api', os.path.join(uri, 'api', ''))
+            self.config.set('napps', 'repo', os.path.join(uri, 'repo', ''))
 
         if not self.config.has_option('auth', 'user'):
             user = input("Enter the username: ")
@@ -55,7 +57,7 @@ class kytos_auth:
 
     def authenticate(self):
         """Check the user authentication."""
-        endpoint = os.path.join(self.config.get('napps', 'uri'), 'auth', '')
+        endpoint = os.path.join(self.config.get('napps', 'api'), 'auth', '')
         username = self.config.get('auth', 'user')
         password = getpass("Enter the password for {}: ".format(username))
         response = requests.get(endpoint, auth=(username, password))

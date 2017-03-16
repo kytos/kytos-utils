@@ -243,9 +243,8 @@ class NAppsManager:
         Return:
             str: Downloaded temp filename.
         """
-        api = self._config.get('napps', 'uri')
-        uri = os.path.join(api, 'repo', self.user, '{}-latest.napp'.format(
-            self.napp), '')
+        repo = self._config.get('napps', 'repo')
+        uri = os.path.join(repo, self.user, '{}-latest.napp'.format(self.napp))
         return urllib.request.urlretrieve(uri)[0]
 
     @staticmethod
