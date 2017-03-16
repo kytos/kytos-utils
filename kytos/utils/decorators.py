@@ -1,8 +1,7 @@
-from getpass import getpass
 import logging
+import os
 import sys
-
-from urllib.parse import urljoin
+from getpass import getpass
 
 import requests
 from kytos.utils.config import KytosConfig
@@ -44,14 +43,15 @@ class kytos_auth:
         return self.__call__
 
     def authenticate(self):
-        endpoint = urljoin(self.config.get('napps', 'uri'), '/api/auth/')
+        endpoint = os.path.join(self.config.get('napps', 'uri'), 'auth', '')
         username = self.config.get('auth', 'user')
         password = getpass("Enter the password for {}: ".format(username))
-        request = requests.post(endpoint, auth=(username, password))
-        if request.status_code != 201:
-            log.error('ERROR: %s: %s', request.status_code, request.reason)
+        response = requests.post(endpoint, auth=(username, password))
+        if response.status_code != 201:
+            log.error(response.content)
+            log.error('ERROR: %s: %s', response.status_code, response.reason)
             sys.exit(1)
         else:
-            data = request.json()
+            data = response.json()
             KytosConfig().save_token(username, data.get('hash'))
             return data.get('hash')
