@@ -1,3 +1,4 @@
+"""Decorators for Kytos-utils."""
 import logging
 import os
 import sys
@@ -13,10 +14,15 @@ class kytos_auth:
     """Class to be used as decorator to require authentication."""
 
     def __init__(self, func):
+        """Init method.
+
+        Save the function on the func attribute and bootstrap a new config.
+        """
         self.func = func
         self.config = KytosConfig().config
 
     def __call__(self, *args, **kwargs):
+        """Code run when func is called."""
         if not self.config.has_option('napps', 'uri'):
             self.config.set('napps', 'uri',
                             input("Enter the kytos napps server address: "))
@@ -32,17 +38,23 @@ class kytos_auth:
         else:
             token = self.config.get('auth', 'token')
 
+        # pylint: disable=W0212
         self.obj._config.set('auth', 'user', user)
+        # pylint: disable=W0212
         self.obj._config.set('auth', 'token', token)
         self.func.__call__(self.obj, *args, **kwargs)
 
     def __get__(self, instance, owner):
+        """Deal with owner class."""
+        # pylint: disable=W0201
         self.cls = owner
+        # pylint: disable=W0201
         self.obj = instance
 
         return self.__call__
 
     def authenticate(self):
+        """Check the user authentication."""
         endpoint = os.path.join(self.config.get('napps', 'uri'), 'auth', '')
         username = self.config.get('auth', 'user')
         password = getpass("Enter the password for {}: ".format(username))

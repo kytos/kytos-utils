@@ -1,4 +1,4 @@
-"""Kytos Configuration."""
+"""Kytos utils configuration."""
 # This file is part of kytos-utils.
 #
 # Copyright (c) 2016 Kytos Team
@@ -25,10 +25,21 @@ from configparser import ConfigParser
 
 log = logging.getLogger(__name__)
 
+
 class KytosConfig():
+    """Kytos Configs.
+
+    Read the config file for kytos utils and/or request data for the user in
+    order to get the correct paths and links.
+    """
+
     def __init__(self, config_file='~/.kytosrc'):
+        """Init method.
+
+        Receive the confi_file as argument.
+        """
         self.config_file = os.path.expanduser(config_file)
-        self.debug = False
+        self.debug = True
         if self.debug:
             log.setLevel(logging.DEBUG)
 
@@ -50,6 +61,7 @@ class KytosConfig():
                 self.config.write(output_file)
 
     def log_configs(self):
+        """Log the read configs if debug is enabled."""
         for sec in self.config.sections():
             log.debug('   %s: %s', sec, self.config.options(sec))
 
@@ -95,6 +107,7 @@ class KytosConfig():
                 config.add_section(section)
 
     def save_token(self, user, token):
+        """Save the token on the config file."""
         self.config.set('auth', 'user', user)
         self.config.set('auth', 'token', token)
         # allow_no_value=True is used to keep the comments on the config file.
@@ -112,8 +125,8 @@ class KytosConfig():
             os.chmod(filename, 0o0600)
             new_config.write(out_file)
 
-
     def clear_token(self):
+        """Clear Token information on config file."""
         # allow_no_value=True is used to keep the comments on the config file.
         new_config = ConfigParser(allow_no_value=True)
 

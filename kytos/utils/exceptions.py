@@ -1,2 +1,5 @@
+"""Kytos utils exceptions."""
+
+
 class KytosException(Exception):
-  pass
+    """Kytos utils main exception."""
