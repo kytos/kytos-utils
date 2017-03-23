@@ -4,7 +4,7 @@ Change log
 
 This is a log of changes made to the *kytos-utils* project.
 
-Version: "bethania" beta1 (2017.1.b1)
+Version: "bethania" beta1 (2017.1b1)
 *************************************
 
 Added
@@ -17,13 +17,16 @@ Added
 
 - Command line tool to manage the kytos NApps. A set of commands to help
   managing NApps.
+
   - May now use the command line to:
+ 
     - Create new NApps.
     - Install NApps created locally or from the NApps server.
     - Enable/disable installed NApps.
     - List installed / enabled NApps.
     - Search for NApps in the NApps server.
     - Upload NApps to the server.
+
   - Help is available for command line tools. Appending :code:`--help` to the
     end of a command displays useful information about it.
 
