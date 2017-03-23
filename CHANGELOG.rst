@@ -49,4 +49,4 @@ Security
 - Authentication for NApps upload process - there is need for an account in
   the `NApps server <https://napps.kytos.io>`__ to upload any NApp.
 
-- Clear and descriptive log messages.
+- Clean and descriptive log messages.
