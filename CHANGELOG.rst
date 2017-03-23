@@ -4,7 +4,7 @@ Change log
 
 This is a log of changes made to the *kytos-utils* project.
 
-Version: "bethania" beta1 (2017.1.b1)
+Version: "bethania" beta1 (2017.1b1)
 *************************************
 
 Added
