@@ -10,8 +10,6 @@ Version: "bethania" beta1 (2017.1b1)
 Added
 =====
 
-- License, Readme and Authors files.
-
 - etc/skel files, with templates to create all the necessary NApp files when
   executing :code:`kytos napps create`.
 
@@ -30,26 +28,23 @@ Added
   - Help is available for command line tools. Appending :code:`--help` to the
     end of a command displays useful information about it.
 
-- Requirements file listing all the necessary software for *kytos-utils* to
-  run.
-
 Changed
 =======
 
 - Setup script now installs all the requirements during the setup process.
   There is no need to worry about them beforehand.
 
-- Updated to Python 3.6 to make use of advantages of the new version.
+- Updated to Python 3.6.
 
 - Several bug fixes.
 
 - Separate CLI code from NApps code: refactored code to make clear what is
   related to the command line tools and what is related to the kytos NApps.
 
+- Clean and descriptive log messages.
+
 Security
 ========
 
 - Authentication for NApps upload process - there is need for an account in
   the `NApps server <https://napps.kytos.io>`__ to upload any NApp.
-
-- Clean and descriptive log messages.
