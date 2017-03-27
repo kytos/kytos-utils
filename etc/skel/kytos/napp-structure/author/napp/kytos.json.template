@@ -2,7 +2,6 @@
   "author": "{{author}}",
   "name": "{{napp}}",
   "description": "{{description}}",
-  "long_description": "",
   "version": "",
   "napp_dependencies": [],
   "license": "",
