@@ -1,0 +1,6 @@
+include etc/kytos.conf
+include etc/logging.ini
+include *.txt
+include *.rst
+include LICENSE
+recursive-include etc/ *
