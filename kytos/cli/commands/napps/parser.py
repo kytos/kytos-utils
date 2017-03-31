@@ -56,18 +56,18 @@ def call(subcommand, args):
 
 
 def parse_napps(napp_args):
-    """Return a list of author and name from the napp list argument.
+    """Return a list of username and napp_name from the napp list argument.
 
-    The expected format of a NApp is napp_author/napp_name.
+    The expected format of a NApp is napp_username/napp_name.
 
     Args:
         napp_args (list): NApps from the cli.
 
     Return:
-        list: tuples (author_name, napp_name).
+        list: tuples (username, napp_name).
 
     Raises:
-        KytosException: If a NApp has not the form _author/name_.
+        KytosException: If a NApp has not the form _username/name_.
     """
     def parse_napp(arg):
         """Parse one argument."""

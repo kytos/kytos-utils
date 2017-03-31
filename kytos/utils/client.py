@@ -78,7 +78,7 @@ class NAppsClient():
             log.error("%s: %s", request.status_code, request.reason)
             sys.exit(1)
 
-        print("SUCCESS: NApp {}/{} uploaded.".format(metadata['author'],
+        print("SUCCESS: NApp {}/{} uploaded.".format(metadata['username'],
                                                      metadata['name']))
 
     @kytos_auth

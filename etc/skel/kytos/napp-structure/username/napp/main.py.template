@@ -1,15 +1,15 @@
-"""Main module of {{author}}/{{napp}} Kytos Network Application.
+"""Main module of {{username}}/{{napp}} Kytos Network Application.
 
 {{ description }}
 """
 
 from kytos.core.napps import KytosNApp
 
-from napps.{{author}}.{{napp}} import settings
+from napps.{{username}}.{{napp}} import settings
 
 
 class Main(KytosNApp):
-    """Main class of {{author}}/{{napp}} NApp.
+    """Main class of {{username}}/{{napp}} NApp.
 
     This class is the entry point for this napp.
     """

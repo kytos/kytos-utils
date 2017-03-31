@@ -133,7 +133,7 @@ class NAppsAPI:
         mgr = NAppsManager()
         enabled = mgr.get_enabled()
         installed = mgr.get_installed()
-        remote = (((n['author'], n['name']), n['description'])
+        remote = (((n['username'], n['name']), n['description'])
                   for n in remote_json)
 
         napps = []
