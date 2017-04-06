@@ -2,6 +2,8 @@
 Overview
 ########
 
+|Experimental| |Tag| |Release| |License| |Build| |Coverage| |Quality|
+
 This is a command line interface (cli) for `Kytos SDN Platform
 <https://kytos.io/>`_. With these utilities you can interact with Kytos daemon
 and manage Network Applications (NApps) on your controller.
@@ -61,3 +63,22 @@ License
 
 This software is under *MIT-License*. For more information please read
 ``LICENSE`` file.
+
+.. |Experimental| image:: https://img.shields.io/badge/stability-experimental-orange.svg
+.. |Tag| image:: https://img.shields.io/github/tag/kytos/kytos-utils.svg
+   :target: https://github.com/kytos/kytos-utils/tags
+.. |Release| image:: https://img.shields.io/github/release/kytos/kytos-utils.svg
+   :target: https://github.com/kytos/kytos-utils/releases
+.. |Tests| image:: https://travis-ci.org/kytos/kytos-utils.svg?branch=master
+   :target: https://travis-ci.org/kytos/kytos-utils
+.. |License| image:: https://img.shields.io/github/license/kytos/kytos-utils.svg
+   :target: https://github.com/kytos/kytos-utils/blob/master/LICENSE
+.. |Build| image:: https://scrutinizer-ci.com/g/kytos/kytos-utils/badges/build.png?b=master
+  :alt: Build status
+  :target: https://scrutinizer-ci.com/g/kytos/kytos-utils/?branch=master
+.. |Coverage| image:: https://scrutinizer-ci.com/g/kytos/kytos-utils/badges/coverage.png?b=master
+  :alt: Code coverage
+  :target: https://scrutinizer-ci.com/g/kytos/kytos-utils/?branch=master
+.. |Quality| image:: https://scrutinizer-ci.com/g/kytos/kytos-utils/badges/quality-score.png?b=master
+  :alt: Code-quality score
+  :target: https://scrutinizer-ci.com/g/kytos/kytos-utils/?branch=master
