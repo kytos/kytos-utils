@@ -20,6 +20,8 @@ class kytos_auth:
         """
         self.func = func
         self.config = KytosConfig().config
+        self.cls = None
+        self.obj = None
 
     def __call__(self, *args, **kwargs):
         """Code run when func is called."""
@@ -40,17 +42,16 @@ class kytos_auth:
         else:
             token = self.config.get('auth', 'token')
 
-        # pylint: disable=W0212
-        self.obj._config.set('auth', 'user', user)
-        # pylint: disable=W0212
-        self.obj._config.set('auth', 'token', token)
+        # Ignore private attribute warning. We don't wanna make it public only
+        # because of a decorator.
+        config = self.obj._config  # noqa
+        config.set('auth', 'user', user)
+        config.set('auth', 'token', token)
         self.func.__call__(self.obj, *args, **kwargs)
 
     def __get__(self, instance, owner):
         """Deal with owner class."""
-        # pylint: disable=W0201
         self.cls = owner
-        # pylint: disable=W0201
         self.obj = instance
 
         return self.__call__
