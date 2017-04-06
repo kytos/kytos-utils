@@ -4,11 +4,10 @@ Run "python3 setup --help-commands" to list all available commands and their
 descriptions.
 """
 import os
-import sys
-from subprocess import CalledProcessError, check_call
+from abc import abstractmethod
+from subprocess import call
 from setuptools import Command, find_packages, setup
 from setuptools.command.develop import develop
-from setuptools.command.test import test as TestCommand
 
 if 'VIRTUAL_ENV' in os.environ:
     BASE_ENV = os.environ['VIRTUAL_ENV']
@@ -29,30 +28,21 @@ ETC_FILES = [(os.path.join(BASE_ENV, AUTHOR_PATH),
                os.path.join(NAPP_PATH, 'settings.py.template')])]
 
 
-class Linter(Command):
-    """Code linters."""
+class SimpleCommand(Command):
+    """Make Command implementation simpler."""
 
-    description = 'run Pylama on Python files'
     user_options = []
 
+    @abstractmethod
     def run(self):
-        """Run linter."""
-        self.lint()
+        """Run when command is invoked.
 
-    @staticmethod
-    def lint():
-        """Run pylama and radon."""
-        files = 'tests setup.py kytos'
-        print('Pylama is running. It may take several seconds...')
-        cmd = 'pylama {}'.format(files)
-        try:
-            check_call(cmd, shell=True)
-        except CalledProcessError as exception:
-            print('FAILED: please, fix the error(s) above.')
-            sys.exit(exception.returncode)
+        Use *call* instead of *check_call* to ignore failures.
+        """
+        pass
 
     def initialize_options(self):
-        """Set default values for options."""
+        """Set defa ult values for options."""
         pass
 
     def finalize_options(self):
@@ -60,13 +50,39 @@ class Linter(Command):
         pass
 
 
-class Test(TestCommand):
-    """Run doctest and linter besides tests/*."""
+class Cleaner(SimpleCommand):
+    """Custom clean command to tidy up the project root."""
+
+    description = 'clean build, dist, pyc and egg from package and docs'
 
     def run(self):
-        """First, tests/*."""
-        super().run()
-        Linter.lint()
+        """Clean build, dist, pyc and egg from package and docs."""
+        call('rm -vrf ./build ./dist ./*.egg-info', shell=True)
+        call('find . -name __pycache__ -type d | xargs rm -rf', shell=True)
+        call('make -C docs/ clean', shell=True)
+
+
+class TestCoverage(SimpleCommand):
+    """Display test coverage."""
+
+    description = 'run unit tests and display code coverage'
+
+    def run(self):
+        """Run unittest quietly and display coverage report."""
+        cmd = 'coverage3 run -m unittest discover -qs tests' \
+              ' && coverage3 report'
+        call(cmd, shell=True)
+
+
+class Linter(SimpleCommand):
+    """Code linters."""
+
+    description = 'lint Python source code'
+
+    def run(self):
+        """Run pylama."""
+        print('Pylama is running. It may take several seconds...')
+        call('pylama setup.py tests kytos', shell=True)
 
 
 class DevelopMode(develop):
@@ -100,14 +116,11 @@ class DevelopMode(develop):
             os.symlink(src, dst)
 
 
-# parse_requirements() returns generator of pip.req.InstallRequirement objects
-# requirements = parse_requirements('requirements.txt', session=False)
 REQS = [i.strip() for i in open("requirements.txt").readlines()]
-
 
 setup(name='kytos-utils',
       version='2017.1b1',
-      description=' Command line utilities to use with Kytos.',
+      description='Command line utilities to use with Kytos.',
       url='http://github.com/kytos/kytos-utils',
       author='Kytos Team',
       author_email='of-ng-dev@ncc.unesp.br',
@@ -119,8 +132,9 @@ setup(name='kytos-utils',
       data_files=ETC_FILES,
       packages=find_packages(exclude=['tests']),
       cmdclass={
+          'clean': Cleaner,
+          'coverage': TestCoverage,
           'develop': DevelopMode,
-          'lint': Linter,
-          'test': Test
+          'lint': Linter
       },
       zip_safe=False)
