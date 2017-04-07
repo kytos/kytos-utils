@@ -133,8 +133,8 @@ class NAppsAPI:
         mgr = NAppsManager()
         enabled = mgr.get_enabled()
         installed = mgr.get_installed()
-        remote = (((n['username'], n['name']), n['description'])
-                  for n in remote_json)
+        remote = (((napp['username'], napp['name']), napp['description'])
+                  for napp in remote_json)
 
         napps = []
         for napp, desc in sorted(remote):
@@ -156,8 +156,9 @@ class NAppsAPI:
 
         # Sort, add description and reorder coloumns
         napps.sort()
-        napps = [(s, '{}/{}'.format(u, n), mgr.get_description(u, n))
-                 for u, n, s in napps]
+        napps = [(status, '{}/{}'.format(user, name), mgr.get_description(user,
+                                                                          name))
+                 for user, name, status in napps]
 
         cls.print_napps(napps)
 
