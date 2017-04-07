@@ -104,6 +104,9 @@ class DevelopMode(develop):
 # requirements = parse_requirements('requirements.txt', session=False)
 REQS = [i.strip() for i in open("requirements.txt").readlines()]
 
+napps_dir = os.path.join(BASE_ENV, 'var/lib/kytos/napps/.installed')
+if not os.path.exists(napps_dir):
+    os.makedirs(napps_dir, exist_ok=True)
 
 setup(name='kytos-utils',
       version='2017.1b1',
