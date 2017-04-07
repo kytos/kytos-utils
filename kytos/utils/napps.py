@@ -293,8 +293,8 @@ class NAppsManager:
         msg = 'Please, insert a brief description for your NApp [optional]: '
         description = input(msg)
         if not description:
-            # pylint: disable=W0511
-            description = '# TODO: <<<< Insert here your NApp description >>>>'
+            description = \
+                '# TODO: <<<< Insert here your NApp description >>>>'  # noqa
 
         context = {'author': author, 'napp': napp_name,
                    'description': description}

@@ -82,7 +82,10 @@ class KytosConfig():
         elif not self.config.has_option('napps', 'repo'):
             self.config.set('napps', 'repo', 'https://napps.kytos.io/repo/')
 
-        # Set paths if NAPPS_PATH is given or if not found in config
+        self._set_napps_path(napps_path)
+
+    def _set_napps_path(self, napps_path):
+        """Set paths if NAPPS_PATH is given or if not found in config."""
         if napps_path or not self.config.has_option('napps', 'enabled_path'):
             if not napps_path:  # default paths
                 base = os.environ.get('VIRTUAL_ENV') or '/'
