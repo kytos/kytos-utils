@@ -16,10 +16,10 @@ else:
 
 SKEL_PATH = 'etc/skel'
 KYTOS_SKEL_PATH = os.path.join(SKEL_PATH, 'kytos')
-AUTHOR_PATH = os.path.join(KYTOS_SKEL_PATH, 'napp-structure/author')
-NAPP_PATH = os.path.join(AUTHOR_PATH, 'napp')
-ETC_FILES = [(os.path.join(BASE_ENV, AUTHOR_PATH),
-              [os.path.join(AUTHOR_PATH, '__init__.py')]),
+USERNAME_PATH = os.path.join(KYTOS_SKEL_PATH, 'napp-structure/username')
+NAPP_PATH = os.path.join(USERNAME_PATH, 'napp')
+ETC_FILES = [(os.path.join(BASE_ENV, USERNAME_PATH),
+              [os.path.join(USERNAME_PATH, '__init__.py')]),
              (os.path.join(BASE_ENV, NAPP_PATH),
               [os.path.join(NAPP_PATH, '__init__.py'),
                os.path.join(NAPP_PATH, 'kytos.json.template'),

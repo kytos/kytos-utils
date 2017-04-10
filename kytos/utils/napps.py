@@ -59,16 +59,16 @@ class NAppsManager:
 
     @staticmethod
     def _get_napps(napps_dir):
-        """List of (author, napp_name) found in ``napps_dir``."""
+        """List of (username, napp_name) found in ``napps_dir``."""
         jsons = napps_dir.glob('*/*/kytos.json')
         return sorted(j.parts[-3:-1] for j in jsons)
 
     def get_enabled(self):
-        """Sorted list of (author, napp_name) of enabled napps."""
+        """Sorted list of (username, napp_name) of enabled napps."""
         return self._get_napps(self._enabled)
 
     def get_installed(self):
-        """Sorted list of (author, napp_name) of installed napps."""
+        """Sorted list of (username, napp_name) of installed napps."""
         return self._get_napps(self._installed)
 
     def is_installed(self):
@@ -76,7 +76,7 @@ class NAppsManager:
         return (self.user, self.napp) in self.get_installed()
 
     def get_disabled(self):
-        """Sorted list of (author, napp_name) of disabled napps.
+        """Sorted list of (username, napp_name) of disabled napps.
 
         The difference of installed and enabled.
         """
@@ -173,7 +173,7 @@ class NAppsManager:
         """
         def match(napp):
             """Whether a NApp metadata matches the pattern."""
-            strings = ['{}/{}'.format(napp['author'], napp['name']),
+            strings = ['{}/{}'.format(napp['username'], napp['name']),
                        napp['description']] + napp['tags']
             return any(pattern.match(string) for string in strings)
 
@@ -212,7 +212,7 @@ class NAppsManager:
             if kytos_json.exists():
                 with kytos_json.open() as f:
                     meta = json.load(f)
-                    if meta['author'] == self.user and \
+                    if meta['username'] == self.user and \
                             meta['name'] == self.napp:
                         return kytos_json.parent
         raise FileNotFoundError('kytos.json not found.')
@@ -269,14 +269,14 @@ class NAppsManager:
         base = os.environ.get('VIRTUAL_ENV') or '/'
 
         templates_path = os.path.join(base, 'etc', 'skel', 'kytos',
-                                      'napp-structure', 'author', 'napp')
-        author = None
+                                      'napp-structure', 'username', 'napp')
+        username = None
         napp_name = None
         description = None
         print('--------------------------------------------------------------')
         print('Welcome to the bootstrap process of your NApp.')
         print('--------------------------------------------------------------')
-        print('In order to answer both the author name and the napp name,')
+        print('In order to answer both the username and the napp name,')
         print('You must follow this naming rules:')
         print(' - name starts with a letter')
         print(' - name contains only letters, numbers or underscores')
@@ -284,8 +284,8 @@ class NAppsManager:
         print('--------------------------------------------------------------')
         print('')
         msg = 'Please, insert your NApps Server username: '
-        while not cls.valid_name(author):
-            author = input(msg)
+        while not cls.valid_name(username):
+            username = input(msg)
 
         while not cls.valid_name(napp_name):
             napp_name = input('Please, insert your NApp name: ')
@@ -296,31 +296,32 @@ class NAppsManager:
             description = \
                 '# TODO: <<<< Insert here your NApp description >>>>'  # noqa
 
-        context = {'author': author, 'napp': napp_name,
+        context = {'username': username, 'napp': napp_name,
                    'description': description}
 
-        #: Creating the directory structure (author/name)
-        os.makedirs(author, exist_ok=True)
+        #: Creating the directory structure (username/napp_name)
+        os.makedirs(username, exist_ok=True)
         #: Creating ``__init__.py`` files
-        with open(os.path.join(author, '__init__.py'), 'w'):
+        with open(os.path.join(username, '__init__.py'), 'w'):
             pass
 
-        os.makedirs(os.path.join(author, napp_name))
-        with open(os.path.join(author, napp_name, '__init__.py'), 'w'):
+        os.makedirs(os.path.join(username, napp_name))
+        with open(os.path.join(username, napp_name, '__init__.py'), 'w'):
             pass
 
         #: Creating the other files based on the templates
         templates = os.listdir(templates_path)
         templates.remove('__init__.py')
         for tmp in templates:
-            fname = os.path.join(author, napp_name, tmp.rsplit('.template')[0])
+            fname = os.path.join(username, napp_name,
+                                 tmp.rsplit('.template')[0])
             with open(fname, 'w') as file:
                 content = cls.render_template(templates_path, tmp, context)
                 file.write(content)
 
         msg = '\nCongratulations! Your NApp have been bootstrapped!\nNow you '
         msg += 'can go to the directory {}/{} and begin to code your NApp.'
-        print(msg.format(author, napp_name))
+        print(msg.format(username, napp_name))
         print('Have fun!')
 
     @staticmethod
@@ -339,7 +340,8 @@ class NAppsManager:
         """Build the .napp file to be sent to the napps server.
 
         Args:
-            napp_identifier (str): Identifier formatted as <author>/<napp_name>
+            napp_identifier (str): Identifier formatted as
+                <username>/<napp_name>
 
         Return:
             file_payload (binary): The binary representation of the napp
