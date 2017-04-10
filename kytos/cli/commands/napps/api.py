@@ -200,5 +200,8 @@ class NAppsAPI:
                 mgr.delete()
                 log.info('  Deleted.')
             except requests.HTTPError as e:
-                msg = json.loads(e.response.content)
-                log.error('  Server error: %s - ', msg['error'])
+                if e.response.status_code == 405:
+                    log.error('Delete Napp is not allowed yet.')
+                else:
+                    msg = json.loads(e.response.content)
+                    log.error('  Server error: %s - ', msg['error'])
