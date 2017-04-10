@@ -135,7 +135,10 @@ class NAppsAPI:
         installed = mgr.get_installed()
         remote = set()
         for napp in remote_json:
-            remote.add(((napp['username'], napp['name']), napp['description']))
+            # WARNING: This will be changed in future versions, when 'author'
+            # will be removed.
+            username = napp.get('username', napp.get('author'))
+            remote.add(((username, napp.get('name')), napp.get('description')))
 
         napps = []
         for napp, desc in sorted(remote):

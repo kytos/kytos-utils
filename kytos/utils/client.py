@@ -64,8 +64,12 @@ class NAppsClient():
             log.error("%s: %s", request.status_code, request.reason)
             sys.exit(1)
 
-        print("SUCCESS: NApp {}/{} uploaded.".format(metadata['username'],
-                                                     metadata['name']))
+        # WARNING: this will change in future versions, when 'author' will get
+        # removed.
+        username = metadata.get('username', metadata.get('author'))
+        name = metadata.get('name')
+
+        print("SUCCESS: NApp {}/{} uploaded.".format(username, name))
 
     @kytos_auth
     def delete(self, username, napp):
