@@ -332,7 +332,7 @@ class NAppsManager:
             folder (pathlib.Path): Module path.
         """
         if not folder.exists():
-            folder.mkdir()
+            folder.mkdir(parents=True, exist_ok=True)
             (folder / '__init__.py').touch()
 
     @staticmethod
