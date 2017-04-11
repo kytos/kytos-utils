@@ -173,8 +173,12 @@ class NAppsManager:
         """
         def match(napp):
             """Whether a NApp metadata matches the pattern."""
-            strings = ['{}/{}'.format(napp['username'], napp['name']),
-                       napp['description']] + napp['tags']
+            # WARNING: This will change for future versions, when 'author' will
+            # be removed.
+            username = napp.get('username', napp.get('author'))
+
+            strings = ['{}/{}'.format(username, napp.get('name')),
+                       napp.get('description')] + napp.get('tags')
             return any(pattern.match(string) for string in strings)
 
         napps = NAppsClient().get_napps()
@@ -212,8 +216,10 @@ class NAppsManager:
             if kytos_json.exists():
                 with kytos_json.open() as f:
                     meta = json.load(f)
-                    if meta['username'] == self.user and \
-                            meta['name'] == self.napp:
+                    # WARNING: This will change in future versions, when
+                    # 'author' will be removed.
+                    username = meta.get('username', meta.get('author'))
+                    if username == self.user and meta.get('name') == self.napp:
                         return kytos_json.parent
         raise FileNotFoundError('kytos.json not found.')
 
@@ -266,7 +272,7 @@ class NAppsManager:
         This will create, on the current folder, a clean structure of a NAPP,
         filling some contents on this structure.
         """
-        base = os.environ.get('VIRTUAL_ENV') or '/'
+        base = os.environ.get('VIRTUAL_ENV', '/')
 
         templates_path = os.path.join(base, 'etc', 'skel', 'kytos',
                                       'napp-structure', 'username', 'napp')
@@ -402,7 +408,7 @@ class NAppsManager:
             FileNotFoundError: If kytos.json is not found.
         """
         metadata = self.create_metadata(*args, **kwargs)
-        package = self.build_napp_package(metadata['name'])
+        package = self.build_napp_package(metadata.get('name'))
 
         NAppsClient().upload_napp(metadata, package)
 

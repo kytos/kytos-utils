@@ -1,4 +1,5 @@
 {
+  "author": "{{username}}",
   "username": "{{username}}",
   "name": "{{napp}}",
   "description": "{{description}}",

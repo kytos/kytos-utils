@@ -129,16 +129,23 @@ class NAppsAPI:
         pat_str = '.*{}.*'.format(safe_shell_pat)
         pattern = re.compile(pat_str, re.IGNORECASE)
         remote_json = NAppsManager.search(pattern)
+        remote = set()
+        for napp in remote_json:
+            # WARNING: This will be changed in future versions, when 'author'
+            # will be removed.
+            username = napp.get('username', napp.get('author'))
+            remote.add(((username, napp.get('name')), napp.get('description')))
 
+        cls._print_napps(remote)
+
+    @classmethod
+    def _print_napps(cls, napp_list):
+        """Format the NApp list to be printed."""
         mgr = NAppsManager()
         enabled = mgr.get_enabled()
         installed = mgr.get_installed()
-        remote = set()
-        for napp in remote_json:
-            remote.add(((napp['username'], napp['name']), napp['description']))
-
         napps = []
-        for napp, desc in sorted(remote):
+        for napp, desc in sorted(napp_list):
             status = 'i' if napp in installed else '-'
             status += 'e' if napp in enabled else '-'
             status = '[{}]'.format(status)
