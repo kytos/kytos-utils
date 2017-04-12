@@ -39,6 +39,9 @@ if __name__ == '__main__':
     if command == 'napps':
         from kytos.cli.commands.napps.parser import parse
         parse(argv)
+    elif command == 'users':
+        from kytos.cli.commands.users.parser import parse
+        parse(argv)
     else:
         print("Error: Invalid syntax")
         exit(__doc__)

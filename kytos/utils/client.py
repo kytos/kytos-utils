@@ -19,14 +19,39 @@ from kytos.utils.exceptions import KytosException
 log = logging.getLogger(__name__)
 
 
-class NAppsClient():
-    """Client for the NApps Server."""
+class CommonClient:
+    """Generic class used to make request the Napss server."""
 
     def __init__(self, config=None):
         """Set Kytos config."""
         if config is None:
             config = KytosConfig().config
         self._config = config
+
+    @staticmethod
+    def make_request(endpoint, **kwargs):
+        """Send a request to server."""
+        data = kwargs.get('json', [])
+        package = kwargs.get('package', None)
+        method = kwargs.get('method', 'GET')
+
+        function = getattr(requests, method.lower())
+
+        try:
+            if package:
+                response = function(endpoint, data=data,
+                                    files={'file': package})
+            else:
+                response = function(endpoint, json=data)
+        except requests.exceptions.ConnectionError:
+            log.error("Couldn't connect to NApps server %s.", endpoint)
+            sys.exit(1)
+
+        return response
+
+
+class NAppsClient(CommonClient):
+    """Client for the NApps Server."""
 
     def get_napps(self):
         """Get all NApps from the server."""
@@ -84,23 +109,19 @@ class NAppsClient():
         response = self.make_request(endpoint, json=content, method='DELETE')
         response.raise_for_status()
 
-    @staticmethod
-    def make_request(endpoint, **kwargs):
-        """Send a request to server."""
-        data = kwargs.get('json', [])
-        package = kwargs.get('package', None)
-        method = kwargs.get('method', 'GET')
 
-        function = getattr(requests, method.lower())
+class UsersClient(CommonClient):
+    """Client for the NApps Server."""
 
-        try:
-            if package:
-                response = function(endpoint, data=data,
-                                    files={'file': package})
-            else:
-                response = function(endpoint, json=data)
-        except response.exceptions.ConnectionError:
-            log.error("Couldn't connect to NApps server %s.", endpoint)
-            sys.exit(1)
+    def register(self, user_dict):
+        """Send an user_dict to NApps server using POST request.
 
-        return response
+        Args:
+            user_dict(dict): Dictionary with user attributes.
+        Returns:
+            result(string): Return the response of Napps server.
+        """
+        endpoint = os.path.join(self._config.get('napps', 'api'), 'users', '')
+        res = self.make_request(endpoint, method='POST', json=user_dict)
+
+        return res.content.decode('utf-8')
