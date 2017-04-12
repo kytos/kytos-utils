@@ -93,14 +93,27 @@ class NAppsAPI:
     @classmethod
     def install(cls, args):
         """Install local or remote NApps."""
+        cls.install_napps(args['<napp>'])
+
+    @classmethod
+    def install_napps(cls, napps):
+        """Install local or remote NApps.
+
+        This method is recursive, it will install each napps and your
+        dependencies.
+        """
         mgr = NAppsManager()
-        for napp in args['<napp>']:
+        for napp in napps:
             mgr.set_napp(*napp)
             log.info('NApp %s:', mgr.napp_id)
             if not mgr.is_installed():
                 cls.install_napp(mgr)
             else:
                 log.info('  Installed.')
+            napp_dependencies = mgr.dependencies()
+            if napp_dependencies:
+                log.info('Installing Dependencies:')
+                cls.install_napps(napp_dependencies)
 
     @classmethod
     def install_napp(cls, mgr):
@@ -155,7 +168,7 @@ class NAppsAPI:
 
     @classmethod
     def list(cls, args):
-        """List all installed NApps and inform whether they are installed."""
+        """List all installed NApps and inform whether they are enabled."""
         mgr = NAppsManager()
 
         # Add status

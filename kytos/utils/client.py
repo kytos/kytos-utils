@@ -63,7 +63,7 @@ class NAppsClient(CommonClient):
             log.error(msg, res.status_code, res.reason)
             sys.exit(1)
 
-        return json.loads(res.content)['napps']
+        return json.loads(res.content.decode('utf-8'))['napps']
 
     def get_napp(self, username, name):
         """Return napp metadata or None if not found."""
