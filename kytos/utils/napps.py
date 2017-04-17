@@ -233,6 +233,7 @@ class NAppsManager:
             dst = self._installed / self.user / self.napp
             self._check_module(dst.parent)
             shutil.move(str(napp_folder), str(dst))
+            os.chmod(dst, mode=0o755)
         finally:
             # Delete temporary files
             if package:
