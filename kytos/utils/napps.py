@@ -232,6 +232,8 @@ class NAppsManager:
             napp_folder = self._get_local_folder(pkg_folder)
             dst = self._installed / self.user / self.napp
             self._check_module(dst.parent)
+            if not dst.exists():
+                dst.mkdir(mode=0o755)
             shutil.move(str(napp_folder), str(dst))
         finally:
             # Delete temporary files
