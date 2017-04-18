@@ -9,6 +9,7 @@ import tarfile
 import tempfile
 import urllib
 from pathlib import Path
+from random import randint
 
 from jinja2 import Environment, FileSystemLoader
 from kytos.utils.client import NAppsClient
@@ -261,6 +262,9 @@ class NAppsManager:
             pathlib.Path: Temp dir with package contents.
         """
         tmp = tempfile.mkdtemp(prefix='kytos')
+        random_string = '{:0d}'.format(randint(0, 10**6))
+        tmp = '/tmp/kytos-napp-' + Path(filename).stem + '-' + random_string
+        os.mkdir(tmp)
         with tarfile.open(filename, 'r:xz') as tar:
             tar.extractall(tmp)
         return Path(tmp)
