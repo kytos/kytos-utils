@@ -72,8 +72,8 @@ def parse_napps(napp_args):
     def parse_napp(arg):
         """Parse one argument."""
         napp = arg.split('/')
-        size_is_valid = len(napp) != 2 or len(napp[0]) or len(napp[1])
-        if size_is_valid:
+        size_is_valid = len(napp) == 2 and len(napp[0]) and len(napp[1])
+        if not size_is_valid:
             msg = '"{}" NApp has not the form username/napp_name.'.format(arg)
             raise KytosException(msg)
         return tuple(napp)
