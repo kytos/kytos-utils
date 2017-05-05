@@ -3,11 +3,11 @@ Change log
 ##########
 This is a log of changes made to the *kytos-utils* project.
 
-Version: "bethania" beta2 (2017.1b2)
-************************************
+[2017.1b2] - "bethania" beta2 - 2017-05-05
+******************************************
 Added
 =====
-- 'kytos users register' command can be used to register a new user in the
+- :code:`kytos users register` command can be used to register a new user in the
   NApps server.
 - Now under MIT license.
 
@@ -34,8 +34,8 @@ Fixed
 - Several bug fixes.
 
 
-Version: "bethania" beta1 (2017.1b1)
-************************************
+[2017.1b1] - "bethania" beta1 - 2017-03-24
+******************************************
 Added
 =====
 - etc/skel files, with templates to create all the necessary NApp files when
