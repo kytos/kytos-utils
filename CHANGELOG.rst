@@ -33,9 +33,6 @@ Fixed
 - Pypi package is fixed and working.
 - Several bug fixes.
 
-Security
-========
-
 
 Version: "bethania" beta1 (2017.1b1)
 ************************************
