@@ -3,6 +3,27 @@ Change log
 ##########
 This is a log of changes made to the *kytos-utils* project.
 
+[UNRELEASED] - Under development
+********************************
+Added
+=====
+
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+
+Fixed
+=====
+
+Security
+========
+
+
 [2017.1b2] - "bethania" beta2 - 2017-05-05
 ******************************************
 Added
