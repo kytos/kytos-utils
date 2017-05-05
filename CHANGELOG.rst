@@ -3,6 +3,40 @@ Change log
 ##########
 This is a log of changes made to the *kytos-utils* project.
 
+Version: "bethania" beta2 (2017.1b2)
+************************************
+Added
+=====
+- 'kytos users register' command can be used to register a new user in the
+  NApps server.
+- Now under MIT license.
+
+Changed
+=======
+- skel templates updated to match changes in logging and kytos.json.
+- Improved tests and style check for developers, and added continuous
+  integration.
+
+Deprecated
+==========
+- kytos.json 'author' attribute is being replaced by 'username' due to context,
+  and is deprecated. It will be removed in future releases.
+
+Removed
+=======
+- kytos.json 'long_description' attribute is no longer necessary nor available.
+  The detailed description shall now be in README.rst.
+
+Fixed
+=====
+- Now creates the NApps directory structure when it does not exist.
+- Pypi package is fixed and working.
+- Several bug fixes.
+
+Security
+========
+
+
 Version: "bethania" beta1 (2017.1b1)
 ************************************
 Added
