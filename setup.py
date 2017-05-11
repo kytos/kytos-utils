@@ -5,6 +5,8 @@ descriptions.
 """
 import os
 from abc import abstractmethod
+# Disabling checks due to https://github.com/PyCQA/pylint/issues/73
+from distutils.command.clean import clean  # pylint: disable=E0401,E0611
 from subprocess import call
 from setuptools import Command, find_packages, setup
 from setuptools.command.develop import develop
@@ -50,16 +52,17 @@ class SimpleCommand(Command):
         pass
 
 
-class Cleaner(SimpleCommand):
+class Cleaner(clean):
     """Custom clean command to tidy up the project root."""
 
     description = 'clean build, dist, pyc and egg from package and docs'
 
     def run(self):
         """Clean build, dist, pyc and egg from package and docs."""
+        super().run()
         call('rm -vrf ./build ./dist ./*.egg-info', shell=True)
         call('find . -name __pycache__ -type d | xargs rm -rf', shell=True)
-        call('make -C docs/ clean', shell=True)
+        call('test -d docs && make -C docs/ clean', shell=True)
 
 
 class TestCoverage(SimpleCommand):
