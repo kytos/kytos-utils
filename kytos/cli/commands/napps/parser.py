@@ -9,8 +9,8 @@ Usage:
        kytos napps list
        kytos napps install   <napp>...
        kytos napps uninstall <napp>...
-       kytos napps enable    <napp>...
-       kytos napps disable   <napp>...
+       kytos napps enable    (all| <napp>...)
+       kytos napps disable   (all| <napp>...)
        kytos napps search    <pattern>
        kytos napps -h | --help
 
@@ -69,6 +69,9 @@ def parse_napps(napp_args):
     Raises:
         KytosException: If a NApp has not the form _username/name_.
     """
+    if 'all' in napp_args:
+        return 'all'
+
     def parse_napp(arg):
         """Parse one argument."""
         napp = arg.split('/')

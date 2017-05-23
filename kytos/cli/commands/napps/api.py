@@ -23,7 +23,13 @@ class NAppsAPI:
     def disable(cls, args):
         """Disable subcommand."""
         mgr = NAppsManager()
-        for napp in args['<napp>']:
+
+        if args['all']:
+            napps = mgr.get_enabled()
+        else:
+            napps = args['<napp>']
+
+        for napp in napps:
             mgr.set_napp(*napp)
             log.info('NApp %s:', mgr.napp_id)
             cls.disable_napp(mgr)
@@ -40,7 +46,13 @@ class NAppsAPI:
     def enable(cls, args):
         """Enable subcommand."""
         mgr = NAppsManager()
-        for napp in args['<napp>']:
+
+        if args['all']:
+            napps = mgr.get_disabled()
+        else:
+            napps = args['<napp>']
+
+        for napp in napps:
             mgr.set_napp(*napp)
             log.info('NApp %s:', mgr.napp_id)
             cls.enable_napp(mgr)
