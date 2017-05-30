@@ -8,6 +8,7 @@
 
 import logging
 import os
+from collections import namedtuple
 from configparser import ConfigParser
 
 log = logging.getLogger(__name__)
@@ -58,46 +59,31 @@ class KytosConfig():
         If no environment variable is found and the config section/key is
         empty, then set some default values.
         """
-        napps_api = os.environ.get('NAPPS_API_URI')
-        napps_repo = os.environ.get('NAPPS_REPO_URI')
-        user = os.environ.get('NAPPS_USER')
-        token = os.environ.get('NAPPS_TOKEN')
-        napps_path = os.environ.get('NAPPS_PATH')
+        Option = namedtuple('Option', ['section', 'name', 'env_var',
+                                       'default_value'])
+
+        options = [Option('auth', 'user', 'NAPPS_USER', None),
+                   Option('auth', 'token', 'NAPPS_TOKEN', None),
+                   Option('napps', 'api', 'NAPPS_API_URI',
+                          'https://napps.kytos.io/api/'),
+                   Option('napps', 'repo', 'NAPPS_REPO_URI',
+                          'https://napps.kytos.io/repo'),
+                   Option('kytos', 'api', 'KYTOS_API',
+                          'http://localhost:8181/')]
+
+        for option in options:
+            if not self.config.has_option(option.section, option.name):
+                env_value = os.environ.get(option.env_var,
+                                           option.default_value)
+                if env_value:
+                    self.config.set(option.section, option.name, env_value)
 
         self.config.set('global', 'debug', str(self.debug))
-
-        if user is not None:
-            self.config.set('auth', 'user', user)
-
-        if token is not None:
-            self.config.set('auth', 'token', token)
-
-        if napps_api is not None:
-            self.config.set('napps', 'api', napps_api)
-        elif not self.config.has_option('napps', 'api'):
-            self.config.set('napps', 'api', 'https://napps.kytos.io/api/')
-
-        if napps_repo is not None:
-            self.config.set('napps', 'repo', napps_repo)
-        elif not self.config.has_option('napps', 'repo'):
-            self.config.set('napps', 'repo', 'https://napps.kytos.io/repo/')
-
-        self._set_napps_path(napps_path)
-
-    def _set_napps_path(self, napps_path):
-        """Set paths if NAPPS_PATH is given or if not found in config."""
-        if napps_path or not self.config.has_option('napps', 'enabled_path'):
-            if not napps_path:  # default paths
-                base = os.environ.get('VIRTUAL_ENV') or '/'
-                napps_path = os.path.join(base, 'var', 'lib', 'kytos', 'napps')
-            self.config.set('napps', 'enabled_path', napps_path)
-            self.config.set('napps', 'installed_path',
-                            os.path.join(napps_path, '.installed'))
 
     @staticmethod
     def check_sections(config):
         """Create a empty config file."""
-        default_sections = ['global', 'auth', 'napps']
+        default_sections = ['global', 'auth', 'napps', 'kytos']
         for section in default_sections:
             if not config.has_section(section):
                 config.add_section(section)

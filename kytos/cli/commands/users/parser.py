@@ -18,6 +18,7 @@ Common user subcommands:
 import sys
 
 from docopt import docopt
+
 from kytos.cli.commands.users.api import UsersAPI
 from kytos.utils.exceptions import KytosException
 

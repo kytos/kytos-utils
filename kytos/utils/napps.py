@@ -11,6 +11,7 @@ from pathlib import Path
 from random import randint
 
 from jinja2 import Environment, FileSystemLoader
+
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 
@@ -36,11 +37,23 @@ class NAppsManager:
         """
         self._controller = controller
         self._config = KytosConfig().config
-        self._installed = Path(self._config.get('napps', 'installed_path'))
-        self._enabled = Path(self._config.get('napps', 'enabled_path'))
+        self._kytos_api = self._config.get('kytos', 'api')
+        self._load_kytos_configuration()
 
         self.user = None
         self.napp = None
+
+    def _load_kytos_configuration(self):
+        """Request current configurations loaded by Kytos instance."""
+        uri = self._kytos_api + 'kytos/config/'
+        try:
+            options = json.loads(urllib.request.urlopen(uri).read())
+        except urllib.error.URLError:
+            print('Kytos is not running.')
+            sys.exit()
+
+        self._installed = Path(options.get('installed_napps'))
+        self._enabled = Path(options.get('napps'))
 
     def set_napp(self, user, napp):
         """Set info about NApp.
@@ -100,13 +113,21 @@ class NAppsManager:
 
     def disable(self):
         """Disable a NApp if it is enabled."""
-        enabled = self._enabled / self.user / self.napp
+        enabled = self.enabled_dir()
         try:
             enabled.unlink()
             if self._controller is not None:
                 self._controller.unload_napp(self.user, self.napp)
         except FileNotFoundError:
             pass  # OK, it was already disabled
+
+    def enabled_dir(self):
+        """Return the enabled dir from current napp."""
+        return self._enabled / self.user / self.napp
+
+    def installed_dir(self):
+        """Return the installed dir from current napp."""
+        return self._installed / self.user / self.napp
 
     def enable(self):
         """Enable a NApp if not already enabled.
@@ -115,8 +136,8 @@ class NAppsManager:
             FileNotFoundError: If NApp is not installed.
             PermissionError: No filesystem permission to enable NApp.
         """
-        enabled = self._enabled / self.user / self.napp
-        installed = self._installed / self.user / self.napp
+        enabled = self.enabled_dir()
+        installed = self.installed_dir()
 
         if not installed.is_dir():
             raise FileNotFoundError('Install NApp {} first.'.format(
@@ -141,7 +162,7 @@ class NAppsManager:
     def uninstall(self):
         """Delete code inside NApp directory, if existent."""
         if self.is_installed():
-            installed = self._installed / self.user / self.napp
+            installed = self.installed_dir()
             if installed.is_symlink():
                 installed.unlink()
             else:
@@ -191,7 +212,7 @@ class NAppsManager:
             FileNotFoundError: If NApp is not found.
         """
         folder = self._get_local_folder()
-        installed = self._installed / self.user / self.napp
+        installed = self.installed_dir()
         self._check_module(installed.parent)
         installed.symlink_to(folder.resolve())
 

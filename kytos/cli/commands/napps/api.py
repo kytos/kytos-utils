@@ -6,6 +6,7 @@ import re
 from urllib.error import HTTPError
 
 import requests
+
 from kytos.utils.napps import NAppsManager
 
 log = logging.getLogger(__name__)
