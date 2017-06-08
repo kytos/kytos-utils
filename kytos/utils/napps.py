@@ -84,8 +84,33 @@ class NAppsManager:
         enabled = set(self.get_enabled())
         return sorted(installed - enabled)
 
+    def dependencies(self, user=None, napp=None):
+        """Method used to get napp_dependencies from install NApp.
+
+        Args:
+            user(string)  A Username.
+            napp(string): A NApp name.
+        Returns:
+            napps(list): List with tuples with Username and NApp name.
+                         e.g. [('kytos'/'of_core'), ('kytos/of_l2ls')]
+        """
+        napps = self._get_napp_key('napp_dependencies', user, napp)
+        return [tuple(napp.split('/')) for napp in napps]
+
     def get_description(self, user=None, napp=None):
         """Return the description from kytos.json."""
+        return self._get_napp_key('description', user, napp)
+
+    def _get_napp_key(self, key, user=None, napp=None):
+        """Generic method used to return a value from kytos.json.
+
+        Args:
+            user (string): A Username.
+            napp (string): A NApp name
+            key (string): Key used to get the value within kytos.json.
+        Returns:
+            meta (object): Value stored in kytos.json.
+        """
         if user is None:
             user = self.user
         if napp is None:
@@ -94,7 +119,7 @@ class NAppsManager:
         try:
             with kj.open() as f:
                 meta = json.load(f)
-                return meta['description']
+                return meta[key]
         except (FileNotFoundError, json.JSONDecodeError, KeyError):
             return ''
 
