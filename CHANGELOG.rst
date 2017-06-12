@@ -10,6 +10,8 @@ Added
 
 Changed
 =======
+- Install and enable NApps based on Kytos instance. kytos-utils will request
+  the configuration loaded by kytos before managing NApps.
 
 Deprecated
 ==========
@@ -61,7 +63,7 @@ Added
 =====
 - etc/skel files, with templates to create all the necessary NApp files when
   executing :code:`kytos napps create`.
-- Command line tool to manage the kytos NApps. A set of commands to help 
+- Command line tool to manage the kytos NApps. A set of commands to help
   managing NApps.
 
     - May now use the command line to:
