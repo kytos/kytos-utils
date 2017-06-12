@@ -34,6 +34,7 @@ Common napps subcommands:
 import sys
 
 from docopt import docopt
+
 from kytos.cli.commands.napps.api import NAppsAPI
 from kytos.utils.exceptions import KytosException
 
