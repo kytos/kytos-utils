@@ -10,8 +10,6 @@ Added
 
 Changed
 =======
-- Install and enable NApps based on Kytos instance. kytos-utils will request
-  the configuration loaded by kytos before managing NApps.
 
 Deprecated
 ==========
@@ -24,6 +22,26 @@ Fixed
 
 Security
 ========
+
+
+[2017.1b3] - "bethania" beta3 - 2017-06-14
+******************************************
+Added
+=====
+- `kytos napps <enable/disable> all` enables or disables all installed NApps.
+
+Changed
+=======
+- Install and enable NApps based on Kytos instance. kytos-utils will request
+  the configuration loaded by kytos before managing NApps.
+
+Removed
+=======
+- Support for NApp management whithout Kytos running.
+
+Fixed
+=====
+- A few bug fixes.
 
 
 [2017.1b2] - "bethania" beta2 - 2017-05-05
