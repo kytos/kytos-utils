@@ -24,20 +24,21 @@ Security
 ========
 
 
-[2017.1b3] - "bethania" beta3 - 2017-06-14
+[2017.1b3] - "bethania" beta3 - 2017-06-16
 ******************************************
 Added
 =====
-- `kytos napps <enable/disable> all` enables or disables all installed NApps.
+- Commands to enable/disable all installed NApps
+  (`kytos napps <enable/disable> all`).
 
 Changed
 =======
-- Install and enable NApps based on Kytos instance. kytos-utils will request
+- Install and enable NApps based on Kytos instance. `kytos-utils` will request
   the configuration loaded by kytos before managing NApps.
 
 Removed
 =======
-- Support for NApp management whithout Kytos running.
+- Support for NApp management whithout a Kytos running instance.
 
 Fixed
 =====
@@ -48,8 +49,8 @@ Fixed
 ******************************************
 Added
 =====
-- :code:`kytos users register` command can be used to register a new user in the
-  NApps server.
+- :code:`kytos users register` command can be used to register a new user in
+  the NApps server.
 - Now under MIT license.
 
 Changed

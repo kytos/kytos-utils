@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This file is part of kytos-utils.
 #
-# Copyright (c) 2016 by Kytos Team.
+# Copyright (c) 2016-2017 by Kytos Team.
 #
 # Authors:
 #    Beraldo Leal <beraldo AT ncc DOT unesp DOT br>
@@ -30,7 +30,7 @@ logging.basicConfig(format='%(levelname)-5s %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
     args = docopt(__doc__,
-                  version='kytos command line, version 2017.1b2',
+                  version='kytos command line, version 2017.1b3',
                   options_first=True)
     command = args['<command>']
     command_args = args['<args>']
