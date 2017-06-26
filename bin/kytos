@@ -30,7 +30,7 @@ logging.basicConfig(format='%(levelname)-5s %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
     args = docopt(__doc__,
-                  version='kytos command line, version 2017.1rc1.dev0',
+                  version='kytos command line, version 2017.1rc1',
                   options_first=True)
     command = args['<command>']
     command_args = args['<args>']
