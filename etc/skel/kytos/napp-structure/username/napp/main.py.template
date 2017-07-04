@@ -3,7 +3,7 @@
 {{ description }}
 """
 
-from kytos.core.napps import KytosNApp
+from kytos.core import KytosNApp, log
 
 from napps.{{username}}.{{napp}} import settings
 
