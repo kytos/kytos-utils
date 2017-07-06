@@ -123,7 +123,7 @@ class DevelopMode(develop):
 REQS = [i.strip() for i in open("requirements.txt").readlines()]
 
 setup(name='kytos-utils',
-      version='2017.1rc1',
+      version='2017.2b1.dev0',
       description='Command line utilities to use with Kytos.',
       url='http://github.com/kytos/kytos-utils',
       author='Kytos Team',
