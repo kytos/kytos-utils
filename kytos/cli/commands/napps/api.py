@@ -53,21 +53,32 @@ class NAppsAPI:
         else:
             napps = args['<napp>']
 
-        for napp in napps:
-            mgr.set_napp(*napp)
-            log.info('NApp %s:', mgr.napp_id)
-            cls.enable_napp(mgr)
+        cls.enable_napps(napps)
 
-    @staticmethod
-    def enable_napp(mgr):
+    @classmethod
+    def enable_napp(cls, mgr):
         """Install one NApp using NAppManager object."""
         try:
             if not mgr.is_enabled():
                 log.info('  Enabling...')
                 mgr.enable()
             log.info('  Enabled.')
+            cls.enable_napps(mgr.dependencies())
         except (FileNotFoundError, PermissionError) as e:
             log.error('  %s', e)
+
+    @classmethod
+    def enable_napps(cls, napps):
+        """Enable a list of NApps.
+
+        Args:
+            napps (list): List of NApps.
+        """
+        mgr = NAppsManager()
+        for napp in napps:
+            mgr.set_napp(*napp)
+            log.info('NApp %s:', mgr.napp_id)
+            cls.enable_napp(mgr)
 
     @classmethod
     def create(cls, args):
@@ -123,6 +134,7 @@ class NAppsAPI:
                 cls.install_napp(mgr)
             else:
                 log.info('  Installed.')
+                cls.enable_napp(mgr)
             napp_dependencies = mgr.dependencies()
             if napp_dependencies:
                 log.info('Installing Dependencies:')
