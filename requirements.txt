@@ -1,3 +1,0 @@
-docopt
-requests
-jinja2>=2.9.5
