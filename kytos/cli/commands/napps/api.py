@@ -200,12 +200,14 @@ class NAppsAPI:
         napps = [napp + ('[ie]',) for napp in mgr.get_enabled()]
         napps += [napp + ('[i-]',) for napp in mgr.get_disabled()]
 
-        # Sort, add description and reorder coloumns
+        # Sort, add description and reorder columns
         napps.sort()
         napps_ordered = []
         for user, name, status in napps:
-            napps_ordered.append((status, '{}/{}'.format(user, name),
-                                  mgr.get_description(user, name)))
+            description = mgr.get_description(user, name)
+            version = mgr.get_version(user, name)
+            napp_id = '{}/{}-{}'.format(user, name, version)
+            napps_ordered.append((status, napp_id, description))
 
         cls.print_napps(napps_ordered)
 

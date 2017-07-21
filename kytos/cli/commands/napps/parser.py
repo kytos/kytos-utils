@@ -31,6 +31,7 @@ Common napps subcommands:
   search        Search for NApps in NApps Server.
 
 """
+import re
 import sys
 
 from docopt import docopt
@@ -75,11 +76,14 @@ def parse_napps(napp_args):
 
     def parse_napp(arg):
         """Parse one argument."""
-        napp = arg.split('/')
-        size_is_valid = len(napp) == 2 and napp[0] and napp[1]
-        if not size_is_valid:
-            msg = '"{}" NApp has not the form username/napp_name.'.format(arg)
-            raise KytosException(msg)
-        return tuple(napp)
+        regex = re.compile(r'(\w+)/(\w+)(-(\d+.\d+.\d+))?')
+        matched = regex.fullmatch(arg)
+
+        if not matched:
+            msg = '"{}" NApp has not the form username/napp_name[-version].'
+            raise KytosException(msg.format(arg))
+
+        attributes = matched.groups()
+        return (attributes[0], attributes[1], attributes[3])
 
     return [parse_napp(arg) for arg in napp_args]
