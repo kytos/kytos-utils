@@ -58,15 +58,21 @@ def call(subcommand, args):
 
 
 def parse_napps(napp_args):
-    """Return a list of username and napp_name from the napp list argument.
+    """Return a list of tuples with username, napp_name and version.
 
-    The expected format of a NApp is napp_username/napp_name.
+    Each napp arg must to have the pattern username/name-version. Version is
+    optional, whether no version is found the tuple will be
+    ('username', 'name', None).
+
+    e.g:
+    If you use ``kytos napps kytos/of_core kytos/of_l2ls-0.1.1`` the returned
+    list is [('kytos', 'of_core', None), ('kytos', 'of_l2ls', '0.1.1')].
 
     Args:
         napp_args (list): NApps from the cli.
 
     Return:
-        list: tuples (username, napp_name).
+        list: list of tuples with (username, napp_name, version).
 
     Raises:
         KytosException: If a NApp has not the form _username/name_.
@@ -76,14 +82,15 @@ def parse_napps(napp_args):
 
     def parse_napp(arg):
         """Parse one argument."""
-        regex = re.compile(r'(\w+)/(\w+)(-(\d+.\d+.\d+))?')
-        matched = regex.fullmatch(arg)
+        regex = r'([a-zA-Z][a-zA-Z0-9_]{2,})/([a-zA-Z][a-zA-Z0-9_]{2,})-?(.+)?'
+        compiled_regex = re.compile(regex)
+
+        matched = compiled_regex.fullmatch(arg)
 
         if not matched:
             msg = '"{}" NApp has not the form username/napp_name[-version].'
             raise KytosException(msg.format(arg))
 
-        attributes = matched.groups()
-        return (attributes[0], attributes[1], attributes[3])
+        return matched.groups()
 
     return [parse_napp(arg) for arg in napp_args]
