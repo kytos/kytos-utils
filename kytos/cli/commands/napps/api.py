@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import re
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 import requests
 
@@ -159,6 +159,8 @@ class NAppsAPI:
                     log.error('  NApp not found.')
                 else:
                     log.error('  NApps Server error: %s', e)
+            except URLError as e:
+                log.error('  NApps Server error: %s', str(e.reason))
 
     @classmethod
     def search(cls, args):
