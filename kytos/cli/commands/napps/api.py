@@ -208,7 +208,7 @@ class NAppsAPI:
             version = mgr.get_version(user, name)
             napp_id = f'{user}/{name}'
             if version:
-                napp_id += f'-{version}'
+                napp_id += f':{version}'
 
             napps_ordered.append((status, napp_id, description))
 

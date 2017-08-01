@@ -60,7 +60,7 @@ def call(subcommand, args):
 def parse_napps(napp_ids):
     """Return a list of tuples with username, napp_name and version.
 
-    napp_ids elements are of the form username/name[-version]
+    napp_ids elements are of the form username/name[:version]
     (version is optional). If no version is found, it will be None.
 
     If napp_ids is equal to 'all', this string will be returned.
@@ -84,7 +84,7 @@ def parse_napp(napp_id):
     """Convert a napp_id in tuple with username, napp name and version.
 
     Args:
-        napp_id: String with the form 'username/napp[-version]' (version is
+        napp_id: String with the form 'username/napp[:version]' (version is
                   optional). If no version is found, it will be None.
 
     Returns:
@@ -97,16 +97,16 @@ def parse_napp(napp_id):
     # and one optional (version).
     # username and napp_name need to start with a letter, are composed of
     # letters, numbers and uderscores and must have at least three characters.
-    # They are separated by a slash.
+    # They are separated by a colon.
     # version is optional and can take any format. Is is separated by a hyphen,
     # if a version is defined.
-    regex = r'([a-zA-Z][a-zA-Z0-9_]{2,})/([a-zA-Z][a-zA-Z0-9_]{2,})-?(.+)?'
+    regex = r'([a-zA-Z][a-zA-Z0-9_]{2,})/([a-zA-Z][a-zA-Z0-9_]{2,}):?(.+)?'
     compiled_regex = re.compile(regex)
 
     matched = compiled_regex.fullmatch(napp_id)
 
     if not matched:
-        msg = '"{}" NApp has not the form username/napp_name[-version].'
+        msg = '"{}" NApp has not the form username/napp_name[:version].'
         raise KytosException(msg.format(napp_id))
 
     return matched.groups()
