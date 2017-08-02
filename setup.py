@@ -120,8 +120,6 @@ class DevelopMode(develop):
             os.symlink(src, dst)
 
 
-REQS = [i.strip() for i in open("requirements.txt").readlines()]
-
 setup(name='kytos-utils',
       version='2017.2b1.dev0',
       description='Command line utilities to use with Kytos.',
@@ -132,7 +130,18 @@ setup(name='kytos-utils',
       test_suite='tests',
       include_package_data=True,
       scripts=['bin/kytos'],
-      install_requires=REQS,
+      install_requires=['docopt', 'requests', 'jinja2>=2.9.5'],
+      extras_require={
+          'dev': [
+              'tox',
+              'coverage',
+              'pip-tools',
+              'pydocstyle~=1.1.1',
+              'pylama~=7.3.3',
+              'pylama_pylint~=3.0.1',
+              'radon~=1.5.0',
+          ]
+      },
       data_files=ETC_FILES,
       packages=find_packages(exclude=['tests']),
       cmdclass={
