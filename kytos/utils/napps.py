@@ -42,6 +42,7 @@ class NAppsManager:
 
         self.user = None
         self.napp = None
+        self.version = None
 
     def _load_kytos_configuration(self):
         """Request current configurations loaded by Kytos instance."""
@@ -55,15 +56,17 @@ class NAppsManager:
         self._installed = Path(options.get('installed_napps'))
         self._enabled = Path(options.get('napps'))
 
-    def set_napp(self, user, napp):
+    def set_napp(self, user, napp, version=None):
         """Set info about NApp.
 
         Args:
             user (str): NApps Server username.
             napp (str): NApp name.
+            version (str): NApp version.
         """
         self.user = user
         self.napp = napp
+        self.version = version or 'latest'
 
     @property
     def napp_id(self):
@@ -113,6 +116,14 @@ class NAppsManager:
     def get_description(self, user=None, napp=None):
         """Return the description from kytos.json."""
         return self._get_napp_key('description', user, napp)
+
+    def get_version(self, user=None, napp=None):
+        """Return the version from kytos.json."""
+        version = self._get_napp_key('version', user, napp)
+        if not version:
+            msg = '{}/{} does not have the key "version" in kytos.json'
+            raise KeyError(msg.format(user, napp))
+        return version
 
     def _get_napp_key(self, key, user=None, napp=None):
         """Generic method used to return a value from kytos.json.
@@ -296,7 +307,8 @@ class NAppsManager:
             str: Downloaded temp filename.
         """
         repo = self._config.get('napps', 'repo')
-        uri = os.path.join(repo, self.user, '{}-latest.napp'.format(self.napp))
+        napp_id = '{}/{}-{}.napp'.format(self.user, self.napp, self.version)
+        uri = os.path.join(repo, napp_id)
         return urllib.request.urlretrieve(uri)[0]
 
     @staticmethod
