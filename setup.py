@@ -7,7 +7,7 @@ import os
 from abc import abstractmethod
 # Disabling checks due to https://github.com/PyCQA/pylint/issues/73
 from distutils.command.clean import clean  # pylint: disable=E0401,E0611
-from subprocess import call
+from subprocess import CalledProcessError, call, check_call
 
 from setuptools import Command, find_packages, setup
 from setuptools.command.develop import develop
@@ -35,6 +35,12 @@ class SimpleCommand(Command):
     """Make Command implementation simpler."""
 
     user_options = []
+
+    def __init__(self, *args, **kwargs):
+        """Store arguments so it's possible to call other commands later."""
+        super().__init__(*args, **kwargs)
+        self._args = args
+        self._kwargs = kwargs
 
     @abstractmethod
     def run(self):
@@ -73,9 +79,19 @@ class TestCoverage(SimpleCommand):
 
     def run(self):
         """Run unittest quietly and display coverage report."""
-        cmd = 'coverage3 run -m unittest discover -qs tests' \
-              ' && coverage3 report'
-        call(cmd, shell=True)
+        cmd = 'coverage3 run --source=kytos setup.py test && coverage3 report'
+        check_call(cmd, shell=True)
+
+
+class CITest(SimpleCommand):
+    """Run all CI tests."""
+
+    description = 'run all CI tests: unit and doc tests, linter'
+
+    def run(self):
+        """Run unit tests with coverage, doc tests and linter."""
+        for command in TestCoverage, Linter:
+            command(*self._args, **self._kwargs).run()
 
 
 class Linter(SimpleCommand):
@@ -86,7 +102,11 @@ class Linter(SimpleCommand):
     def run(self):
         """Run pylama."""
         print('Pylama is running. It may take several seconds...')
-        call('pylama setup.py tests kytos', shell=True)
+        try:
+            check_call('pylama setup.py tests kytos', shell=True)
+            print('No linter error found.')
+        except CalledProcessError:
+            print('Linter check failed. Fix the error(s) above and try again.')
 
 
 class DevelopMode(develop):
@@ -145,6 +165,7 @@ setup(name='kytos-utils',
       data_files=ETC_FILES,
       packages=find_packages(exclude=['tests']),
       cmdclass={
+          'ci': CITest,
           'clean': Cleaner,
           'coverage': TestCoverage,
           'develop': DevelopMode,
