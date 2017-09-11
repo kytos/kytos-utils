@@ -119,11 +119,7 @@ class NAppsManager:
 
     def get_version(self, user=None, napp=None):
         """Return the version from kytos.json."""
-        version = self._get_napp_key('version', user, napp)
-        if not version:
-            msg = '{}/{} does not have the key "version" in kytos.json'
-            raise KeyError(msg.format(user, napp))
-        return version
+        return self._get_napp_key('version', user, napp) or 'latest'
 
     def _get_napp_key(self, key, user=None, napp=None):
         """Generic method used to return a value from kytos.json.
