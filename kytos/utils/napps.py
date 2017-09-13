@@ -435,7 +435,7 @@ class NAppsManager:
         return file_payload
 
     @staticmethod
-    def create_metadata(*args, **kwargs):
+    def create_metadata(*args, **kwargs):  # pylint: disable=unused-argument
         """Generate the metadata to send the napp package."""
         json_filename = kwargs.get('json_filename', 'kytos.json')
         readme_filename = kwargs.get('readme_filename', 'README.rst')

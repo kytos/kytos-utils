@@ -81,12 +81,12 @@ class NAppsAPI:
             cls.enable_napp(mgr)
 
     @classmethod
-    def create(cls, args):
+    def create(cls, args):  # pylint: disable=unused-argument
         """Bootstrap a basic NApp structure on the current folder."""
         NAppsManager.create_napp()
 
     @classmethod
-    def upload(cls, args):
+    def upload(cls, args):  # pylint: disable=unused-argument
         """Upload the NApp to the NApps server.
 
         Create the NApp package and upload it to the NApp server.
@@ -194,7 +194,7 @@ class NAppsAPI:
         cls.print_napps(napps)
 
     @classmethod
-    def list(cls, args):
+    def list(cls, args):  # pylint: disable=unused-argument
         """List all installed NApps and inform whether they are enabled."""
         mgr = NAppsManager()
 

@@ -17,7 +17,7 @@ class UsersAPI:
     user_manager = UsersManager()
 
     @classmethod
-    def register(cls, args):
+    def register(cls, args):  # pylint: disable=unused-argument
         """Create a new user and register it on the Napps server."""
         result = cls.user_manager.register()
         print(result)
