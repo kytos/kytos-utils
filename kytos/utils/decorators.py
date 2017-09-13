@@ -11,7 +11,9 @@ from kytos.utils.config import KytosConfig
 LOG = logging.getLogger(__name__)
 
 
-class kytos_auth:
+# This class is used as decorator, so this class name is lowercase and the
+# invalid-name warning from pylint is disabled below.
+class kytos_auth:  # pylint: disable=invalid-name
     """Class to be used as decorator to require authentication."""
 
     def __init__(self, func):
@@ -45,7 +47,7 @@ class kytos_auth:
 
         # Ignore private attribute warning. We don't wanna make it public only
         # because of a decorator.
-        config = self.obj._config  # noqa
+        config = self.obj._config  # pylint: disable=protected-access
         config.set('auth', 'user', user)
         config.set('auth', 'token', token)
         self.func.__call__(self.obj, *args, **kwargs)
