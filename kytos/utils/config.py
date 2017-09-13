@@ -59,16 +59,16 @@ class KytosConfig():
         If no environment variable is found and the config section/key is
         empty, then set some default values.
         """
-        Option = namedtuple('Option', ['section', 'name', 'env_var',
+        option = namedtuple('Option', ['section', 'name', 'env_var',
                                        'default_value'])
 
-        options = [Option('auth', 'user', 'NAPPS_USER', None),
-                   Option('auth', 'token', 'NAPPS_TOKEN', None),
-                   Option('napps', 'api', 'NAPPS_API_URI',
+        options = [option('auth', 'user', 'NAPPS_USER', None),
+                   option('auth', 'token', 'NAPPS_TOKEN', None),
+                   option('napps', 'api', 'NAPPS_API_URI',
                           'https://napps.kytos.io/api/'),
-                   Option('napps', 'repo', 'NAPPS_REPO_URI',
+                   option('napps', 'repo', 'NAPPS_REPO_URI',
                           'https://napps.kytos.io/repo'),
-                   Option('kytos', 'api', 'KYTOS_API',
+                   option('kytos', 'api', 'KYTOS_API',
                           'http://localhost:8181/')]
 
         for option in options:

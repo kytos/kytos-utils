@@ -135,10 +135,10 @@ class NAppsManager:
             user = self.user
         if napp is None:
             napp = self.napp
-        kj = self._installed / user / napp / 'kytos.json'
+        kytos_json = self._installed / user / napp / 'kytos.json'
         try:
-            with kj.open() as f:
-                meta = json.load(f)
+            with kytos_json.open() as file_descriptor:
+                meta = json.load(file_descriptor)
                 return meta[key]
         except (FileNotFoundError, json.JSONDecodeError, KeyError):
             return ''
@@ -213,9 +213,9 @@ class NAppsManager:
     @staticmethod
     def render_template(templates_path, template_filename, context):
         """Render Jinja2 template for a NApp structure."""
-        TEMPLATE_ENV = Environment(autoescape=False, trim_blocks=False,
+        template_env = Environment(autoescape=False, trim_blocks=False,
                                    loader=FileSystemLoader(templates_path))
-        return TEMPLATE_ENV.get_template(template_filename).render(context)
+        return template_env.get_template(template_filename).render(context)
 
     @staticmethod
     def search(pattern):
@@ -267,8 +267,8 @@ class NAppsManager:
         for folders in ['.'], [self.user, self.napp]:
             kytos_json = root / Path(*folders) / 'kytos.json'
             if kytos_json.exists():
-                with kytos_json.open() as f:
-                    meta = json.load(f)
+                with kytos_json.open() as file_descriptor:
+                    meta = json.load(file_descriptor)
                     # WARNING: This will change in future versions, when
                     # 'author' will be removed.
                     username = meta.get('username', meta.get('author'))

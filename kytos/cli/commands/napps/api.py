@@ -64,8 +64,8 @@ class NAppsAPI:
                 mgr.enable()
             LOG.info('  Enabled.')
             cls.enable_napps(mgr.dependencies())
-        except (FileNotFoundError, PermissionError) as e:
-            LOG.error('  %s', e)
+        except (FileNotFoundError, PermissionError) as exception:
+            LOG.error('  %s', exception)
 
     @classmethod
     def enable_napps(cls, napps):
@@ -154,13 +154,13 @@ class NAppsAPI:
                 mgr.install_remote()
                 LOG.info('  Downloaded and installed.')
                 cls.enable_napp(mgr)
-            except HTTPError as e:
-                if e.code == 404:
+            except HTTPError as exception:
+                if exception.code == 404:
                     LOG.error('  NApp not found.')
                 else:
-                    LOG.error('  NApps Server error: %s', e)
-            except URLError as e:
-                LOG.error('  NApps Server error: %s', str(e.reason))
+                    LOG.error('  NApps Server error: %s', exception)
+            except URLError as exception:
+                LOG.error('  NApps Server error: %s', str(exception.reason))
 
     @classmethod
     def search(cls, args):
@@ -251,9 +251,9 @@ class NAppsAPI:
             try:
                 mgr.delete()
                 LOG.info('  Deleted.')
-            except requests.HTTPError as e:
-                if e.response.status_code == 405:
+            except requests.HTTPError as exception:
+                if exception.response.status_code == 405:
                     LOG.error('Delete Napp is not allowed yet.')
                 else:
-                    msg = json.loads(e.response.content)
+                    msg = json.loads(exception.response.content)
                     LOG.error('  Server error: %s - ', msg['error'])
