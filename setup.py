@@ -100,10 +100,10 @@ class Linter(SimpleCommand):
     description = 'lint Python source code'
 
     def run(self):
-        """Run pylama."""
-        print('Pylama is running. It may take several seconds...')
+        """Run yala."""
+        print('Yala is running. It may take several seconds...')
         try:
-            check_call('pylama setup.py tests kytos', shell=True)
+            check_call('yala setup.py tests kytos', shell=True)
             print('No linter error found.')
         except CalledProcessError:
             print('Linter check failed. Fix the error(s) above and try again.')
@@ -156,10 +156,7 @@ setup(name='kytos-utils',
               'tox',
               'coverage',
               'pip-tools',
-              'pydocstyle~=1.1.1',
-              'pylama~=7.3.3',
-              'pylama_pylint~=3.0.1',
-              'radon~=1.5.0',
+              'yala'
           ]
       },
       data_files=ETC_FILES,
