@@ -5,7 +5,7 @@ from getpass import getpass
 
 from kytos.utils.client import UsersClient
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 NAME_PATTERN = ("\t- insert only letters", r'[a-zA-Z][a-zA-Z]{2,}$')
 USERNAME_PATTERN = ("\t- start with letter\n"

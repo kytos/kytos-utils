@@ -9,7 +9,7 @@ import requests
 
 from kytos.utils.napps import NAppsManager
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class NAppsAPI:
@@ -32,16 +32,16 @@ class NAppsAPI:
 
         for napp in napps:
             mgr.set_napp(*napp)
-            log.info('NApp %s:', mgr.napp_id)
+            LOG.info('NApp %s:', mgr.napp_id)
             cls.disable_napp(mgr)
 
     @staticmethod
     def disable_napp(mgr):
         """Disable a NApp."""
         if mgr.is_enabled():
-            log.info('  Disabling...')
+            LOG.info('  Disabling...')
             mgr.disable()
-        log.info('  Disabled.')
+        LOG.info('  Disabled.')
 
     @classmethod
     def enable(cls, args):
@@ -60,12 +60,12 @@ class NAppsAPI:
         """Install one NApp using NAppManager object."""
         try:
             if not mgr.is_enabled():
-                log.info('  Enabling...')
+                LOG.info('  Enabling...')
                 mgr.enable()
-            log.info('  Enabled.')
+            LOG.info('  Enabled.')
             cls.enable_napps(mgr.dependencies())
         except (FileNotFoundError, PermissionError) as e:
-            log.error('  %s', e)
+            LOG.error('  %s', e)
 
     @classmethod
     def enable_napps(cls, napps):
@@ -77,7 +77,7 @@ class NAppsAPI:
         mgr = NAppsManager()
         for napp in napps:
             mgr.set_napp(*napp)
-            log.info('NApp %s:', mgr.napp_id)
+            LOG.info('NApp %s:', mgr.napp_id)
             cls.enable_napp(mgr)
 
     @classmethod
@@ -94,7 +94,7 @@ class NAppsAPI:
         try:
             NAppsManager().upload()
         except FileNotFoundError:
-            log.error("Couldn't find kytos.json in current directory.")
+            LOG.error("Couldn't find kytos.json in current directory.")
 
     @classmethod
     def uninstall(cls, args):
@@ -106,13 +106,13 @@ class NAppsAPI:
         mgr = NAppsManager()
         for napp in args['<napp>']:
             mgr.set_napp(*napp)
-            log.info('NApp %s:', mgr.napp_id)
+            LOG.info('NApp %s:', mgr.napp_id)
             if mgr.is_installed():
                 if mgr.is_enabled():
                     cls.disable_napp(mgr)
-                log.info('  Uninstalling...')
+                LOG.info('  Uninstalling...')
                 mgr.uninstall()
-            log.info('  Uninstalled.')
+            LOG.info('  Uninstalled.')
 
     @classmethod
     def install(cls, args):
@@ -129,38 +129,38 @@ class NAppsAPI:
         mgr = NAppsManager()
         for napp in napps:
             mgr.set_napp(*napp)
-            log.info('NApp %s:', mgr.napp_id)
+            LOG.info('NApp %s:', mgr.napp_id)
             if not mgr.is_installed():
                 cls.install_napp(mgr)
             else:
-                log.info('  Installed.')
+                LOG.info('  Installed.')
                 cls.enable_napp(mgr)
             napp_dependencies = mgr.dependencies()
             if napp_dependencies:
-                log.info('Installing Dependencies:')
+                LOG.info('Installing Dependencies:')
                 cls.install_napps(napp_dependencies)
 
     @classmethod
     def install_napp(cls, mgr):
         """Install a NApp."""
         try:
-            log.info('  Searching local NApp...')
+            LOG.info('  Searching local NApp...')
             mgr.install_local()
-            log.info('  Found and installed.')
+            LOG.info('  Found and installed.')
             cls.enable_napp(mgr)
         except FileNotFoundError:
-            log.info('  Not found. Downloading from NApps Server...')
+            LOG.info('  Not found. Downloading from NApps Server...')
             try:
                 mgr.install_remote()
-                log.info('  Downloaded and installed.')
+                LOG.info('  Downloaded and installed.')
                 cls.enable_napp(mgr)
             except HTTPError as e:
                 if e.code == 404:
-                    log.error('  NApp not found.')
+                    LOG.error('  NApp not found.')
                 else:
-                    log.error('  NApps Server error: %s', e)
+                    LOG.error('  NApps Server error: %s', e)
             except URLError as e:
-                log.error('  NApps Server error: %s', str(e.reason))
+                LOG.error('  NApps Server error: %s', str(e.reason))
 
     @classmethod
     def search(cls, args):
@@ -247,13 +247,13 @@ class NAppsAPI:
         mgr = NAppsManager()
         for napp in args['<napp>']:
             mgr.set_napp(*napp)
-            log.info('Deleting NApp %s from server...', mgr.napp_id)
+            LOG.info('Deleting NApp %s from server...', mgr.napp_id)
             try:
                 mgr.delete()
-                log.info('  Deleted.')
+                LOG.info('  Deleted.')
             except requests.HTTPError as e:
                 if e.response.status_code == 405:
-                    log.error('Delete Napp is not allowed yet.')
+                    LOG.error('Delete Napp is not allowed yet.')
                 else:
                     msg = json.loads(e.response.content)
-                    log.error('  Server error: %s - ', msg['error'])
+                    LOG.error('  Server error: %s - ', msg['error'])

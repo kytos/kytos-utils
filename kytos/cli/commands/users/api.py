@@ -3,7 +3,7 @@ import logging
 
 from kytos.utils.users import UsersManager
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class UsersAPI:

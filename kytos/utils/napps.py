@@ -15,7 +15,7 @@ from jinja2 import Environment, FileSystemLoader
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class NAppsManager:

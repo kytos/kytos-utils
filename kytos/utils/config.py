@@ -11,7 +11,7 @@ import os
 from collections import namedtuple
 from configparser import ConfigParser
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class KytosConfig():
@@ -29,7 +29,7 @@ class KytosConfig():
         self.config_file = os.path.expanduser(config_file)
         self.debug = False
         if self.debug:
-            log.setLevel(logging.DEBUG)
+            LOG.setLevel(logging.DEBUG)
 
         # allow_no_value=True is used to keep the comments on the config file.
         self.config = ConfigParser(allow_no_value=True)
@@ -42,8 +42,8 @@ class KytosConfig():
         self.set_env_or_defaults()
 
         if not os.path.exists(self.config_file):
-            log.warning("Config file %s not found.", self.config_file)
-            log.warning("Creating a new empty config file.")
+            LOG.warning("Config file %s not found.", self.config_file)
+            LOG.warning("Creating a new empty config file.")
             with open(self.config_file, 'w') as output_file:
                 os.chmod(self.config_file, 0o0600)
                 self.config.write(output_file)
@@ -51,7 +51,7 @@ class KytosConfig():
     def log_configs(self):
         """Log the read configs if debug is enabled."""
         for sec in self.config.sections():
-            log.debug('   %s: %s', sec, self.config.options(sec))
+            LOG.debug('   %s: %s', sec, self.config.options(sec))
 
     def set_env_or_defaults(self):
         """Read some environment variables and set them on the config.

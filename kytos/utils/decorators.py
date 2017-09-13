@@ -8,7 +8,7 @@ import requests
 
 from kytos.utils.config import KytosConfig
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class kytos_auth:
@@ -64,8 +64,8 @@ class kytos_auth:
         password = getpass("Enter the password for {}: ".format(username))
         response = requests.get(endpoint, auth=(username, password))
         if response.status_code != 201:
-            log.error(response.content)
-            log.error('ERROR: %s: %s', response.status_code, response.reason)
+            LOG.error(response.content)
+            LOG.error('ERROR: %s: %s', response.status_code, response.reason)
             sys.exit(1)
         else:
             data = response.json()
