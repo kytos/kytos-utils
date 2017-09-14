@@ -18,6 +18,7 @@ from kytos.utils.config import KytosConfig
 LOG = logging.getLogger(__name__)
 
 
+# pylint: disable=too-many-instance-attributes,too-many-public-methods
 class NAppsManager:
     """Deal with NApps at filesystem level and ask Kytos to (un)load NApps."""
 
@@ -477,3 +478,4 @@ class NAppsManager:
         """
         client = NAppsClient(self._config)
         client.delete(self.user, self.napp)
+# pylint: enable=too-many-instance-attributes,too-many-public-methods
