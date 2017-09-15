@@ -47,7 +47,7 @@ class NAppsManager:
 
     def _load_kytos_configuration(self):
         """Request current configurations loaded by Kytos instance."""
-        uri = self._kytos_api + 'kytos/config/'
+        uri = self._kytos_api + 'api/kytos/core/config/'
         try:
             options = json.loads(urllib.request.urlopen(uri).read())
         except urllib.error.URLError:
