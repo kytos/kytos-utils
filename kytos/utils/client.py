@@ -17,7 +17,7 @@ from kytos.utils.config import KytosConfig
 from kytos.utils.decorators import kytos_auth
 from kytos.utils.exceptions import KytosException
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class CommonClient:
@@ -45,7 +45,7 @@ class CommonClient:
             else:
                 response = function(endpoint, json=data)
         except requests.exceptions.ConnectionError:
-            log.error("Couldn't connect to NApps server %s.", endpoint)
+            LOG.error("Couldn't connect to NApps server %s.", endpoint)
             sys.exit(1)
 
         return response
@@ -61,7 +61,7 @@ class NAppsClient(CommonClient):
 
         if res.status_code != 200:
             msg = 'Error getting NApps from server (%s) - %s'
-            log.error(msg, res.status_code, res.reason)
+            LOG.error(msg, res.status_code, res.reason)
             sys.exit(1)
 
         return json.loads(res.content.decode('utf-8'))['napps']
@@ -87,7 +87,7 @@ class NAppsClient(CommonClient):
                                     method="POST")
         if request.status_code != 201:
             KytosConfig().clear_token()
-            log.error("%s: %s", request.status_code, request.reason)
+            LOG.error("%s: %s", request.status_code, request.reason)
             sys.exit(1)
 
         # WARNING: this will change in future versions, when 'author' will get

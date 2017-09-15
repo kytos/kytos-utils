@@ -28,8 +28,8 @@ def parse(argv):
     args = docopt(__doc__, argv=argv)
     try:
         call(sys.argv[2], args)
-    except KytosException as e:
-        print("Error parsing args: {}".format(e))
+    except KytosException as exception:
+        print("Error parsing args: {}".format(exception))
         exit()
 
 

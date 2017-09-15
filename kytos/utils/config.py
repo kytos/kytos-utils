@@ -11,7 +11,7 @@ import os
 from collections import namedtuple
 from configparser import ConfigParser
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class KytosConfig():
@@ -29,7 +29,7 @@ class KytosConfig():
         self.config_file = os.path.expanduser(config_file)
         self.debug = False
         if self.debug:
-            log.setLevel(logging.DEBUG)
+            LOG.setLevel(logging.DEBUG)
 
         # allow_no_value=True is used to keep the comments on the config file.
         self.config = ConfigParser(allow_no_value=True)
@@ -42,8 +42,8 @@ class KytosConfig():
         self.set_env_or_defaults()
 
         if not os.path.exists(self.config_file):
-            log.warning("Config file %s not found.", self.config_file)
-            log.warning("Creating a new empty config file.")
+            LOG.warning("Config file %s not found.", self.config_file)
+            LOG.warning("Creating a new empty config file.")
             with open(self.config_file, 'w') as output_file:
                 os.chmod(self.config_file, 0o0600)
                 self.config.write(output_file)
@@ -51,7 +51,7 @@ class KytosConfig():
     def log_configs(self):
         """Log the read configs if debug is enabled."""
         for sec in self.config.sections():
-            log.debug('   %s: %s', sec, self.config.options(sec))
+            LOG.debug('   %s: %s', sec, self.config.options(sec))
 
     def set_env_or_defaults(self):
         """Read some environment variables and set them on the config.
@@ -59,16 +59,16 @@ class KytosConfig():
         If no environment variable is found and the config section/key is
         empty, then set some default values.
         """
-        Option = namedtuple('Option', ['section', 'name', 'env_var',
+        option = namedtuple('Option', ['section', 'name', 'env_var',
                                        'default_value'])
 
-        options = [Option('auth', 'user', 'NAPPS_USER', None),
-                   Option('auth', 'token', 'NAPPS_TOKEN', None),
-                   Option('napps', 'api', 'NAPPS_API_URI',
+        options = [option('auth', 'user', 'NAPPS_USER', None),
+                   option('auth', 'token', 'NAPPS_TOKEN', None),
+                   option('napps', 'api', 'NAPPS_API_URI',
                           'https://napps.kytos.io/api/'),
-                   Option('napps', 'repo', 'NAPPS_REPO_URI',
+                   option('napps', 'repo', 'NAPPS_REPO_URI',
                           'https://napps.kytos.io/repo'),
-                   Option('kytos', 'api', 'KYTOS_API',
+                   option('kytos', 'api', 'KYTOS_API',
                           'http://localhost:8181/')]
 
         for option in options:

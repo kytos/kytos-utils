@@ -15,9 +15,10 @@ from jinja2 import Environment, FileSystemLoader
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
+# pylint: disable=too-many-instance-attributes,too-many-public-methods
 class NAppsManager:
     """Deal with NApps at filesystem level and ask Kytos to (un)load NApps."""
 
@@ -135,10 +136,10 @@ class NAppsManager:
             user = self.user
         if napp is None:
             napp = self.napp
-        kj = self._installed / user / napp / 'kytos.json'
+        kytos_json = self._installed / user / napp / 'kytos.json'
         try:
-            with kj.open() as f:
-                meta = json.load(f)
+            with kytos_json.open() as file_descriptor:
+                meta = json.load(file_descriptor)
                 return meta[key]
         except (FileNotFoundError, json.JSONDecodeError, KeyError):
             return ''
@@ -213,9 +214,9 @@ class NAppsManager:
     @staticmethod
     def render_template(templates_path, template_filename, context):
         """Render Jinja2 template for a NApp structure."""
-        TEMPLATE_ENV = Environment(autoescape=False, trim_blocks=False,
+        template_env = Environment(autoescape=False, trim_blocks=False,
                                    loader=FileSystemLoader(templates_path))
-        return TEMPLATE_ENV.get_template(template_filename).render(context)
+        return template_env.get_template(template_filename).render(context)
 
     @staticmethod
     def search(pattern):
@@ -267,8 +268,8 @@ class NAppsManager:
         for folders in ['.'], [self.user, self.napp]:
             kytos_json = root / Path(*folders) / 'kytos.json'
             if kytos_json.exists():
-                with kytos_json.open() as f:
-                    meta = json.load(f)
+                with kytos_json.open() as file_descriptor:
+                    meta = json.load(file_descriptor)
                     # WARNING: This will change in future versions, when
                     # 'author' will be removed.
                     username = meta.get('username', meta.get('author'))
@@ -355,8 +356,9 @@ class NAppsManager:
         msg = 'Please, insert a brief description for your NApp [optional]: '
         description = input(msg)
         if not description:
-            description = \
-                '# TODO: <<<< Insert here your NApp description >>>>'  # noqa
+            # pylint: disable=fixme
+            description = '# TODO: <<<< Insert here your NApp description >>>>'
+            # pylint: enable=fixme
 
         context = {'username': username, 'napp': napp_name,
                    'description': description}
@@ -434,7 +436,7 @@ class NAppsManager:
         return file_payload
 
     @staticmethod
-    def create_metadata(*args, **kwargs):
+    def create_metadata(*args, **kwargs):  # pylint: disable=unused-argument
         """Generate the metadata to send the napp package."""
         json_filename = kwargs.get('json_filename', 'kytos.json')
         readme_filename = kwargs.get('readme_filename', 'README.rst')
@@ -476,3 +478,4 @@ class NAppsManager:
         """
         client = NAppsClient(self._config)
         client.delete(self.user, self.napp)
+# pylint: enable=too-many-instance-attributes,too-many-public-methods

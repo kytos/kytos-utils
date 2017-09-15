@@ -8,10 +8,12 @@ import requests
 
 from kytos.utils.config import KytosConfig
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
-class kytos_auth:
+# This class is used as decorator, so this class name is lowercase and the
+# invalid-name warning from pylint is disabled below.
+class kytos_auth:  # pylint: disable=invalid-name
     """Class to be used as decorator to require authentication."""
 
     def __init__(self, func):
@@ -45,7 +47,7 @@ class kytos_auth:
 
         # Ignore private attribute warning. We don't wanna make it public only
         # because of a decorator.
-        config = self.obj._config  # noqa
+        config = self.obj._config  # pylint: disable=protected-access
         config.set('auth', 'user', user)
         config.set('auth', 'token', token)
         self.func.__call__(self.obj, *args, **kwargs)
@@ -64,8 +66,8 @@ class kytos_auth:
         password = getpass("Enter the password for {}: ".format(username))
         response = requests.get(endpoint, auth=(username, password))
         if response.status_code != 201:
-            log.error(response.content)
-            log.error('ERROR: %s: %s', response.status_code, response.reason)
+            LOG.error(response.content)
+            LOG.error('ERROR: %s: %s', response.status_code, response.reason)
             sys.exit(1)
         else:
             data = response.json()

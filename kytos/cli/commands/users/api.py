@@ -3,7 +3,7 @@ import logging
 
 from kytos.utils.users import UsersManager
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class UsersAPI:
@@ -17,7 +17,7 @@ class UsersAPI:
     user_manager = UsersManager()
 
     @classmethod
-    def register(cls, args):
+    def register(cls, args):  # pylint: disable=unused-argument
         """Create a new user and register it on the Napps server."""
         result = cls.user_manager.register()
         print(result)
