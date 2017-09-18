@@ -24,26 +24,29 @@ Security
 ========
 
 
-[2017.1] - 'bethania' - 2017-07-06
-**********************************
+[2017.2b1] - "chico" beta1 - 2017-09-18
+***************************************
 Added
 =====
+- Version tags - now NApps fully support the <username>/<nappname>:<version> format.
 
 Changed
 =======
-
-Deprecated
-==========
-
-Removed
-=======
+- NApps will now install other NApps listed as dependencies.
+- Yala substitutes Pylama as the main linter checker.
+- Requirements files updated and restructured.
 
 Fixed
 =====
-- NApp skel to match changes in Kytos
+- Some test features.
+- Some bug fixes.
 
-Security
-========
+
+[2017.1] - 'bethania' - 2017-07-06
+**********************************
+Fixed
+=====
+- NApp skel to match changes in Kytos
 
 
 [2017.1b3] - "bethania" beta3 - 2017-06-16
