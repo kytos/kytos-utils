@@ -29,10 +29,12 @@ Security
 Added
 =====
 - Version tags - now NApps fully support the <username>/<nappname>:<version> format.
+- Create an OpenAPI skeleton based on NApp's rest decorators.
 
 Changed
 =======
 - NApps will now install other NApps listed as dependencies.
+- Do not require a running kytosd for some commands.
 - Yala substitutes Pylama as the main linter checker.
 - Requirements files updated and restructured.
 

@@ -11,9 +11,11 @@ from pathlib import Path
 from random import randint
 
 from jinja2 import Environment, FileSystemLoader
+from ruamel.yaml import YAML
 
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
+from kytos.utils.openapi import OpenAPI
 
 LOG = logging.getLogger(__name__)
 
@@ -233,9 +235,11 @@ class NAppsManager:
     @staticmethod
     def render_template(templates_path, template_filename, context):
         """Render Jinja2 template for a NApp structure."""
-        template_env = Environment(autoescape=False, trim_blocks=False,
-                                   loader=FileSystemLoader(templates_path))
-        return template_env.get_template(template_filename).render(context)
+        template_env = Environment(
+            autoescape=False, trim_blocks=False,
+            loader=FileSystemLoader(str(templates_path)))
+        return template_env.get_template(str(template_filename)) \
+            .render(context)
 
     @staticmethod
     def search(pattern):
@@ -476,6 +480,14 @@ class NAppsManager:
         except FileNotFoundError:
             metadata['readme'] = ''
 
+        try:
+            yaml = YAML(typ='safe')
+            openapi_dict = yaml.load(Path('openapi.yml').open())
+            openapi = json.dumps(openapi_dict)
+        except FileNotFoundError:
+            openapi = ''
+        metadata['OpenAPI_Spec'] = openapi
+
         return metadata
 
     def upload(self, *args, **kwargs):
@@ -484,6 +496,7 @@ class NAppsManager:
         Raises:
             FileNotFoundError: If kytos.json is not found.
         """
+        self.prepare()
         metadata = self.create_metadata(*args, **kwargs)
         package = self.build_napp_package(metadata.get('name'))
 
@@ -497,4 +510,36 @@ class NAppsManager:
         """
         client = NAppsClient(self._config)
         client.delete(self.user, self.napp)
+
+    @classmethod
+    def prepare(cls):
+        """Prepare NApp to be uploaded by creating openAPI skeleton."""
+        if cls._ask_openapi():
+            napp_path = Path()
+            prefix = Path(sys.prefix)
+            tpl_path = prefix / 'etc/skel/kytos/napp-structure/username/napp'
+            OpenAPI(napp_path, tpl_path).render_template()
+            print('Please, update your openapi.yml file.')
+            sys.exit()
+
+    @staticmethod
+    def _ask_openapi():
+        """Return whether we should create a (new) skeleton."""
+        if Path('openapi.yml').exists():
+            question = 'Override local openapi.yml with a new skeleton? (y/N) '
+            default = False
+        else:
+            question = 'Do you have REST endpoints and wish to create an API' \
+                  ' skeleton in openapi.yml? (Y/n) '
+            default = True
+
+        while True:
+            answer = input(question)
+            if answer == '':
+                return default
+            if answer.lower() in ['y', 'yes']:
+                return True
+            if answer.lower() in ['n', 'no']:
+                return False
+
 # pylint: enable=too-many-instance-attributes,too-many-public-methods

@@ -26,6 +26,7 @@ ETC_FILES = [(os.path.join(BASE_ENV, USERNAME_PATH),
              (os.path.join(BASE_ENV, NAPP_PATH),
               [os.path.join(NAPP_PATH, '__init__.py'),
                os.path.join(NAPP_PATH, 'kytos.json.template'),
+               os.path.join(NAPP_PATH, 'openapi.yml.template'),
                os.path.join(NAPP_PATH, 'main.py.template'),
                os.path.join(NAPP_PATH, 'README.rst.template'),
                os.path.join(NAPP_PATH, 'settings.py.template')])]
@@ -150,7 +151,7 @@ setup(name='kytos-utils',
       test_suite='tests',
       include_package_data=True,
       scripts=['bin/kytos'],
-      install_requires=['docopt', 'requests', 'jinja2>=2.9.5'],
+      install_requires=['docopt', 'requests', 'jinja2>=2.9.5', 'ruamel.yaml'],
       extras_require={
           'dev': [
               'tox',

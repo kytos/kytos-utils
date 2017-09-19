@@ -4,6 +4,7 @@ You are at the "napps" command.
 
 Usage:
        kytos napps create
+       kytos napps prepare
        kytos napps upload
        kytos napps delete    <napp>...
        kytos napps list
@@ -21,6 +22,7 @@ Options:
 Common napps subcommands:
 
   create        Create a bootstrap NApp structure for development.
+  prepare       Prepare NApp to be uploaded (called by "upload").
   upload        Upload current NApp to Kytos repository.
   delete        Delete NApps from NApps Server.
   list          List all NApps installed into your system.
