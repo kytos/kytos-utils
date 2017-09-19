@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: {{napp.username}}/{{napp.name}}
+  version: {{napp.version}}
+  description: {{napp.description}}
+paths:
+{% for path, methods in paths.items() %}
+  {{path}}:
+{% for method, method_info in methods.items() %}
+    {{method}}:
+      summary: {{method_info.summary}}
+      description: {{method_info.description}}
+      parameters:  # If you have parameters in the URL
+        - name: Parameter's name as in path.
+          required: true
+          description: Describe parameter here
+          in: path
+{% if method == "post" %}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:  # What the user should post
+                dpid:  # "dpid" is just an example. Replace it.
+                  type: string 
+                  description: Switch datapath ID.
+                  example: 00:...:01
+{% endif %}
+      responses:
+        200:  # You can add more responses
+          description: Describe a successful call.
+          content:
+            application/json:  # You can also use text/plain, for example
+              schema:
+                type: object  # Adapt to your response
+                properties:
+                  prop_one:
+                    type: string
+                    description: Meaning of prop_one
+                    example: an example of prop_one
+                  second_prop:
+                    type: integer
+                    description: Meaning of second_prop
+                    example: 42
+{% endfor %}
+{% endfor %}

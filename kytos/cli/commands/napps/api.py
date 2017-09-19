@@ -257,3 +257,9 @@ class NAppsAPI:
                 else:
                     msg = json.loads(exception.response.content)
                     LOG.error('  Server error: %s - ', msg['error'])
+
+    @classmethod
+    def prepare(cls, args):
+        """Create OpenAPI v3.0 spec skeleton."""
+        mgr = NAppsManager()
+        mgr.prepare()
