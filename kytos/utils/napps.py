@@ -39,23 +39,42 @@ class NAppsManager:
         self._controller = controller
         self._config = KytosConfig().config
         self._kytos_api = self._config.get('kytos', 'api')
-        self._load_kytos_configuration()
 
         self.user = None
         self.napp = None
         self.version = None
 
-    def _load_kytos_configuration(self):
-        """Request current configurations loaded by Kytos instance."""
-        uri = self._kytos_api + 'api/kytos/core/config/'
-        try:
-            options = json.loads(urllib.request.urlopen(uri).read())
-        except urllib.error.URLError:
-            print('Kytos is not running.')
-            sys.exit()
+        # Automatically get from kytosd API when needed
+        self.__enabled = None
+        self.__installed = None
 
-        self._installed = Path(options.get('installed_napps'))
-        self._enabled = Path(options.get('napps'))
+    @property
+    def _enabled(self):
+        if self.__enabled is None:
+            self.__require_kytos_config()
+        return self.__enabled
+
+    @property
+    def _installed(self):
+        if self.__installed is None:
+            self.__require_kytos_config()
+        return self.__installed
+
+    def __require_kytos_config(self):
+        """Set path locations from kytosd API.
+
+        It should not be called directly, but from properties that require a
+        running kytosd instance.
+        """
+        if self.__enabled is None:
+            uri = self._kytos_api + 'api/kytos/core/config/'
+            try:
+                options = json.loads(urllib.request.urlopen(uri).read())
+            except urllib.error.URLError:
+                print('Kytos is not running.')
+                sys.exit()
+            self.__enabled = Path(options.get('napps'))
+            self.__installed = Path(options.get('installed_napps'))
 
     def set_napp(self, user, napp, version=None):
         """Set info about NApp.
