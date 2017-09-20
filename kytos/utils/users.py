@@ -52,6 +52,7 @@ class UsersManager:
 
         Returns:
             result(string): Response of user registration process.
+
         """
         user = {}
 
@@ -86,6 +87,7 @@ class UsersManager:
             password(bool): Boolean value to get input password with mask.
         Returns:
             input_value(string): Input value validated.
+
         """
         input_value = ""
         question = ("Insert the field using the pattern below:"
@@ -119,5 +121,6 @@ class UsersManager:
             pattern(string): Pattern used to validate the attribute value.
         Returns:
             pattern_found(bool): Return True if the pattern match.
+
         """
         return attribute and re.match(pattern, attribute)

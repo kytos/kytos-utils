@@ -131,6 +131,7 @@ class NAppsManager:
         Returns:
             napps(list): List with tuples with Username and NApp name.
                          e.g. [('kytos'/'of_core'), ('kytos/of_l2ls')]
+
         """
         napps = self._get_napp_key('napp_dependencies', user, napp)
         return [tuple(napp.split('/')) for napp in napps]
@@ -150,8 +151,10 @@ class NAppsManager:
             user (string): A Username.
             napp (string): A NApp name
             key (string): Key used to get the value within kytos.json.
+
         Returns:
             meta (object): Value stored in kytos.json.
+
         """
         if user is None:
             user = self.user
@@ -189,6 +192,7 @@ class NAppsManager:
         Raises:
             FileNotFoundError: If NApp is not installed.
             PermissionError: No filesystem permission to enable NApp.
+
         """
         enabled = self.enabled_dir()
         installed = self.installed_dir()
@@ -266,6 +270,7 @@ class NAppsManager:
 
         Raises:
             FileNotFoundError: If NApp is not found.
+
         """
         folder = self._get_local_folder()
         installed = self.installed_dir()
@@ -280,11 +285,12 @@ class NAppsManager:
         Args:
             root (pathlib.Path): Where to begin searching.
 
+        Return:
+            pathlib.Path: NApp root folder.
+
         Raises:
             FileNotFoundError: If there is no such local NApp.
 
-        Return:
-            pathlib.Path: NApp root folder.
         """
         if root is None:
             root = Path()
@@ -320,11 +326,12 @@ class NAppsManager:
     def _download(self):
         """Download NApp package from server.
 
+        Return:
+            str: Downloaded temp filename.
+
         Raises:
             urllib.error.HTTPError: If download is not successful.
 
-        Return:
-            str: Downloaded temp filename.
         """
         repo = self._config.get('napps', 'repo')
         napp_id = '{}/{}-{}.napp'.format(self.user, self.napp, self.version)
@@ -337,6 +344,7 @@ class NAppsManager:
 
         Return:
             pathlib.Path: Temp dir with package contents.
+
         """
         random_string = '{:0d}'.format(randint(0, 10**6))
         tmp = '/tmp/kytos-napp-' + Path(filename).stem + '-' + random_string
@@ -433,6 +441,7 @@ class NAppsManager:
         Return:
             file_payload (binary): The binary representation of the napp
                 package that will be POSTed to the napp server.
+
         """
         ignored_extensions = ['.swp', '.pyc', '.napp']
         ignored_dirs = ['__pycache__']
@@ -495,6 +504,7 @@ class NAppsManager:
 
         Raises:
             FileNotFoundError: If kytos.json is not found.
+
         """
         self.prepare()
         metadata = self.create_metadata(*args, **kwargs)
@@ -507,6 +517,7 @@ class NAppsManager:
 
         Raises:
             requests.HTTPError: When there's a server error.
+
         """
         client = NAppsClient(self._config)
         client.delete(self.user, self.napp)

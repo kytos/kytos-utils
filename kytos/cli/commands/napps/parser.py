@@ -75,6 +75,7 @@ def parse_napps(napp_ids):
 
     Raises:
         KytosException: If a NApp has not the form _username/name_.
+
     """
     if 'all' in napp_ids:
         return 'all'
@@ -94,6 +95,7 @@ def parse_napp(napp_id):
 
     Raises:
         KytosException: If a NApp has not the form _username/name_.
+
     """
     # `napp_id` regex, composed by two mandatory parts (username, napp_name)
     # and one optional (version).
