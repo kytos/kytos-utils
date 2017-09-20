@@ -92,7 +92,7 @@ class NAppsManager:
 
     @property
     def napp_id(self):
-        """Identifier of NApp."""
+        """Return a Identifier of NApp."""
         return '/'.join((self.user, self.napp))
 
     @staticmethod
@@ -123,7 +123,7 @@ class NAppsManager:
         return sorted(installed - enabled)
 
     def dependencies(self, user=None, napp=None):
-        """Method used to get napp_dependencies from install NApp.
+        """Get napp_dependencies from install NApp.
 
         Args:
             user(string)  A Username.
@@ -145,7 +145,7 @@ class NAppsManager:
         return self._get_napp_key('version', user, napp) or 'latest'
 
     def _get_napp_key(self, key, user=None, napp=None):
-        """Generic method used to return a value from kytos.json.
+        """Return a value from kytos.json.
 
         Args:
             user (string): A Username.
