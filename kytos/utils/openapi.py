@@ -3,7 +3,6 @@ import json
 import re
 
 from jinja2 import Environment, FileSystemLoader
-
 from kytos.core.api_server import APIServer
 from kytos.core.napps.base import NApp
 
@@ -12,7 +11,7 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
     """Create OpenAPI skeleton."""
 
     def __init__(self, napp_path, tpl_path):
-        """Instance a OpenAPI object.
+        """Instantiate an OpenAPI object.
 
         Args:
             napp_path (string): Napp directory
