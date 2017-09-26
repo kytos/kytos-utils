@@ -399,6 +399,7 @@ class NAppsManager:
         #: Creating the other files based on the templates
         templates = os.listdir(templates_path)
         templates.remove('__init__.py')
+        templates.remove('openapi.yml.template')
         for tmp in templates:
             fname = os.path.join(username, napp_name,
                                  tmp.rsplit('.template')[0])
