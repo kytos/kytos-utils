@@ -132,8 +132,9 @@ class NAppsAPI:
             LOG.info('NApp %s:', mgr.napp_id)
             if not mgr.is_installed():
                 cls.install_napp(mgr)
-            else:
                 LOG.info('  Installed.')
+            else:
+                LOG.warning('  Napp already Installed.')
                 cls.enable_napp(mgr)
             napp_dependencies = mgr.dependencies()
             if napp_dependencies:
