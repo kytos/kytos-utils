@@ -41,17 +41,21 @@ class UsersManager:
     required = ["username", "first_name", "password", "email"]
 
     def __init__(self):
-        """Constructor of UsersManager do not need parameters."""
+        """Instance a new UsersManager.
+
+        This method do not need parameters.
+        """
         self._users_client = UsersClient()
 
     def register(self):
-        """Method used to register a new user.
+        """Register a new user.
 
         This method will ask for user attributes and create the user in
         Napps server, when All required fields is filled.
 
         Returns:
             result(string): Response of user registration process.
+
         """
         user = {}
 
@@ -76,7 +80,7 @@ class UsersManager:
 
     def ask_question(self, field_name, pattern=NAME_PATTERN, is_required=False,
                      password=False):
-        """Method used to ask a question and get the input values.
+        """Ask a question and get the input values.
 
         This method will validade the input values.
         Args:
@@ -86,6 +90,7 @@ class UsersManager:
             password(bool): Boolean value to get input password with mask.
         Returns:
             input_value(string): Input value validated.
+
         """
         input_value = ""
         question = ("Insert the field using the pattern below:"
@@ -119,5 +124,6 @@ class UsersManager:
             pattern(string): Pattern used to validate the attribute value.
         Returns:
             pattern_found(bool): Return True if the pattern match.
+
         """
         return attribute and re.match(pattern, attribute)

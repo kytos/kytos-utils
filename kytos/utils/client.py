@@ -103,6 +103,7 @@ class NAppsClient(CommonClient):
 
         Raises:
             requests.HTTPError: If 400 <= status < 600.
+
         """
         api = self._config.get('napps', 'api')
         endpoint = os.path.join(api, 'napps', username, napp, '')
@@ -119,8 +120,10 @@ class UsersClient(CommonClient):
 
         Args:
             user_dict(dict): Dictionary with user attributes.
+
         Returns:
             result(string): Return the response of Napps server.
+
         """
         endpoint = os.path.join(self._config.get('napps', 'api'), 'users', '')
         res = self.make_request(endpoint, method='POST', json=user_dict)

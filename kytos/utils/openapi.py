@@ -11,6 +11,13 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
     """Create OpenAPI skeleton."""
 
     def __init__(self, napp_path, tpl_path):
+        """Instantiate an OpenAPI object.
+
+        Args:
+            napp_path (string): Napp directory
+            tlp_path (string): File name from template
+
+        """
         self._napp_path = napp_path
         self._template = tpl_path / 'openapi.yml.template'
         self._api_file = napp_path / 'openapi.yml'

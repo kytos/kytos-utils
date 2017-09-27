@@ -4,6 +4,7 @@ Run "python3 setup --help-commands" to list all available commands and their
 descriptions.
 """
 import os
+import sys
 from abc import abstractmethod
 # Disabling checks due to https://github.com/PyCQA/pylint/issues/73
 from distutils.command.clean import clean  # pylint: disable=E0401,E0611
@@ -108,6 +109,7 @@ class Linter(SimpleCommand):
             print('No linter error found.')
         except CalledProcessError:
             print('Linter check failed. Fix the error(s) above and try again.')
+            sys.exit(-1)
 
 
 class DevelopMode(develop):

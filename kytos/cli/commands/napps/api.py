@@ -259,7 +259,7 @@ class NAppsAPI:
                     LOG.error('  Server error: %s - ', msg['error'])
 
     @classmethod
-    def prepare(cls, args):
+    def prepare(cls, args):  # pylint: disable=unused-argument
         """Create OpenAPI v3.0 spec skeleton."""
         mgr = NAppsManager()
         mgr.prepare()
