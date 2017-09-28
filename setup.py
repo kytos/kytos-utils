@@ -144,7 +144,7 @@ class DevelopMode(develop):
 
 
 setup(name='kytos-utils',
-      version='2017.2b1',
+      version='2017.2b2.dev0',
       description='Command line utilities to use with Kytos.',
       url='http://github.com/kytos/kytos-utils',
       author='Kytos Team',
