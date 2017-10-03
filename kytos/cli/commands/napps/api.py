@@ -63,7 +63,6 @@ class NAppsAPI:
                 LOG.info('  Enabling...')
                 mgr.enable()
             LOG.info('  Enabled.')
-            cls.enable_napps(mgr.dependencies())
         except (FileNotFoundError, PermissionError) as exception:
             LOG.error('  %s', exception)
 
@@ -130,16 +129,18 @@ class NAppsAPI:
         for napp in napps:
             mgr.set_napp(*napp)
             LOG.info('NApp %s:', mgr.napp_id)
+
             if not mgr.is_installed():
                 cls.install_napp(mgr)
-                LOG.info('  Installed.')
-            else:
-                LOG.warning('  Napp already Installed.')
+
+            if not mgr.is_enabled():
                 cls.enable_napp(mgr)
-            napp_dependencies = mgr.dependencies()
-            if napp_dependencies:
-                LOG.info('Installing Dependencies:')
-                cls.install_napps(napp_dependencies)
+                napp_dependencies = mgr.dependencies()
+                if napp_dependencies:
+                    LOG.info('  Installing Dependencies:')
+                    cls.install_napps(napp_dependencies)
+            else:
+                LOG.warning('  NApp already installed and enabled.')
 
     @classmethod
     def install_napp(cls, mgr):
@@ -148,13 +149,11 @@ class NAppsAPI:
             LOG.info('  Searching local NApp...')
             mgr.install_local()
             LOG.info('  Found and installed.')
-            cls.enable_napp(mgr)
         except FileNotFoundError:
             LOG.info('  Not found. Downloading from NApps Server...')
             try:
                 mgr.install_remote()
                 LOG.info('  Downloaded and installed.')
-                cls.enable_napp(mgr)
             except HTTPError as exception:
                 if exception.code == 404:
                     LOG.error('  NApp not found.')
