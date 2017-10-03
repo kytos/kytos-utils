@@ -153,7 +153,13 @@ setup(name='kytos-utils',
       test_suite='tests',
       include_package_data=True,
       scripts=['bin/kytos'],
-      install_requires=['docopt', 'requests', 'jinja2>=2.9.5', 'ruamel.yaml'],
+      install_requires=[
+          'docopt',
+          'requests',
+          'jinja2>=2.9.5',
+          'ruamel.yaml',
+          'kytos>2017.2b1'
+      ],
       extras_require={
           'dev': [
               'tox',
