@@ -22,6 +22,7 @@ The most commonly used kytos commands are:
    server     Start, Stop your Kytos Controller (Kytos)
    web        Manage the Web User Interface
    users      Commands to handle users from NApps server.
+   bug-report Display detailed information about the current environment.
 
 See 'kytos <command> -h|--help' for more information on a specific command.
 """
@@ -55,6 +56,9 @@ if __name__ == '__main__':
     elif command == 'web':
         from kytos.cli.commands.web.parser import parse
 
+        parse(argv)
+    elif command == 'bug-report':
+        from kytos.cli.commands.bug_report.parser import parse
         parse(argv)
     else:
         print("Error: Invalid syntax")
