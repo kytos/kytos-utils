@@ -60,9 +60,9 @@ class NAppsAPI:
         """Install one NApp using NAppManager object."""
         try:
             if not mgr.is_enabled():
-                LOG.info('  Enabling...')
+                LOG.info('    Enabling...')
                 mgr.enable()
-            LOG.info('  Enabled.')
+            LOG.info('    Enabled.')
         except (FileNotFoundError, PermissionError) as exception:
             LOG.error('  %s', exception)
 
@@ -128,7 +128,7 @@ class NAppsAPI:
         mgr = NAppsManager()
         for napp in napps:
             mgr.set_napp(*napp)
-            LOG.info('NApp %s:', mgr.napp_id)
+            LOG.info('  NApp %s:', mgr.napp_id)
 
             if not mgr.is_installed():
                 cls.install_napp(mgr)
@@ -137,30 +137,30 @@ class NAppsAPI:
                 cls.enable_napp(mgr)
                 napp_dependencies = mgr.dependencies()
                 if napp_dependencies:
-                    LOG.info('  Installing Dependencies:')
+                    LOG.info('Installing Dependencies:')
                     cls.install_napps(napp_dependencies)
             else:
-                LOG.warning('  NApp already installed and enabled.')
+                LOG.warning('  Napp already enabled.')
 
     @classmethod
     def install_napp(cls, mgr):
         """Install a NApp."""
         try:
-            LOG.info('  Searching local NApp...')
+            LOG.info('    Searching local NApp...')
             mgr.install_local()
-            LOG.info('  Found and installed.')
+            LOG.info('    Found and installed.')
         except FileNotFoundError:
-            LOG.info('  Not found. Downloading from NApps Server...')
+            LOG.info('    Not found. Downloading from NApps Server...')
             try:
                 mgr.install_remote()
-                LOG.info('  Downloaded and installed.')
+                LOG.info('    Downloaded and installed.')
             except HTTPError as exception:
                 if exception.code == 404:
-                    LOG.error('  NApp not found.')
+                    LOG.error('    NApp not found.')
                 else:
-                    LOG.error('  NApps Server error: %s', exception)
+                    LOG.error('    NApps Server error: %s', exception)
             except URLError as exception:
-                LOG.error('  NApps Server error: %s', str(exception.reason))
+                LOG.error('    NApps Server error: %s', str(exception.reason))
 
     @classmethod
     def search(cls, args):
