@@ -7,8 +7,6 @@ This is a log of changes made to the *kytos-utils* project.
 ********************************
 Added
 =====
-- Commands to handle the Kytos Controller
-  (`kytos controller <start/stop/status/restart>`).
 
 Changed
 =======
