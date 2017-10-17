@@ -158,7 +158,6 @@ setup(name='kytos-utils',
           'requests',
           'jinja2>=2.9.5',
           'ruamel.yaml',
-          'kytos>=2017.2b2.dev0'
       ],
       extras_require={
           'dev': [
