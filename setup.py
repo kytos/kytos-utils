@@ -144,7 +144,7 @@ class DevelopMode(develop):
 
 
 setup(name='kytos-utils',
-      version='2017.2b1',
+      version='2017.2b2.dev0',
       description='Command line utilities to use with Kytos.',
       url='http://github.com/kytos/kytos-utils',
       author='Kytos Team',
@@ -153,7 +153,13 @@ setup(name='kytos-utils',
       test_suite='tests',
       include_package_data=True,
       scripts=['bin/kytos'],
-      install_requires=['docopt', 'requests', 'jinja2>=2.9.5', 'ruamel.yaml'],
+      install_requires=[
+          'docopt',
+          'requests',
+          'jinja2>=2.9.5',
+          'ruamel.yaml',
+          'kytos>=2017.2b2.dev0'
+      ],
       extras_require={
           'dev': [
               'tox',
