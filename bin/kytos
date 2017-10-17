@@ -19,7 +19,7 @@ Options:
 
 The most commonly used kytos commands are:
    napps      Create, list, enable, install (and other actions) NApps.
-   server     Start, Stop your Kytos Controller (Kytos)
+   controller Start, Stop your Kytos Controller (Kytos)
 
 See 'kytos <command> -h|--help' for more information on a specific command.
 """
@@ -41,6 +41,9 @@ if __name__ == '__main__':
         parse(argv)
     elif command == 'users':
         from kytos.cli.commands.users.parser import parse
+        parse(argv)
+    elif command == 'controller':
+        from kytos.cli.commands.controller.parser import parse
         parse(argv)
     else:
         print("Error: Invalid syntax")
