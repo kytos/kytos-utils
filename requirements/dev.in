@@ -1,2 +1,2 @@
 -e .[dev]
-kytos>2017.2b1
+-e git+git://github.com/kytos/kytos.git#egg=kytos
