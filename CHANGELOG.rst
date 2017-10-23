@@ -25,11 +25,21 @@ Security
 
 [2017.2b2] - "chico" beta2 - 2017-10-20
 ***************************************
+Added
+=====
+- `kytos napps prepare` command to generate openapi.yml skeleton file
+
 Changed
 =======
 - Dependency installation/update for devs:
   `pip install -Ur requirements/dev.txt`. To use cloned kytos repos as
   dependencies, reinstall that repos with `pip install -e .` in the end.
+- Improvements on napps dependencies management.
+
+Fixed
+=====
+- Linter issues.
+- Unneeded running Kytosd requirement.
 
 [2017.2b1] - "chico" beta1 - 2017-09-19
 ***************************************
