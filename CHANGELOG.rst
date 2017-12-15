@@ -3,25 +3,13 @@ Change log
 ##########
 This is a log of changes made to the *kytos-utils* project.
 
-[UNRELEASED] - Under development
-********************************
+[2017.2rc1] - "chico" release candidate 1 - 2017-12-15
+******************************************************
 Added
 =====
+- `kytos web update` command to update the Kytos Web User Interface to the
+  latest version.
 
-Changed
-=======
-
-Deprecated
-==========
-
-Removed
-=======
-
-Fixed
-=====
-
-Security
-========
 
 [2017.2b2] - "chico" beta2 - 2017-12-01
 ***************************************
