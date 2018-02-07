@@ -3,7 +3,7 @@
   "username": "{{username}}",
   "name": "{{napp}}",
   "description": "{{description}}",
-  "version": "latest",
+  "version": "initial",
   "napp_dependencies": [],
   "license": "",
   "tags": [],
