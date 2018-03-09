@@ -3,6 +3,14 @@ Change log
 ##########
 This is a log of changes made to the *kytos-utils* project.
 
+[2018.1b1] - "dalva" beta1 - 2018-03-09
+**************************************
+Nothing has changed since 2017.2
+
+[2017.2] - "chico" stable - 2017-12-21
+**************************************
+Nothing has changed since 2017.2rc1
+
 [2017.2rc1] - "chico" release candidate 1 - 2017-12-15
 ******************************************************
 Added
