@@ -227,7 +227,7 @@ class NAppsAPI:
         name_w = max(len(n[1]) for n in napps)
         desc_w = max(len(n[2]) for n in napps)
         term_w = os.popen('stty size', 'r').read().split()[1]
-        remaining = int(term_w) - stat_w - name_w - 6
+        remaining = max(0, int(term_w) - stat_w - name_w - 6)
         desc_w = min(desc_w, remaining)
         widths = (stat_w, name_w, desc_w)
 
