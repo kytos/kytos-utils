@@ -364,9 +364,13 @@ class NAppsManager:
 
         templates_path = os.path.join(base, 'etc', 'skel', 'kytos',
                                       'napp-structure', 'username', 'napp')
+
+        ui_templates_path = os.path.join(templates_path, 'ui')
+
         username = None
         napp_name = None
         description = None
+
         print('--------------------------------------------------------------')
         print('Welcome to the bootstrap process of your NApp.')
         print('--------------------------------------------------------------')
@@ -404,8 +408,13 @@ class NAppsManager:
         with open(os.path.join(username, napp_name, '__init__.py'), 'w'):
             pass
 
+        #: Creating the ui directory structure
+        for section in ['k-info-panel', 'k-toolbar', 'k-action-menu']:
+            os.makedirs(os.path.join(username, napp_name, 'ui', section))
+
         #: Creating the other files based on the templates
         templates = os.listdir(templates_path)
+        templates.remove('ui')
         templates.remove('__init__.py')
         templates.remove('openapi.yml.template')
         for tmp in templates:
@@ -413,6 +422,16 @@ class NAppsManager:
                                  tmp.rsplit('.template')[0])
             with open(fname, 'w') as file:
                 content = cls.render_template(templates_path, tmp, context)
+                file.write(content)
+
+        templates = os.listdir(ui_templates_path)
+
+        for tmp in templates:
+            fname = os.path.join(username, napp_name, 'ui',
+                                 tmp.rsplit('.template')[0])
+
+            with open(fname, 'w') as file:
+                content = cls.render_template(ui_templates_path, tmp, context)
                 file.write(content)
 
         msg = '\nCongratulations! Your NApp have been bootstrapped!\nNow you '
@@ -542,7 +561,7 @@ class NAppsManager:
             default = False
         else:
             question = 'Do you have REST endpoints and wish to create an API' \
-                  ' skeleton in openapi.yml? (Y/n) '
+                ' skeleton in openapi.yml? (Y/n) '
             default = True
 
         while True:

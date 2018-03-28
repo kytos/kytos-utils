@@ -1,0 +1,16 @@
+Overview
+========
+
+Sometimes, it is necessary for a Napp to interact with the user, for
+through a graphical interface (not just API REST).
+
+We have developed `vue-js` based components (`Vuejs <https://vuejs.org>`_), so
+that you, developer, worry as little as possible about interface.
+
+In theory, you can during the construction of your NAPP UI, write any HTML code
+that Kytos will render. However, we strongly recommend that you use the
+components we have developed. The so-called ``k-*`` components.
+
+For more information visit the `documentation page`_.
+
+.. _documentation page: http://docs.kytos.io/
