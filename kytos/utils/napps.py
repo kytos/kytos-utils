@@ -392,7 +392,7 @@ class NAppsManager:
         description = input(msg)
         if not description:
             # pylint: disable=fixme
-            description = '# TODO: <<<< Insert here your NApp description >>>>'
+            description = '# TODO: <<<< Insert your NApp description here >>>>'
             # pylint: enable=fixme
 
         context = {'username': username, 'napp': napp_name,
@@ -434,7 +434,7 @@ class NAppsManager:
                 content = cls.render_template(ui_templates_path, tmp, context)
                 file.write(content)
 
-        msg = '\nCongratulations! Your NApp have been bootstrapped!\nNow you '
+        msg = '\nCongratulations! Your NApp has been bootstrapped!\nNow you '
         msg += 'can go to the directory {}/{} and begin to code your NApp.'
         print(msg.format(username, napp_name))
         print('Have fun!')
