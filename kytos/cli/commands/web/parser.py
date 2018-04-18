@@ -4,6 +4,7 @@ You are at the "web" command.
 
 Usage:
        kytos web update
+       kytos web update <version>
 
 Options:
 
@@ -35,4 +36,4 @@ def parse(argv):
 def call(subcommand, args):  # pylint: disable=unused-argument
     """Call a subcommand passing the args."""
     func = getattr(WebAPI, subcommand)
-    func()
+    func(args)
