@@ -13,10 +13,14 @@ class WebAPI:  # pylint: disable=too-few-public-methods
     """An API for the command-line interface."""
 
     @classmethod
-    def update(cls):
+    def update(cls, args):
         """Call the method to update the Web UI."""
         kytos_api = KytosConfig().config.get('kytos', 'api')
-        url = f"{kytos_api}api/kytos/core/web/update/"
+        url = f"{kytos_api}api/kytos/core/web/update"
+        version = args["<version>"]
+        if version:
+            url += f"/{version}"
+
         try:
             result = requests.post(url)
         except(HTTPError, URLError, requests.exceptions.ConnectionError):
