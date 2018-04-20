@@ -3,6 +3,19 @@ Change log
 ##########
 This is a log of changes made to the *kytos-utils* project.
 
+[2018.1b2] - "dalva" beta2 - 2018-04-20
+**************************************
+Added
+=====
+- `kytos napps create` will create the ui folder [`ui/k-toolbar`,
+  `ui/k-menu-bar`, `k-info-panel`] when creating a new Napp structure
+- `kytos web update <version>` command to update the Kytos Web User Interface
+  with a specific version
+
+Fixed
+=====
+- Fix some docstring and comments
+
 [2018.1b1] - "dalva" beta1 - 2018-03-09
 **************************************
 Nothing has changed since 2017.2
