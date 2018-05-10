@@ -236,7 +236,7 @@ class NAppsAPI:
         print(header.format('Status', 'NApp ID', 'Description'))
         print('=+='.join('=' * w for w in widths))
         for user, name, desc in napps:
-            desc = (desc[:desc_w-3] + '...') if len(desc) > desc_w else desc
+            desc = (desc[:desc_w - 3] + '...') if len(desc) > desc_w else desc
             print(row.format(user, name, desc))
 
         print('\nStatus: (i)nstalled, (e)nabled\n')
@@ -263,3 +263,9 @@ class NAppsAPI:
         """Create OpenAPI v3.0 spec skeleton."""
         mgr = NAppsManager()
         mgr.prepare()
+
+    @classmethod
+    def reload(cls, args):  # pylint: disable=unused-argument
+        """Uninstall NApps and reinstall."""
+        cls.uninstall(args)
+        cls.install(args)

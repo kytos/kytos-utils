@@ -10,6 +10,7 @@ Usage:
        kytos napps list
        kytos napps install   <napp>...
        kytos napps uninstall <napp>...
+       kytos napps reload    <napp>...
        kytos napps enable    (all| <napp>...)
        kytos napps disable   (all| <napp>...)
        kytos napps search    <pattern>
@@ -28,6 +29,7 @@ Common napps subcommands:
   list          List all NApps installed into your system.
   install       Install a local or remote NApp into a controller.
   uninstall     Remove a NApp from your controller.
+  reload        Remove a NApp from your controller and reinstall.
   enable        Enable a installed NApp.
   disable       Disable a NApp.
   search        Search for NApps in NApps Server.
