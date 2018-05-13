@@ -240,7 +240,7 @@ class NAppsAPI:
         print(header.format('Status', 'NApp ID', 'Description'))
         print('=+='.join('=' * w for w in widths))
         for user, name, desc in napps:
-            desc = (desc[:desc_w-3] + '...') if len(desc) > desc_w else desc
+            desc = (desc[:desc_w - 3] + '...') if len(desc) > desc_w else desc
             print(row.format(user, name, desc))
 
         print('\nStatus: (i)nstalled, (e)nabled\n')
@@ -267,3 +267,22 @@ class NAppsAPI:
         """Create OpenAPI v3.0 spec skeleton."""
         mgr = NAppsManager()
         mgr.prepare()
+
+    @classmethod
+    def reload(cls, args):
+        """Reload NApps code."""
+        LOG.info('Reloading NApps...')
+        mgr = NAppsManager()
+
+        try:
+            if args['all']:
+                mgr.reload(None)
+            else:
+                napps = args['<napp>']
+                mgr.reload(napps)
+
+            LOG.info('\tReloaded.')
+        except requests.HTTPError as exception:
+            if exception.response.status_code != 200:
+                msg = json.loads(exception.response.content)
+                LOG.error('\tServer error: %s - ', msg['error'])

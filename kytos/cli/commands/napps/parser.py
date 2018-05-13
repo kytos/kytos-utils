@@ -12,6 +12,7 @@ Usage:
        kytos napps uninstall <napp>...
        kytos napps enable    (all| <napp>...)
        kytos napps disable   (all| <napp>...)
+       kytos napps reload    (all| <napp>...)
        kytos napps search    <pattern>
        kytos napps -h | --help
 
@@ -30,6 +31,7 @@ Common napps subcommands:
   uninstall     Remove a NApp from your controller.
   enable        Enable a installed NApp.
   disable       Disable a NApp.
+  reload        Reload NApps code.
   search        Search for NApps in NApps Server.
 
 """

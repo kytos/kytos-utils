@@ -573,4 +573,17 @@ class NAppsManager:
             if answer.lower() in ['n', 'no']:
                 return False
 
+    def reload(self, napps=None):
+        """Reload a NApp or all NApps.
+
+        Args:
+            napps (list): NApp list to be reloaded.
+        Raises:
+            requests.HTTPError: When there's a server error.
+
+        """
+        client = NAppsClient(self._config)
+        client.reload_napps(napps)
+
+
 # pylint: enable=too-many-instance-attributes,too-many-public-methods

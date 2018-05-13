@@ -3,6 +3,28 @@ Change log
 ##########
 This is a log of changes made to the *kytos-utils* project.
 
+UNRELEASED - Under development
+******************************
+Added
+=====
+- `kytos napps reload <username>/<napp_name>` will reload the NApp code
+- `kytos napps reload all` command to update the NApp code of all NApps
+
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+
+Fixed
+=====
+
+Security
+========
+
 [2018.1b2] - "dalva" beta2 - 2018-04-20
 **************************************
 Added
