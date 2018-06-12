@@ -41,7 +41,9 @@ class NAppsAPI:
         if mgr.is_enabled():
             LOG.info('  Disabling...')
             mgr.disable()
-        LOG.info('  Disabled.')
+            LOG.info('  Disabled.')
+        else:
+            LOG.error("  NApp isn't enabled.")
 
     @classmethod
     def enable(cls, args):
@@ -111,7 +113,9 @@ class NAppsAPI:
                     cls.disable_napp(mgr)
                 LOG.info('  Uninstalling...')
                 mgr.uninstall()
-            LOG.info('  Uninstalled.')
+                LOG.info('  Uninstalled.')
+            else:
+                LOG.error("  NApp isn't installed.")
 
     @classmethod
     def install(cls, args):
