@@ -7,8 +7,6 @@ UNRELEASED - Under development
 ******************************
 Added
 =====
-- `kytos napps reload <username>/<napp_name>` will reload the NApp code
-- `kytos napps reload all` command to update the NApp code of all NApps
 
 Changed
 =======
@@ -24,6 +22,17 @@ Fixed
 
 Security
 ========
+
+[2018.1b3] - "dalva" beta3 - 2018-06-15
+**************************************
+Added
+=====
+- `kytos napps reload <username>/<napp_name>` will reload the NApp code
+- `kytos napps reload all` command to update the NApp code of all NApps
+
+Changed
+=======
+- Improved log error messages
 
 [2018.1b2] - "dalva" beta2 - 2018-04-20
 **************************************
