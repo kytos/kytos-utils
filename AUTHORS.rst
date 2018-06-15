@@ -10,7 +10,8 @@ Authors
 Contributors
 ------------
 
-- Rogerio Motitsuki <rogerio.motitsuki@gmail.com>
-- Humberto Diógenes <hdiogenes@gmail.com>
-- Luan Gonçalves <luanlg.cco@gmail.com>
-- Erick Vermot <erick.vermot@gmail.com>
+- Rogerio Motitsuki <rogerio.motitsuki AT gmail DOT com>
+- Humberto Diógenes <hdiogenes AT gmail DOT com>
+- Luan Gonçalves <luanlg.cco AT gmail DOT com>
+- Erick Vermot <erick.vermot AT gmail DOT com>
+- Vinicius Arcanjo <viniciusarcanjov AT gmail DOT com>
