@@ -78,6 +78,34 @@ class NAppsClient(CommonClient):
                                  username, name, res.status_code, res.reason)
         return json.loads(res.content)
 
+    def reload_napps(self, napps=None):
+        """Reload a specific NApp or all Napps.
+
+        Args:
+            napp (list): NApp list to be reload.
+        Raises:
+            requests.HTTPError: When there's a server error.
+
+        """
+        if napps is None:
+            napps = []
+            api = self._config.get('kytos', 'api')
+            endpoint = os.path.join(api, 'api', 'kytos', 'core', 'reload',
+                                    'all')
+            response = self.make_request(endpoint)
+
+        for napp in napps:
+            api = self._config.get('kytos', 'api')
+            endpoint = os.path.join(api, 'api', 'kytos', 'core', 'reload',
+                                    napp[0], napp[1])
+            response = self.make_request(endpoint)
+
+        if response.status_code != 200:
+            raise KytosException('Error reloading the napp: Module not founded'
+                                 ' or could not be imported')
+
+        return response.content
+
     @kytos_auth
     def upload_napp(self, metadata, package):
         """Upload the napp from the current directory to the napps server."""
