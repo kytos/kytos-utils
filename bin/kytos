@@ -21,6 +21,7 @@ The most commonly used kytos commands are:
    napps      Create, list, enable, install (and other actions) NApps.
    server     Start, Stop your Kytos Controller (Kytos)
    web        Manage the Web User Interface
+   users      Commands to handle users from NApps server.
 
 See 'kytos <command> -h|--help' for more information on a specific command.
 """
