@@ -23,8 +23,14 @@ Fixed
 Security
 ========
 
+[2018.1rc1] - "dalva" release candidate - 2018-06-29
+****************************************************
+Fixed
+=====
+- Fixed small bug
+
 [2018.1b3] - "dalva" beta3 - 2018-06-15
-**************************************
+***************************************
 Added
 =====
 - `kytos napps reload <username>/<napp_name>` will reload the NApp code
