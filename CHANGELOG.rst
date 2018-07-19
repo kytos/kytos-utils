@@ -23,6 +23,12 @@ Fixed
 Security
 ========
 
+[2018.1] - "dalva" release stable - 2018-07-19
+****************************************************
+Fixed
+=====
+- Fix BASE_ENV using `kytos napps prepare`.
+
 [2018.1rc1] - "dalva" release candidate - 2018-06-29
 ****************************************************
 Fixed
