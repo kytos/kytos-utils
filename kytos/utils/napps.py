@@ -16,6 +16,7 @@ from ruamel.yaml import YAML
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 from kytos.utils.openapi import OpenAPI
+from kytos.utils.settings import BASE_ENV
 
 LOG = logging.getLogger(__name__)
 
@@ -360,9 +361,7 @@ class NAppsManager:
         This will create, on the current folder, a clean structure of a NAPP,
         filling some contents on this structure.
         """
-        base = os.environ.get('VIRTUAL_ENV', '/')
-
-        templates_path = os.path.join(base, 'etc', 'skel', 'kytos',
+        templates_path = os.path.join(BASE_ENV, 'etc', 'skel', 'kytos',
                                       'napp-structure', 'username', 'napp')
 
         ui_templates_path = os.path.join(templates_path, 'ui')
@@ -547,8 +546,7 @@ class NAppsManager:
         """Prepare NApp to be uploaded by creating openAPI skeleton."""
         if cls._ask_openapi():
             napp_path = Path()
-            prefix = Path(sys.prefix)
-            tpl_path = prefix / 'etc/skel/kytos/napp-structure/username/napp'
+            tpl_path = BASE_ENV / 'etc/skel/kytos/napp-structure/username/napp'
             OpenAPI(napp_path, tpl_path).render_template()
             print('Please, update your openapi.yml file.')
             sys.exit()
