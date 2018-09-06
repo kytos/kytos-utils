@@ -23,6 +23,10 @@ Fixed
 Security
 ========
 
+[2018.2b1] - "ernesto" beta1 - 2018-09-06
+*****************************************
+Nothing has changed since 2018.1rc1
+
 [2018.1rc1] - "dalva" release candidate - 2018-06-29
 ****************************************************
 Fixed
