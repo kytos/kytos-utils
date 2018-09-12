@@ -399,13 +399,12 @@ class NAppsManager:
 
         #: Creating the directory structure (username/napp_name)
         os.makedirs(username, exist_ok=True)
+
         #: Creating ``__init__.py`` files
-        with open(os.path.join(username, '__init__.py'), 'w'):
-            pass
+        with open(os.path.join(username, '__init__.py'), 'w') as init_file:
+            init_file.write(f'"""Napps for the user {username}.""""')
 
         os.makedirs(os.path.join(username, napp_name))
-        with open(os.path.join(username, napp_name, '__init__.py'), 'w'):
-            pass
 
         #: Creating the ui directory structure
         for section in ['k-info-panel', 'k-toolbar', 'k-action-menu']:
@@ -414,7 +413,6 @@ class NAppsManager:
         #: Creating the other files based on the templates
         templates = os.listdir(templates_path)
         templates.remove('ui')
-        templates.remove('__init__.py')
         templates.remove('openapi.yml.template')
         for tmp in templates:
             fname = os.path.join(username, napp_name,

@@ -25,7 +25,7 @@ NAPP_PATH = os.path.join(USERNAME_PATH, 'napp')
 ETC_FILES = [(os.path.join(BASE_ENV, USERNAME_PATH),
               [os.path.join(USERNAME_PATH, '__init__.py')]),
              (os.path.join(BASE_ENV, NAPP_PATH),
-              [os.path.join(NAPP_PATH, '__init__.py'),
+              [os.path.join(NAPP_PATH, '__init__.py.template'),
                os.path.join(NAPP_PATH, 'kytos.json.template'),
                os.path.join(NAPP_PATH, 'openapi.yml.template'),
                os.path.join(NAPP_PATH, 'main.py.template'),
