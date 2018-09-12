@@ -84,7 +84,7 @@ class NAppsAPI:
     @classmethod
     def create(cls, args):  # pylint: disable=unused-argument
         """Bootstrap a basic NApp structure on the current folder."""
-        NAppsManager.create_napp()
+        NAppsManager.create_napp(meta_package=args.get('--meta', False))
 
     @classmethod
     def upload(cls, args):  # pylint: disable=unused-argument

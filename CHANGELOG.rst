@@ -7,6 +7,7 @@ UNRELEASED - Under development
 ******************************
 Added
 =====
+- Added flag --meta to create a new NApp with meta-package structure.
 
 Changed
 =======
