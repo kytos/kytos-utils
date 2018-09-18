@@ -355,7 +355,7 @@ class NAppsManager:
         return Path(tmp)
 
     @classmethod
-    def create_napp(cls):
+    def create_napp(cls, meta_package=False):
         """Bootstrap a basic NApp strucutre for you to develop your NApp.
 
         This will create, on the current folder, a clean structure of a NAPP,
@@ -407,21 +407,38 @@ class NAppsManager:
         with open(os.path.join(username, napp_name, '__init__.py'), 'w'):
             pass
 
-        #: Creating the ui directory structure
-        for section in ['k-info-panel', 'k-toolbar', 'k-action-menu']:
-            os.makedirs(os.path.join(username, napp_name, 'ui', section))
-
         #: Creating the other files based on the templates
         templates = os.listdir(templates_path)
         templates.remove('ui')
         templates.remove('__init__.py')
         templates.remove('openapi.yml.template')
+
+        if meta_package:
+            templates.remove('main.py.template')
+            templates.remove('settings.py.template')
+
         for tmp in templates:
             fname = os.path.join(username, napp_name,
                                  tmp.rsplit('.template')[0])
             with open(fname, 'w') as file:
                 content = cls.render_template(templates_path, tmp, context)
                 file.write(content)
+
+        if not meta_package:
+            NAppsManager.create_ui_structure(username, napp_name,
+                                             ui_templates_path, context)
+
+        msg = '\nCongratulations! Your NApp has been bootstrapped!\nNow you '
+        msg += 'can go to the directory {}/{} and begin to code your NApp.'
+        print(msg.format(username, napp_name))
+        print('Have fun!')
+
+    @classmethod
+    def create_ui_structure(cls, username, napp_name, ui_templates_path,
+                            context):
+        """Create the ui directory structure."""
+        for section in ['k-info-panel', 'k-toolbar', 'k-action-menu']:
+            os.makedirs(os.path.join(username, napp_name, 'ui', section))
 
         templates = os.listdir(ui_templates_path)
 
@@ -430,13 +447,9 @@ class NAppsManager:
                                  tmp.rsplit('.template')[0])
 
             with open(fname, 'w') as file:
-                content = cls.render_template(ui_templates_path, tmp, context)
+                content = cls.render_template(ui_templates_path, tmp,
+                                              context)
                 file.write(content)
-
-        msg = '\nCongratulations! Your NApp has been bootstrapped!\nNow you '
-        msg += 'can go to the directory {}/{} and begin to code your NApp.'
-        print(msg.format(username, napp_name))
-        print('Have fun!')
 
     @staticmethod
     def _check_module(folder):

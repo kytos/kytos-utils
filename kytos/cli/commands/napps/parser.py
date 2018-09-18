@@ -3,7 +3,7 @@
 You are at the "napps" command.
 
 Usage:
-       kytos napps create
+       kytos napps create [--meta]
        kytos napps prepare
        kytos napps upload
        kytos napps delete    <napp>...
