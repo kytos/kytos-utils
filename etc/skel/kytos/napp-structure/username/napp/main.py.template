@@ -25,7 +25,7 @@ class Main(KytosNApp):
         pass
 
     def execute(self):
-        """This method is executed right after the setup method execution.
+        """Run after the setup method execution.
 
         You can also use this method in loop mode if you add to the above setup
         method a line like the following example:
@@ -35,8 +35,9 @@ class Main(KytosNApp):
         pass
 
     def shutdown(self):
-        """This method is executed when your napp is unloaded.
+        """Run when your napp is unloaded.
 
         If you have some cleanup procedure, insert it here.
         """
         pass
+
