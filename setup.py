@@ -4,6 +4,7 @@ Run "python3 setup --help-commands" to list all available commands and their
 descriptions.
 """
 import os
+import shutil
 import sys
 from abc import abstractmethod
 # Disabling checks due to https://github.com/PyCQA/pylint/issues/73
@@ -12,6 +13,7 @@ from subprocess import CalledProcessError, call, check_call
 
 from setuptools import Command, find_packages, setup
 from setuptools.command.develop import develop
+from setuptools.command.install import install
 
 if 'VIRTUAL_ENV' in os.environ:
     BASE_ENV = os.environ['VIRTUAL_ENV']
@@ -112,20 +114,12 @@ class Linter(SimpleCommand):
             sys.exit(-1)
 
 
-class DevelopMode(develop):
-    """Recommended setup for kytos-utils developers.
-
-    Instead of copying the files to the expected directories, a symlink is
-    created on the system aiming the current source code.
-    """
-
-    def run(self):
-        """Install the package in a developer mode."""
-        super().run()
-        self._create_data_files_directory()
+class CommonInstall:
+    """Class with common procedures to install the package."""
 
     @staticmethod
-    def _create_data_files_directory():
+    def _create_data_files_directory(symlink=False):
+        """Install data_files in the /etc directory."""
         current_directory = os.path.abspath(os.path.dirname(__file__))
 
         etc_dir = os.path.join(BASE_ENV, 'etc')
@@ -140,7 +134,32 @@ class DevelopMode(develop):
         dst = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
 
         if not os.path.exists(dst):
-            os.symlink(src, dst)
+            if symlink is True:
+                os.symlink(src, dst)
+            else:
+                shutil.copytree(src, dst)
+
+
+class InstallMode(install, CommonInstall):
+    """Procedures to install the package."""
+
+    def run(self):
+        """Install the package in a developer mode."""
+        super().run()
+        self._create_data_files_directory()
+
+
+class DevelopMode(develop, CommonInstall):
+    """Recommended setup for kytos-utils developers.
+
+    Instead of copying the files to the expected directories, a symlink is
+    created on the system aiming the current source code.
+    """
+
+    def run(self):
+        """Install the package in a developer mode."""
+        super().run()
+        self._create_data_files_directory(True)
 
 
 setup(name='kytos-utils',
@@ -167,13 +186,13 @@ setup(name='kytos-utils',
               'yala'
           ]
       },
-      data_files=ETC_FILES,
       packages=find_packages(exclude=['tests']),
       cmdclass={
           'ci': CITest,
           'clean': Cleaner,
           'coverage': TestCoverage,
           'develop': DevelopMode,
+          'install': InstallMode,
           'lint': Linter
       },
       zip_safe=False)
