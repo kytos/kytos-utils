@@ -7,7 +7,6 @@ UNRELEASED - Under development
 ******************************
 Added
 =====
-- Added flag --meta to create a new NApp with meta-package structure.
 
 Changed
 =======
@@ -23,6 +22,17 @@ Fixed
 
 Security
 ========
+
+[2018.2b2] - "ernesto" beta2 - 2018-10-15
+*****************************************
+Added
+=====
+ - Added flag --meta to create a new NApp with meta-package structure.
+
+Fixed
+=====
+ - Fixed bug when creating NApp (#190)
+ - Fixed some linter erros
 
 [2018.2b1] - "ernesto" beta1 - 2018-09-06
 *****************************************
