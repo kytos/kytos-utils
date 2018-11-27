@@ -7,6 +7,7 @@ from urllib.error import HTTPError, URLError
 
 import requests
 
+from kytos.utils.exceptions import KytosException
 from kytos.utils.napps import NAppsManager
 
 LOG = logging.getLogger(__name__)
@@ -135,20 +136,29 @@ class NAppsAPI:
             LOG.info('  NApp %s:', mgr.napp_id)
 
             if not mgr.is_installed():
-                cls.install_napp(mgr)
-
-            if not mgr.is_enabled():
-                cls.enable_napp(mgr)
-                napp_dependencies = mgr.dependencies()
-                if napp_dependencies:
-                    LOG.info('Installing Dependencies:')
-                    cls.install_napps(napp_dependencies)
+                try:
+                    cls.install_napp(mgr)
+                    if not mgr.is_enabled():
+                        cls.enable_napp(mgr)
+                        napp_dependencies = mgr.dependencies()
+                        if napp_dependencies:
+                            LOG.info('Installing Dependencies:')
+                            cls.install_napps(napp_dependencies)
+                    else:
+                        LOG.warning('  Napp already enabled.')
+                except KytosException:
+                    continue
             else:
                 LOG.warning('  Napp already enabled.')
 
     @classmethod
     def install_napp(cls, mgr):
-        """Install a NApp."""
+        """Install a NApp.
+
+        Raises:
+            KytosException: If a NApp hasn't been found.
+
+        """
         try:
             LOG.info('    Searching local NApp...')
             mgr.install_local()
@@ -158,6 +168,7 @@ class NAppsAPI:
             try:
                 mgr.install_remote()
                 LOG.info('    Downloaded and installed.')
+                return
             except HTTPError as exception:
                 if exception.code == 404:
                     LOG.error('    NApp not found.')
@@ -165,6 +176,7 @@ class NAppsAPI:
                     LOG.error('    NApps Server error: %s', exception)
             except URLError as exception:
                 LOG.error('    NApps Server error: %s', str(exception.reason))
+            raise KytosException("NApp not found.")
 
     @classmethod
     def search(cls, args):
