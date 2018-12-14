@@ -23,6 +23,14 @@ Fixed
 Security
 ========
 
+[2018.2b3] - "ernesto" beta3 - 2018-11-14
+*****************************************
+Fixed
+=====
+ - Enhanced error handling when installing invalid NApps
+ - Fixed Kytos skel location to be compliant with Debian policy
+
+
 [2018.2b2] - "ernesto" beta2 - 2018-10-15
 *****************************************
 Added
