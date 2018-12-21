@@ -172,13 +172,8 @@ class NAppsManager:
 
     def disable(self):
         """Disable a NApp if it is enabled."""
-        enabled = self.enabled_dir()
-        try:
-            enabled.unlink()
-            if self._controller is not None:
-                self._controller.unload_napp(self.user, self.napp)
-        except FileNotFoundError:
-            pass  # OK, it was already disabled
+        core_napps_manager = CoreNAppsManager(base_path=self._enabled)
+        core_napps_manager.disable(self.user, self.napp)
 
     def enabled_dir(self):
         """Return the enabled dir from current napp."""
