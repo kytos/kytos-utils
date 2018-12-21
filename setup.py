@@ -20,9 +20,9 @@ if 'VIRTUAL_ENV' in os.environ:
 else:
     BASE_ENV = '/'
 
-ETC_KYTOS = 'etc/kytos'
-ETC_KYTOS_SKEL = os.path.join(ETC_KYTOS, 'skel')
-USERNAME_PATH = os.path.join(ETC_KYTOS_SKEL, 'napp-structure/username')
+SKEL_PATH = 'etc/kytos'
+KYTOS_SKEL_PATH = os.path.join(SKEL_PATH, 'skel')
+USERNAME_PATH = os.path.join(KYTOS_SKEL_PATH, 'napp-structure/username')
 NAPP_PATH = os.path.join(USERNAME_PATH, 'napp')
 ETC_FILES = [(os.path.join(BASE_ENV, USERNAME_PATH),
               [os.path.join(USERNAME_PATH, '__init__.py')]),
@@ -126,12 +126,12 @@ class CommonInstall:
         if not os.path.exists(etc_dir):
             os.mkdir(etc_dir)
 
-        dst_dir = os.path.join(BASE_ENV, ETC_KYTOS)
+        dst_dir = os.path.join(BASE_ENV, SKEL_PATH)
         if not os.path.exists(dst_dir):
             os.mkdir(dst_dir)
 
-        src = os.path.join(current_directory, ETC_KYTOS_SKEL)
-        dst = os.path.join(BASE_ENV, ETC_KYTOS_SKEL)
+        src = os.path.join(current_directory, KYTOS_SKEL_PATH)
+        dst = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
 
         if not os.path.exists(dst):
             if symlink is True:
