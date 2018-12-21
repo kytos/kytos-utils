@@ -13,6 +13,7 @@ from random import randint
 from jinja2 import Environment, FileSystemLoader
 from ruamel.yaml import YAML
 
+from kytos.core.napps.manager import NAppsManager as CoreNAppsManager
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 from kytos.utils.openapi import OpenAPI
@@ -171,13 +172,8 @@ class NAppsManager:
 
     def disable(self):
         """Disable a NApp if it is enabled."""
-        enabled = self.enabled_dir()
-        try:
-            enabled.unlink()
-            if self._controller is not None:
-                self._controller.unload_napp(self.user, self.napp)
-        except FileNotFoundError:
-            pass  # OK, it was already disabled
+        core_napps_manager = CoreNAppsManager(base_path=self._enabled)
+        core_napps_manager.disable(self.user, self.napp)
 
     def enabled_dir(self):
         """Return the enabled dir from current napp."""
@@ -195,24 +191,8 @@ class NAppsManager:
             PermissionError: No filesystem permission to enable NApp.
 
         """
-        enabled = self.enabled_dir()
-        installed = self.installed_dir()
-
-        if not installed.is_dir():
-            raise FileNotFoundError('Install NApp {} first.'.format(
-                self.napp_id))
-        elif not enabled.exists():
-            self._check_module(enabled.parent)
-            try:
-                # Create symlink
-                enabled.symlink_to(installed)
-                if self._controller is not None:
-                    self._controller.load_napp(self.user, self.napp)
-            except FileExistsError:
-                pass  # OK, NApp was already enabled
-            except PermissionError:
-                raise PermissionError('Permission error on enabling NApp. Try '
-                                      'with sudo.')
+        core_napps_manager = CoreNAppsManager(base_path=self._enabled)
+        core_napps_manager.enable(self.user, self.napp)
 
     def is_enabled(self):
         """Whether a NApp is enabled."""
@@ -356,7 +336,7 @@ class NAppsManager:
 
     @classmethod
     def create_napp(cls, meta_package=False):
-        """Bootstrap a basic NApp strucutre for you to develop your NApp.
+        """Bootstrap a basic NApp structure for you to develop your NApp.
 
         This will create, on the current folder, a clean structure of a NAPP,
         filling some contents on this structure.
@@ -368,7 +348,6 @@ class NAppsManager:
 
         username = None
         napp_name = None
-        description = None
 
         print('--------------------------------------------------------------')
         print('Welcome to the bootstrap process of your NApp.')
