@@ -127,7 +127,7 @@ class CommonInstall:
         if not os.path.exists(etc_dir):
             os.mkdir(etc_dir)
 
-        dst_dir = os.path.join(BASE_ENV, SKEL_PATH)
+        dst_dir = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
         if not os.path.exists(dst_dir):
             print('*****', "mkdir", etc_kytos)
             os.mkdir(dst_dir)
