@@ -123,25 +123,25 @@ class CommonInstall:
         current_directory = os.path.abspath(os.path.dirname(__file__))
 
         etc_dir = os.path.join(BASE_ENV, 'etc')
-        print(etc_kytos)
+        print('*******', etc_kytos)
         if not os.path.exists(etc_dir):
             os.mkdir(etc_dir)
 
         dst_dir = os.path.join(BASE_ENV, SKEL_PATH)
         if not os.path.exists(dst_dir):
-            print("mkdir", etc_kytos)
+            print('*****', "mkdir", etc_kytos)
             os.mkdir(dst_dir)
 
         src = os.path.join(current_directory, KYTOS_SKEL_PATH)
         dst = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
 
-        print('src', src, 'dst', dst)
+        print('*****', 'src', src, 'dst', dst)
         if not os.path.exists(dst):
             if symlink is True:
-                print('symlink', dst)
+                print('*****', 'symlink', dst)
                 os.symlink(src, dst)
             else:
-                print('copytree', src, dst)
+                print('*****', 'copytree', src, dst)
                 shutil.copytree(src, dst)
 
 
