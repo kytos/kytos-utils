@@ -20,8 +20,8 @@ if 'VIRTUAL_ENV' in os.environ:
 else:
     BASE_ENV = '/'
 
-SKEL_PATH = 'etc/kytos'
-KYTOS_SKEL_PATH = os.path.join(SKEL_PATH, 'skel')
+SKEL_PATH = 'etc/skel'
+KYTOS_SKEL_PATH = os.path.join(SKEL_PATH, 'kytos')
 USERNAME_PATH = os.path.join(KYTOS_SKEL_PATH, 'napp-structure/username')
 NAPP_PATH = os.path.join(USERNAME_PATH, 'napp')
 ETC_FILES = [(os.path.join(BASE_ENV, USERNAME_PATH),
@@ -55,7 +55,7 @@ class SimpleCommand(Command):
         pass
 
     def initialize_options(self):
-        """Set default values for options."""
+        """Set defa ult values for options."""
         pass
 
     def finalize_options(self):
