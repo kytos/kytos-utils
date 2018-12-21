@@ -24,10 +24,10 @@ class WebAPI:  # pylint: disable=too-few-public-methods
         try:
             result = requests.post(url)
         except(HTTPError, URLError, requests.exceptions.ConnectionError):
-            LOG.error(f"Can't connect to the server: {kytos_api}")
+            LOG.error("Can't connect to server: %s", kytos_api)
             return
 
         if result.status_code != 200:
-            LOG.info(f"Error while update web ui: {result.content}")
+            LOG.info("Error while updating web ui: %s", result.content)
         else:
             LOG.info("Web UI updated.")

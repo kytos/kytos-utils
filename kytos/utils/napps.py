@@ -380,15 +380,14 @@ class NAppsManager:
         print(' - at least three characters')
         print('--------------------------------------------------------------')
         print('')
-        msg = 'Please, insert your NApps Server username: '
         while not cls.valid_name(username):
-            username = input(msg)
+            username = input('Please, insert your NApps Server username: ')
 
         while not cls.valid_name(napp_name):
             napp_name = input('Please, insert your NApp name: ')
 
-        msg = 'Please, insert a brief description for your NApp [optional]: '
-        description = input(msg)
+        description = input('Please, insert a brief description for your'
+                            'NApp [optional]: ')
         if not description:
             # pylint: disable=fixme
             description = '# TODO: <<<< Insert your NApp description here >>>>'
@@ -426,9 +425,10 @@ class NAppsManager:
             NAppsManager.create_ui_structure(username, napp_name,
                                              ui_templates_path, context)
 
-        msg = '\nCongratulations! Your NApp has been bootstrapped!\nNow you '
-        msg += 'can go to the directory {}/{} and begin to code your NApp.'
-        print(msg.format(username, napp_name))
+        print()
+        print(f'Congratulations! Your NApp has been bootstrapped!\nNow you '
+               'can go to the directory {username}/{napp_name} and begin to '
+               'code your NApp.')
         print('Have fun!')
 
     @classmethod
