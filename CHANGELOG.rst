@@ -23,6 +23,11 @@ Fixed
 Security
 ========
 
+[2018.2] - "ernesto" - 2018-12-30
+*********************************
+
+ - This the "ernesto" stable release, based on our last pre-releases.
+
 [2018.2rc1] - "ernesto" rc - 2018-12-21
 *****************************************
 Added
