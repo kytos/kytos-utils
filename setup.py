@@ -20,6 +20,7 @@ if 'VIRTUAL_ENV' in os.environ:
 else:
     BASE_ENV = '/'
 
+ETC_KYTOS = 'etc/kytos'
 KYTOS_SKEL_PATH = 'etc/kytos/skel'
 USERNAME_PATH = os.path.join(KYTOS_SKEL_PATH, 'napp-structure/username')
 NAPP_PATH = os.path.join(USERNAME_PATH, 'napp')
@@ -121,20 +122,23 @@ class CommonInstall:
         """Install data_files in the /etc directory."""
         current_directory = os.path.abspath(os.path.dirname(__file__))
 
-        etc_dir = os.path.join(BASE_ENV, 'etc')
+        etc_kytos = os.path.join(BASE_ENV, ETC_KYTOS)
 
-        if not os.path.exists(etc_dir):
-            os.makedirs(etc_dir)
-
-        dst_dir = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
-        if not os.path.exists(dst_dir):
-            os.makedirs(dst_dir)
+        if not os.path.exists(etc_kytos):
+            os.makedirs(etc_kytos)
 
         src = os.path.join(current_directory, KYTOS_SKEL_PATH)
         dst = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
 
-        if not os.path.exists(dst):
-            if symlink is True:
+        if os.path.exists(dst):
+            if not os.listdir(dst):
+                # Path already exists but it's empty, so we'll populate it
+                # We remove it first to avoid an exception from copytree
+                os.rmdir(dst)
+                shutil.copytree(src, dst)
+        else:
+            # It doesn't exist yet, so we should symlink or copy contents
+            if symlink:
                 os.symlink(src, dst)
             else:
                 shutil.copytree(src, dst)
