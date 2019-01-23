@@ -4,8 +4,8 @@
 #
 #    pip-compile --output-file requirements/dev.txt requirements/dev.in
 #
--e git+git://github.com/kytos/kytos.git#egg=kytos
 -e .
+-e git+git://github.com/kytos/kytos.git#egg=kytos
 astroid==1.5.3            # via pylint
 certifi==2017.7.27.1      # via requests
 chardet==3.0.4            # via requests
