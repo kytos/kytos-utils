@@ -73,9 +73,10 @@ class NAppsClient(CommonClient):
         res = self.make_request(endpoint)
         if res.status_code == 404:  # We need to know if NApp is not found
             return None
-        elif res.status_code != 200:
-            raise KytosException('Error getting %s/%s from server: (%d) - %s',
-                                 username, name, res.status_code, res.reason)
+        if res.status_code != 200:
+            msg = 'Error getting %s/%s from server: (%d) - %s'
+            raise KytosException(msg % (username, name, res.status_code,
+                                        res.reason))
         return json.loads(res.content)
 
     def reload_napps(self, napps=None):
