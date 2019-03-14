@@ -7,9 +7,13 @@ UNRELEASED - Under development
 ******************************
 Added
 =====
+ - Added a global and explicit SKEL_PATH constant to get skel from the new location.
 
 Changed
 =======
+ - mkdir switched to makedirs to increase security.
+ - kytos-utils is installed before kytos core now.
+ - Updated requirements versions to match Kytos core.
 
 Deprecated
 ==========
@@ -19,6 +23,8 @@ Removed
 
 Fixed
 =====
+ - Fixed some linter issues.
+ - Populate /etc/kytos/skel even if it is empty.
 
 Security
 ========
