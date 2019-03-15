@@ -5,14 +5,17 @@ This is a log of changes made to the *kytos-utils* project.
 
 UNRELEASED - Under development
 ******************************
+
+[2019.1b1] - "fafa" beta1 - 2019-03-15
+**************************************
 Added
 =====
- - Added a global and explicit SKEL_PATH constant to get skel from the new location.
+ - Added a global and explicit SKEL_PATH constant to get skel from the new
+   location.
 
 Changed
 =======
- - mkdir switched to makedirs to increase security.
- - kytos-utils is installed before kytos core now.
+ - mkdir call replaced by makedirs in order to make installation more reliable.
  - Updated requirements versions to match Kytos core.
 
 Deprecated
@@ -24,7 +27,7 @@ Removed
 Fixed
 =====
  - Fixed some linter issues.
- - Populate /etc/kytos/skel even if it is empty.
+ - Populate /etc/kytos/skel even if exists and it is empty.
 
 Security
 ========
