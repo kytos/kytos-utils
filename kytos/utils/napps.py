@@ -454,7 +454,7 @@ class NAppsManager:
 
         """
         ignored_extensions = ['.swp', '.pyc', '.napp']
-        ignored_dirs = ['__pycache__']
+        ignored_dirs = ['__pycache__', '.git', '.tox']
         files = os.listdir()
         for filename in files:
             if os.path.isfile(filename) and '.' in filename and \
