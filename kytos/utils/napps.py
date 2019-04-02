@@ -9,7 +9,6 @@ import sys
 import tarfile
 import urllib
 from pathlib import Path
-from pip._internal import main
 from random import randint
 
 # Disable pylint import checks that conflict with isort
@@ -251,13 +250,14 @@ class NAppsManager:
         return [napp for napp in napps if match(napp)]
 
     def install_requirements(self):
-        """Install NApp requirements"""
+        """Install NApp requirements."""
         folder = self._installed / self.user / self.napp
         os.chdir(folder)
         requirements_file = "requirements/dev.txt"
         if os.path.exists(requirements_file):
             LOG.info('Installing dependencies:')
-            subprocess.call([sys.executable, "-m", "pip", "install", "-r", requirements_file])
+            subprocess.call([sys.executable, "-m", "pip", "install", "-r",
+                             requirements_file])
         else:
             LOG.info("Requirements file does not exist.")
 
@@ -400,6 +400,7 @@ class NAppsManager:
 
         #: Creating the other files based on the templates
         templates = os.listdir(templates_path)
+        templates.remove('requirements')
         templates.remove('ui')
         templates.remove('openapi.yml.template')
 
@@ -417,6 +418,7 @@ class NAppsManager:
         if not meta_package:
             NAppsManager.create_ui_structure(username, napp_name,
                                              ui_templates_path, context)
+            NAppsManager.create_requirements_structure(username, napp_name)
 
         print()
         print(f'Congratulations! Your NApp has been bootstrapped!\nNow you '
@@ -441,6 +443,15 @@ class NAppsManager:
                 content = cls.render_template(ui_templates_path, tmp,
                                               context)
                 file.write(content)
+
+    @classmethod
+    def create_requirements_structure(cls, username, napp_name):
+        """Create the requirements directory structure."""
+        os.makedirs(os.path.join(username, napp_name, 'requirements'))
+        for file_name in ['dev.txt', 'dev.in', 'run.in']:
+            file = open(os.path.join(username, napp_name, 'requirements',
+                                     file_name), 'w')
+            file.close()
 
     @staticmethod
     def _check_module(folder):
