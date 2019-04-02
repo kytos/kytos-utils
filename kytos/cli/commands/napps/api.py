@@ -162,11 +162,13 @@ class NAppsAPI:
         try:
             LOG.info('    Searching local NApp...')
             mgr.install_local()
+            mgr.install_requirements()
             LOG.info('    Found and installed.')
         except FileNotFoundError:
             LOG.info('    Not found. Downloading from NApps Server...')
             try:
                 mgr.install_remote()
+                mgr.install_requirements()
                 LOG.info('    Downloaded and installed.')
                 return
             except HTTPError as exception:

@@ -4,10 +4,12 @@ import logging
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tarfile
 import urllib
 from pathlib import Path
+from pip._internal import main
 from random import randint
 
 # Disable pylint import checks that conflict with isort
@@ -247,6 +249,17 @@ class NAppsManager:
 
         napps = NAppsClient().get_napps()
         return [napp for napp in napps if match(napp)]
+
+    def install_requirements(self):
+        """Install NApp requirements"""
+        folder = self._installed / self.user / self.napp
+        os.chdir(folder)
+        requirements_file = "requirements/dev.txt"
+        if os.path.exists(requirements_file):
+            LOG.info('Installing dependencies:')
+            subprocess.call([sys.executable, "-m", "pip", "install", "-r", requirements_file])
+        else:
+            LOG.info("Requirements file does not exist.")
 
     def install_local(self):
         """Make a symlink in install folder to a local NApp.
