@@ -11,6 +11,11 @@ build:
         python: 3.6.0
         postgresql: false
         redis: false
-    dependencies:
+    tests:
         override:
-            - true
+            -
+                command: 'tox'
+                coverage:
+                    file: '.coverage'
+                    config_file: '.coveragerc'
+                    format: 'py-cc'
