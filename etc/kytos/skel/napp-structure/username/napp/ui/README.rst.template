@@ -1,0 +1,15 @@
+Overview
+========
+
+Sometimes a NApp may require user interaction through the graphical
+interface (not just through the REST API).
+
+Kytos has its own `Vue.js`-based components (`Vue.js <https://vuejs.org>`_), 
+that you can use on the interface.
+
+Plain HTML code is also supported. However, we strongly recommend that you
+stick to Kytos native (``k-*``) components.
+
+For more information visit the `documentation page`_.
+
+.. _documentation page: http://docs.kytos.io/

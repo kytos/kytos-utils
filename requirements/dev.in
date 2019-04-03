@@ -1,0 +1,2 @@
+-e .[dev]
+-e git+git://github.com/kytos/kytos.git#egg=kytos

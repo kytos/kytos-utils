@@ -1,24 +1,11 @@
 #!/usr/bin/env python3
 # This file is part of kytos-utils.
 #
-# Copyright (c) 2016 by Kytos Team.
+# Copyright (c) 2016-2017 by Kytos Team.
 #
 # Authors:
 #    Beraldo Leal <beraldo AT ncc DOT unesp DOT br>
-#
-# kytos-utils is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# kytos-utils is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
-#
+
 """kytos - The kytos command line.
 
 Usage: kytos [-c <file>|--config <file>] <command> [<args>...]
@@ -32,7 +19,9 @@ Options:
 
 The most commonly used kytos commands are:
    napps      Create, list, enable, install (and other actions) NApps.
-   server     Start, Stop your Kytos Controller (Kyco)
+   server     Start, Stop your Kytos Controller (Kytos)
+   web        Manage the Web User Interface
+   users      Commands to handle users from NApps server.
 
 See 'kytos <command> -h|--help' for more information on a specific command.
 """
@@ -43,7 +32,7 @@ logging.basicConfig(format='%(levelname)-5s %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
     args = docopt(__doc__,
-                  version='kytos command line, version 0.1.0',
+                  version='kytos command line, version 2019.1b1',
                   options_first=True)
     command = args['<command>']
     command_args = args['<args>']
@@ -51,6 +40,12 @@ if __name__ == '__main__':
 
     if command == 'napps':
         from kytos.cli.commands.napps.parser import parse
+        parse(argv)
+    elif command == 'users':
+        from kytos.cli.commands.users.parser import parse
+        parse(argv)
+    elif command == 'web':
+        from kytos.cli.commands.web.parser import parse
         parse(argv)
     else:
         print("Error: Invalid syntax")

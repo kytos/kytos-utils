@@ -1,9 +1,9 @@
 {
-  "author": "{{author}}",
+  "author": "{{username}}",
+  "username": "{{username}}",
   "name": "{{napp}}",
   "description": "{{description}}",
-  "long_description": "",
-  "version": "",
+  "version": "latest",
   "napp_dependencies": [],
   "license": "",
   "tags": [],

@@ -1,23 +1,21 @@
-"""Main module of {{author}}/{{napp}} Kytos Network Application.
+"""Main module of {{username}}/{{napp}} Kytos Network Application.
 
 {{ description }}
 """
 
-from kyco.core.napps import KycoNApp
+from kytos.core import KytosNApp, log
 
-from napps.{{author}}.{{napp}} import settings
-
-log = settings.log
+from napps.{{username}}.{{napp}} import settings
 
 
-class Main(KycoNApp):
-    """Main class of {{author}}/{{napp}} NApp.
+class Main(KytosNApp):
+    """Main class of {{username}}/{{napp}} NApp.
 
     This class is the entry point for this napp.
     """
 
     def setup(self):
-        """Replace the '__init__' method for the KycoNApp subclass.
+        """Replace the '__init__' method for the KytosNApp subclass.
 
         The setup method is automatically called by the controller when your
         application is loaded.
@@ -27,7 +25,7 @@ class Main(KycoNApp):
         pass
 
     def execute(self):
-        """This method is executed right after the setup method execution.
+        """Run after the setup method execution.
 
         You can also use this method in loop mode if you add to the above setup
         method a line like the following example:
@@ -37,8 +35,9 @@ class Main(KycoNApp):
         pass
 
     def shutdown(self):
-        """This method is executed when your napp is unloaded.
+        """Run when your napp is unloaded.
 
         If you have some cleanup procedure, insert it here.
         """
         pass
+

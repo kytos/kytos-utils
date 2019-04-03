@@ -5,25 +5,11 @@
 #
 # Authors:
 #    Beraldo Leal <beraldo AT ncc DOT unesp DOT br>
-#
-# kytos-utils is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# kytos-utils is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 import json
 import logging
+import os
 import sys
-from urllib.parse import urljoin
 
 import requests
 
@@ -31,59 +17,17 @@ from kytos.utils.config import KytosConfig
 from kytos.utils.decorators import kytos_auth
 from kytos.utils.exceptions import KytosException
 
+LOG = logging.getLogger(__name__)
 
-log = logging.getLogger(__name__)
 
-
-class NAppsClient():
-    """Client for the NApps Server."""
+class CommonClient:
+    """Generic class used to make request the Napss server."""
 
     def __init__(self, config=None):
         """Set Kytos config."""
         if config is None:
             config = KytosConfig().config
         self._config = config
-
-    def get_napps(self):
-        """Get all NApps from the server."""
-        endpoint = urljoin(self._config.get('napps', 'uri'), 'napps')
-        res = self.make_request(endpoint)
-
-        if res.status_code != 200:
-            msg = 'Error getting NApps from server (%s) - %s'
-            log.error(msg, res.status_code, res.reason)
-            sys.exit(1)
-
-        return json.loads(res.content)['napps']
-
-    def get_napp(self, username, name):
-        """Return napp metadata or None if not found."""
-        api = self._config.get('napps', 'uri')
-        napp_uri = '{}{}/{}/{}/'.format(api, 'napps', username, name)
-        res = self.make_request(napp_uri)
-        if res.status_code == 404:  # We need to know if NApp is not found
-            return None
-        elif res.status_code != 200:
-            raise KytosException('Error getting %s/%s from server: (%d) - %s',
-                                 username, name, res.status_code, res.reason)
-        return json.loads(res.content)
-
-    @kytos_auth
-    def upload_napp(self, metadata, package):
-        """Upload the napp from the current directory to the napps server."""
-        endpoint = urljoin(self._config.get('napps', 'uri'), 'napps/')
-
-        metadata['token'] = self._config.get('auth', 'token')
-
-        request = self.make_request(endpoint, json=metadata, package=package,
-                                    method="POST")
-        if request.status_code != 201:
-            KytosConfig().clear_token()
-            log.error("%s: %s", request.status_code, request.reason)
-            sys.exit(1)
-
-        print("SUCCESS: NApp {}/{} uploaded.".format(metadata['author'],
-                                                     metadata['name']))
 
     @staticmethod
     def make_request(endpoint, **kwargs):
@@ -100,8 +44,117 @@ class NAppsClient():
                                     files={'file': package})
             else:
                 response = function(endpoint, json=data)
-        except response.exceptions.ConnectionError:
-            log.error("Couldn't connect to NApps server %s.", endpoint)
+        except requests.exceptions.ConnectionError:
+            LOG.error("Couldn't connect to NApps server %s.", endpoint)
             sys.exit(1)
 
         return response
+
+
+class NAppsClient(CommonClient):
+    """Client for the NApps Server."""
+
+    def get_napps(self):
+        """Get all NApps from the server."""
+        endpoint = os.path.join(self._config.get('napps', 'api'), 'napps', '')
+        res = self.make_request(endpoint)
+
+        if res.status_code != 200:
+            msg = 'Error getting NApps from server (%s) - %s'
+            LOG.error(msg, res.status_code, res.reason)
+            sys.exit(1)
+
+        return json.loads(res.content.decode('utf-8'))['napps']
+
+    def get_napp(self, username, name):
+        """Return napp metadata or None if not found."""
+        endpoint = os.path.join(self._config.get('napps', 'api'), 'napps',
+                                username, name, '')
+        res = self.make_request(endpoint)
+        if res.status_code == 404:  # We need to know if NApp is not found
+            return None
+        if res.status_code != 200:
+            msg = 'Error getting %s/%s from server: (%d) - %s'
+            raise KytosException(msg % (username, name, res.status_code,
+                                        res.reason))
+        return json.loads(res.content)
+
+    def reload_napps(self, napps=None):
+        """Reload a specific NApp or all Napps.
+
+        Args:
+            napp (list): NApp list to be reload.
+        Raises:
+            requests.HTTPError: When there's a server error.
+
+        """
+        if napps is None:
+            napps = []
+            api = self._config.get('kytos', 'api')
+            endpoint = os.path.join(api, 'api', 'kytos', 'core', 'reload',
+                                    'all')
+            response = self.make_request(endpoint)
+
+        for napp in napps:
+            api = self._config.get('kytos', 'api')
+            endpoint = os.path.join(api, 'api', 'kytos', 'core', 'reload',
+                                    napp[0], napp[1])
+            response = self.make_request(endpoint)
+
+        if response.status_code != 200:
+            raise KytosException('Error reloading the napp: Module not founded'
+                                 ' or could not be imported')
+
+        return response.content
+
+    @kytos_auth
+    def upload_napp(self, metadata, package):
+        """Upload the napp from the current directory to the napps server."""
+        endpoint = os.path.join(self._config.get('napps', 'api'), 'napps', '')
+        metadata['token'] = self._config.get('auth', 'token')
+        request = self.make_request(endpoint, json=metadata, package=package,
+                                    method="POST")
+        if request.status_code != 201:
+            KytosConfig().clear_token()
+            LOG.error("%s: %s", request.status_code, request.reason)
+            sys.exit(1)
+
+        # WARNING: this will change in future versions, when 'author' will get
+        # removed.
+        username = metadata.get('username', metadata.get('author'))
+        name = metadata.get('name')
+
+        print("SUCCESS: NApp {}/{} uploaded.".format(username, name))
+
+    @kytos_auth
+    def delete(self, username, napp):
+        """Delete a NApp.
+
+        Raises:
+            requests.HTTPError: If 400 <= status < 600.
+
+        """
+        api = self._config.get('napps', 'api')
+        endpoint = os.path.join(api, 'napps', username, napp, '')
+        content = {'token': self._config.get('auth', 'token')}
+        response = self.make_request(endpoint, json=content, method='DELETE')
+        response.raise_for_status()
+
+
+class UsersClient(CommonClient):
+    """Client for the NApps Server."""
+
+    def register(self, user_dict):
+        """Send an user_dict to NApps server using POST request.
+
+        Args:
+            user_dict(dict): Dictionary with user attributes.
+
+        Returns:
+            result(string): Return the response of Napps server.
+
+        """
+        endpoint = os.path.join(self._config.get('napps', 'api'), 'users', '')
+        res = self.make_request(endpoint, method='POST', json=user_dict)
+
+        return res.content.decode('utf-8')
