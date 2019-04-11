@@ -3,8 +3,6 @@ import json
 import re
 
 from jinja2 import Environment, FileSystemLoader
-from kytos.core.api_server import APIServer
-from kytos.core.napps.base import NApp
 
 
 class OpenAPI:  # pylint: disable=too-few-public-methods
@@ -22,8 +20,7 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
         self._template = tpl_path / 'openapi.yml.template'
         self._api_file = napp_path / 'openapi.yml'
 
-        metadata = napp_path / 'kytos.json'
-        self._napp = NApp.create_from_json(metadata)
+        self._napp_dict = self._parse_napp_metadata(napp_path)
 
         # Data for a path
         self._summary = None
@@ -35,8 +32,15 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
     def render_template(self):
         """Render and save API doc in openapi.yml."""
         self._parse_paths()
-        context = dict(napp=self._napp.__dict__, paths=self._paths)
+        context = dict(napp=self._napp_dict, paths=self._paths)
         self._save(context)
+
+    def _parse_napp_metadata(self, napp_path):
+        """Return a NApp metadata file."""
+        filename = self._napp_path / 'kytos.json'
+        with open(filename, encoding='utf-8') as data_file:
+            data = json.loads(data_file.read())
+        return data
 
     def _parse_paths(self):
         main_file = self._napp_path / 'main.py'
@@ -59,9 +63,14 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
             self._parse_docstring(m_dict['docstring'])
             self._add_function_paths(m_dict['decorators'])
 
+    def _get_absolute_rule(self, rule, napp):
+        _NAPP_PREFIX = "/api/{username}/{name}/"
+        relative_rule = rule[1:] if rule.startswith('/') else rule
+        return _NAPP_PREFIX.format_map(napp) + relative_rule
+
     def _add_function_paths(self, decorators_str):
         for rule, parsed_methods in self._parse_decorators(decorators_str):
-            absolute_rule = APIServer.get_absolute_rule(rule, self._napp)
+            absolute_rule = self._get_absolute_rule(rule, self._napp_dict)
             path_url = self._rule2path(absolute_rule)
             path_methods = self._paths.setdefault(path_url, {})
             self._add_methods(parsed_methods, path_methods)
@@ -127,7 +136,7 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
     def _parse_methods(cls, list_string):
         """Return HTTP method list. Use json for security reasons."""
         if list_string is None:
-            return APIServer.DEFAULT_METHODS
+            return ('GET',)
         # json requires double quotes
         json_list = list_string.replace("'", '"')
         return json.loads(json_list)

@@ -7,13 +7,14 @@ import shutil
 import sys
 import tarfile
 import urllib
+from http import HTTPStatus
 from pathlib import Path
 from random import randint
+from urllib.error import HTTPError
 
 # Disable pylint import checks that conflict with isort
 # pylint: disable=ungrouped-imports,wrong-import-order
 from jinja2 import Environment, FileSystemLoader
-from kytos.core.napps.manager import NAppsManager as CoreNAppsManager
 from ruamel.yaml import YAML
 
 from kytos.utils.client import NAppsClient
@@ -27,6 +28,9 @@ LOG = logging.getLogger(__name__)
 # pylint: disable=too-many-instance-attributes,too-many-public-methods
 class NAppsManager:
     """Deal with NApps at filesystem level and ask Kytos to (un)load NApps."""
+
+    _NAPP_ENABLE = "api/kytos/core/{}/{}/enable/"
+    _NAPP_DISABLE = "api/kytos/core/{}/{}/disable/"
 
     def __init__(self, controller=None):
         """If controller is not informed, the necessary paths must be.
@@ -174,8 +178,16 @@ class NAppsManager:
 
     def disable(self):
         """Disable a NApp if it is enabled."""
-        core_napps_manager = CoreNAppsManager(base_path=self._enabled)
-        core_napps_manager.disable(self.user, self.napp)
+        uri = self._kytos_api + self._NAPP_DISABLE
+        uri = uri.format(self.user, self.napp)
+
+        try:
+            json.loads(urllib.request.urlopen(uri).read())
+        except HTTPError as exception:
+            if exception.code == HTTPStatus.BAD_REQUEST.value:
+                LOG.error("NApp is not installed. Check the NApp list.")
+            else:
+                LOG.error("Error disabling the NApp")
 
     def enabled_dir(self):
         """Return the enabled dir from current napp."""
@@ -186,15 +198,17 @@ class NAppsManager:
         return self._installed / self.user / self.napp
 
     def enable(self):
-        """Enable a NApp if not already enabled.
+        """Enable a NApp if not already enabled."""
+        uri = self._kytos_api + self._NAPP_ENABLE
+        uri = uri.format(self.user, self.napp)
 
-        Raises:
-            FileNotFoundError: If NApp is not installed.
-            PermissionError: No filesystem permission to enable NApp.
-
-        """
-        core_napps_manager = CoreNAppsManager(base_path=self._enabled)
-        core_napps_manager.enable(self.user, self.napp)
+        try:
+            json.loads(urllib.request.urlopen(uri).read())
+        except HTTPError as exception:
+            if exception.code == HTTPStatus.BAD_REQUEST.value:
+                LOG.error("NApp is not installed. Check the NApp list.")
+            else:
+                LOG.error("Error enabling the NApp")
 
     def is_enabled(self):
         """Whether a NApp is enabled."""
