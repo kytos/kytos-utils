@@ -3,14 +3,12 @@ import json
 import logging
 import os
 import re
-import shutil
 import sys
 import tarfile
 import urllib
 from http import HTTPStatus
 from pathlib import Path
 from random import randint
-from urllib.error import HTTPError
 
 # Disable pylint import checks that conflict with isort
 # pylint: disable=ungrouped-imports,wrong-import-order
@@ -29,24 +27,12 @@ LOG = logging.getLogger(__name__)
 class NAppsManager:
     """Deal with NApps at filesystem level and ask Kytos to (un)load NApps."""
 
-    _NAPP_ENABLE = "api/kytos/core/{}/{}/enable/"
-    _NAPP_DISABLE = "api/kytos/core/{}/{}/disable/"
+    _NAPP_ENABLE = "api/kytos/core/napps/{}/{}/enable"
+    _NAPP_DISABLE = "api/kytos/core/napps/{}/{}/disable"
+    _NAPP_INSTALL = "api/kytos/core/napps/{}/{}/install"
+    _NAPP_UNINSTALL = "api/kytos/core/napps/{}/{}/uninstall"
 
-    def __init__(self, controller=None):
-        """If controller is not informed, the necessary paths must be.
-
-        If ``controller`` is available, NApps will be (un)loaded at runtime and
-        you don't need to inform the paths. Otherwise, you should inform the
-        required paths for the methods called.
-
-        Args:
-            controller (kytos.Controller): Controller to (un)load NApps.
-            install_path (str): Folder where NApps should be installed. If
-                None, use the controller's configuration.
-            enabled_path (str): Folder where enabled NApps are stored. If None,
-                use the controller's configuration.
-        """
-        self._controller = controller
+    def __init__(self):
         self._config = KytosConfig().config
         self._kytos_api = self._config.get('kytos', 'api')
 
@@ -183,7 +169,7 @@ class NAppsManager:
 
         try:
             json.loads(urllib.request.urlopen(uri).read())
-        except HTTPError as exception:
+        except urllib.error.HTTPError as exception:
             if exception.code == HTTPStatus.BAD_REQUEST.value:
                 LOG.error("NApp is not installed. Check the NApp list.")
             else:
@@ -204,7 +190,7 @@ class NAppsManager:
 
         try:
             json.loads(urllib.request.urlopen(uri).read())
-        except HTTPError as exception:
+        except urllib.error.HTTPError as exception:
             if exception.code == HTTPStatus.BAD_REQUEST.value:
                 LOG.error("NApp is not installed. Check the NApp list.")
             else:
@@ -216,12 +202,16 @@ class NAppsManager:
 
     def uninstall(self):
         """Delete code inside NApp directory, if existent."""
-        if self.is_installed():
-            installed = self.installed_dir()
-            if installed.is_symlink():
-                installed.unlink()
+        uri = self._kytos_api + self._NAPP_UNINSTALL
+        uri = uri.format(self.user, self.napp)
+
+        try:
+            json.loads(urllib.request.urlopen(uri).read())
+        except urllib.error.HTTPError as exception:
+            if exception.code == HTTPStatus.BAD_REQUEST.value:
+                LOG.error("NApp is not uninstalled. Check the NApp list.")
             else:
-                shutil.rmtree(str(installed))
+                LOG.error("Error uninstalling the NApp")
 
     @staticmethod
     def valid_name(username):
@@ -304,21 +294,17 @@ class NAppsManager:
         raise FileNotFoundError('kytos.json not found.')
 
     def install_remote(self):
-        """Download, extract and install NApp."""
-        package, pkg_folder = None, None
+        """Ask kytos server to install NApp."""
+        uri = self._kytos_api + self._NAPP_INSTALL
+        uri = uri.format(self.user, self.napp)
+
         try:
-            package = self._download()
-            pkg_folder = self._extract(package)
-            napp_folder = self._get_local_folder(pkg_folder)
-            dst = self._installed / self.user / self.napp
-            self._check_module(dst.parent)
-            shutil.move(str(napp_folder), str(dst))
-        finally:
-            # Delete temporary files
-            if package:
-                Path(package).unlink()
-            if pkg_folder and pkg_folder.exists():
-                shutil.rmtree(str(pkg_folder))
+            json.loads(urllib.request.urlopen(uri).read())
+        except urllib.error.HTTPError as exception:
+            if exception.code == HTTPStatus.BAD_REQUEST.value:
+                LOG.error("NApp is not installed. Check the NApp list.")
+            else:
+                LOG.error("Error installing the NApp.")
 
     def _download(self):
         """Download NApp package from server.
