@@ -6,6 +6,11 @@ This is a log of changes made to the *kytos-utils* project.
 UNRELEASED - Under development
 ******************************
 
+Changed
+======
+- Changed initial version in napps creation.
+
+
 [2019.1b1] - "fafa" beta1 - 2019-03-15
 **************************************
 Added
