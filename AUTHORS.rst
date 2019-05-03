@@ -15,3 +15,5 @@ Contributors
 - Luan Gonçalves <luanlg.cco AT gmail DOT com>
 - Erick Vermot <erick.vermot AT gmail DOT com>
 - Vinicius Arcanjo <viniciusarcanjov AT gmail DOT com>
+- Gleyberson Andrade <gleybersonandrade AT gmail DOT com>
+- Carlos Magno Barbosa <cmagnobarbosa AT gmail DOT com>
