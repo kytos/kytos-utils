@@ -1,6 +1,6 @@
-##########
-Change log
-##########
+#########
+Changelog
+#########
 This is a log of changes made to the *kytos-utils* project.
 
 UNRELEASED - Under development
