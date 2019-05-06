@@ -95,8 +95,8 @@ class NAppsAPI:
         """
         try:
             NAppsManager().upload()
-        except FileNotFoundError:
-            LOG.error("Couldn't find kytos.json in current directory.")
+        except FileNotFoundError as err:
+            LOG.error("Couldn't find %s in current directory.", err.filename)
 
     @classmethod
     def uninstall(cls, args):

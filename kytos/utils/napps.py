@@ -453,14 +453,18 @@ class NAppsManager:
                 package that will be POSTed to the napp server.
 
         """
-        ignored_extensions = ['.swp', '.pyc', '.napp']
-        ignored_dirs = ['__pycache__', '.git', '.tox']
         files = os.listdir()
-        for filename in files:
-            if os.path.isfile(filename) and '.' in filename and \
-                    filename.rsplit('.', 1)[1] in ignored_extensions:
-                files.remove(filename)
-            elif os.path.isdir(filename) and filename in ignored_dirs:
+        ignored_files = [".git"]
+        with open(".gitignore", 'r') as kytosignore:
+            for line in kytosignore:
+                if re.search(r"^(#+|\s*$)", line):
+                    continue
+                line = re.sub("^[*]|^/|(/|\n)$", '', line)
+                ignored_files.append(line)
+        for filename in files.copy():
+            matches = [re.search(ignored+"$", filename)
+                       for ignored in ignored_files]
+            if any(elem is not None for elem in matches):
                 files.remove(filename)
 
         # Create the '.napp' package
