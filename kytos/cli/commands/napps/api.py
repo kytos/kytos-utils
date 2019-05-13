@@ -113,7 +113,7 @@ class NAppsAPI:
                 if mgr.is_enabled():
                     cls.disable_napp(mgr)
                 LOG.info('  Uninstalling...')
-                mgr.uninstall()
+                mgr.uninstall_remote()
                 LOG.info('  Uninstalled.')
             else:
                 LOG.error("  NApp isn't installed.")
@@ -135,8 +135,10 @@ class NAppsAPI:
             mgr.set_napp(*napp)
             LOG.info('  NApp %s:', mgr.napp_id)
 
-            if not mgr.is_installed():
-                try:
+            try:
+                if not mgr.is_installed():
+                    # Try to install all NApps, even if
+                    # some of them fail.
                     cls.install_napp(mgr)
                     if not mgr.is_enabled():
                         cls.enable_napp(mgr)
@@ -146,10 +148,11 @@ class NAppsAPI:
                             cls.install_napps(napp_dependencies)
                     else:
                         LOG.warning('  Napp already enabled.')
-                except KytosException:
-                    continue
-            else:
-                LOG.warning('  Napp already enabled.')
+                else:
+                    LOG.warning('  Napp already enabled.')
+            except KytosException:
+                LOG.error('Error installing NApp.')
+                continue
 
     @classmethod
     def install_napp(cls, mgr):
