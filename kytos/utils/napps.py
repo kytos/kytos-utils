@@ -36,6 +36,10 @@ class NAppsManager:
     _NAPP_METADATA = "api/kytos/core/napps/{}/{}/metadata/{}"
 
     def __init__(self):
+        """Instance a new NAppsManager.
+
+        This method do not need parameters.
+        """
         self._config = KytosConfig().config
         self._kytos_api = self._config.get('kytos', 'api')
 
