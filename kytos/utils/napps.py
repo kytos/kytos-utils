@@ -114,7 +114,12 @@ class NAppsManager:
         uri = self._kytos_api + self._NAPPS_ENABLED
 
         try:
-            content = json.loads(urllib.request.urlopen(uri).read())
+            response = urllib.request.urlopen(uri)
+            if response.getcode() != 200:
+                msg = "Error calling Kytos to check enabled NApps."
+                raise KytosException(msg)
+
+            content = json.loads(response.read())
             return sorted((c[0], c[1]) for c in content['napps'])
         except urllib.error.URLError as exception:
             LOG.error("Error checking installed NApps. Is Kytos running?")
