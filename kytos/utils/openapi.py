@@ -20,7 +20,7 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
         self._template = tpl_path / 'openapi.yml.template'
         self._api_file = napp_path / 'openapi.yml'
 
-        self._napp_dict = self._parse_napp_metadata(napp_path)
+        self._napp_dict = self._parse_napp_metadata()
 
         # Data for a path
         self._summary = None
@@ -35,7 +35,7 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
         context = dict(napp=self._napp_dict, paths=self._paths)
         self._save(context)
 
-    def _parse_napp_metadata(self, napp_path):
+    def _parse_napp_metadata(self):
         """Return a NApp metadata file."""
         filename = self._napp_path / 'kytos.json'
         with open(filename, encoding='utf-8') as data_file:
@@ -63,14 +63,14 @@ class OpenAPI:  # pylint: disable=too-few-public-methods
             self._parse_docstring(m_dict['docstring'])
             self._add_function_paths(m_dict['decorators'])
 
-    def _get_absolute_rule(self, rule, napp):
-        _NAPP_PREFIX = "/api/{username}/{name}/"
+    def _get_absolute_rule(self, rule):
+        napp_prefix = "/api/{username}/{name}/"
         relative_rule = rule[1:] if rule.startswith('/') else rule
-        return _NAPP_PREFIX.format_map(napp) + relative_rule
+        return napp_prefix.format_map(self._napp_dict) + relative_rule
 
     def _add_function_paths(self, decorators_str):
         for rule, parsed_methods in self._parse_decorators(decorators_str):
-            absolute_rule = self._get_absolute_rule(rule, self._napp_dict)
+            absolute_rule = self._get_absolute_rule(rule)
             path_url = self._rule2path(absolute_rule)
             path_methods = self._paths.setdefault(path_url, {})
             self._add_methods(parsed_methods, path_methods)
