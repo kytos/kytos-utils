@@ -150,7 +150,7 @@ class NAppsAPI:
                         LOG.warning('  Napp already enabled.')
                 else:
                     LOG.warning('  Napp already installed.')
-            except KytosException as exception:
+            except KytosException:
                 LOG.error('Error installing NApp.')
                 continue
 
