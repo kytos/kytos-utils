@@ -241,7 +241,7 @@ class NAppsManager:
         """Whether a NApp is enabled."""
         return (self.user, self.napp) in self.get_enabled()
 
-    def uninstall_remote(self):
+    def remote_uninstall(self):
         """Delete code inside NApp directory, if existent."""
         uri = self._kytos_api + self._NAPP_UNINSTALL
         uri = uri.format(self.user, self.napp)
@@ -250,7 +250,7 @@ class NAppsManager:
             json.loads(urllib.request.urlopen(uri).read())
         except urllib.error.HTTPError as exception:
             if exception.code == HTTPStatus.BAD_REQUEST.value:
-                LOG.error("NApp is not uninstalled. Check the NApp list.")
+                LOG.error("Check if the NApp is installed.")
             else:
                 LOG.error("Error uninstalling the NApp")
 
@@ -334,7 +334,7 @@ class NAppsManager:
                         return kytos_json.parent
         raise FileNotFoundError('kytos.json not found.')
 
-    def install_remote(self):
+    def remote_install(self):
         """Ask kytos server to install NApp."""
         uri = self._kytos_api + self._NAPP_INSTALL
         uri = uri.format(self.user, self.napp)

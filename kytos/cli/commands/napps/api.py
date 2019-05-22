@@ -113,7 +113,7 @@ class NAppsAPI:
                 if mgr.is_enabled():
                     cls.disable_napp(mgr)
                 LOG.info('  Uninstalling...')
-                mgr.uninstall_remote()
+                mgr.remote_uninstall()
                 LOG.info('  Uninstalled.')
             else:
                 LOG.error("  NApp isn't installed.")
@@ -149,8 +149,8 @@ class NAppsAPI:
                     else:
                         LOG.warning('  Napp already enabled.')
                 else:
-                    LOG.warning('  Napp already enabled.')
-            except KytosException:
+                    LOG.warning('  Napp already installed.')
+            except KytosException as exception:
                 LOG.error('Error installing NApp.')
                 continue
 
@@ -169,7 +169,7 @@ class NAppsAPI:
         except FileNotFoundError:
             LOG.info('    Not found. Downloading from NApps Server...')
             try:
-                mgr.install_remote()
+                mgr.remote_install()
                 LOG.info('    Downloaded and installed.')
                 return
             except HTTPError as exception:
