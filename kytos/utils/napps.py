@@ -468,15 +468,19 @@ class NAppsManager:
         ignored_files = [".git"]
         with open(".gitignore", 'r') as kytosignore:
             for line in kytosignore:
+                # continue if the line starts with # or contains only spaces
+                # or nothing
                 if re.search(r"^(#+|\s*$)", line):
                     continue
-                line = re.sub("^[*]|^/|(/|\n)$", '', line)
+                # replace to '' if the character is * or / in the begin or
+                # / or \n in the end of line.
+                line = re.sub(r"^([*]|/)|(/|\n)$", '', line)
                 ignored_files.append(line)
         for filename in files.copy():
-            matches = [re.search(ignored+"$", filename)
-                       for ignored in ignored_files]
-            if any(elem is not None for elem in matches):
-                files.remove(filename)
+            for ignored in ignored_files:
+                if re.search(ignored+"$", filename):
+                    files.remove(filename)
+                    break
 
         # Create the '.napp' package
         napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
