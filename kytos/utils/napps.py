@@ -3,21 +3,20 @@ import json
 import logging
 import os
 import re
-import shutil
 import sys
 import tarfile
 import urllib
+from http import HTTPStatus
 from pathlib import Path
-from random import randint
 
 # Disable pylint import checks that conflict with isort
 # pylint: disable=ungrouped-imports,wrong-import-order
 from jinja2 import Environment, FileSystemLoader
-from kytos.core.napps.manager import NAppsManager as CoreNAppsManager
 from ruamel.yaml import YAML
 
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
+from kytos.utils.exceptions import KytosException
 from kytos.utils.openapi import OpenAPI
 from kytos.utils.settings import SKEL_PATH
 
@@ -28,21 +27,19 @@ LOG = logging.getLogger(__name__)
 class NAppsManager:
     """Deal with NApps at filesystem level and ask Kytos to (un)load NApps."""
 
-    def __init__(self, controller=None):
-        """If controller is not informed, the necessary paths must be.
+    _NAPP_ENABLE = "api/kytos/core/napps/{}/{}/enable"
+    _NAPP_DISABLE = "api/kytos/core/napps/{}/{}/disable"
+    _NAPP_INSTALL = "api/kytos/core/napps/{}/{}/install"
+    _NAPP_UNINSTALL = "api/kytos/core/napps/{}/{}/uninstall"
+    _NAPPS_INSTALLED = "api/kytos/core/napps_installed"
+    _NAPPS_ENABLED = "api/kytos/core/napps_enabled"
+    _NAPP_METADATA = "api/kytos/core/napps/{}/{}/metadata/{}"
 
-        If ``controller`` is available, NApps will be (un)loaded at runtime and
-        you don't need to inform the paths. Otherwise, you should inform the
-        required paths for the methods called.
+    def __init__(self):
+        """Instance a new NAppsManager.
 
-        Args:
-            controller (kytos.Controller): Controller to (un)load NApps.
-            install_path (str): Folder where NApps should be installed. If
-                None, use the controller's configuration.
-            enabled_path (str): Folder where enabled NApps are stored. If None,
-                use the controller's configuration.
+        This method do not need parameters.
         """
-        self._controller = controller
         self._config = KytosConfig().config
         self._kytos_api = self._config.get('kytos', 'api')
 
@@ -51,20 +48,20 @@ class NAppsManager:
         self.version = None
 
         # Automatically get from kytosd API when needed
-        self.__enabled = None
-        self.__installed = None
+        self.__local_enabled = None
+        self.__local_installed = None
 
     @property
     def _enabled(self):
-        if self.__enabled is None:
+        if self.__local_enabled is None:
             self.__require_kytos_config()
-        return self.__enabled
+        return self.__local_enabled
 
     @property
     def _installed(self):
-        if self.__installed is None:
+        if self.__local_installed is None:
             self.__require_kytos_config()
-        return self.__installed
+        return self.__local_installed
 
     def __require_kytos_config(self):
         """Set path locations from kytosd API.
@@ -72,15 +69,15 @@ class NAppsManager:
         It should not be called directly, but from properties that require a
         running kytosd instance.
         """
-        if self.__enabled is None:
+        if self.__local_enabled is None:
             uri = self._kytos_api + 'api/kytos/core/config/'
             try:
                 options = json.loads(urllib.request.urlopen(uri).read())
             except urllib.error.URLError:
                 print('Kytos is not running.')
                 sys.exit()
-            self.__enabled = Path(options.get('napps'))
-            self.__installed = Path(options.get('installed_napps'))
+            self.__local_enabled = Path(options.get('napps'))
+            self.__local_installed = Path(options.get('installed_napps'))
 
     def set_napp(self, user, napp, version=None):
         """Set info about NApp.
@@ -101,17 +98,52 @@ class NAppsManager:
 
     @staticmethod
     def _get_napps(napps_dir):
-        """List of (username, napp_name) found in ``napps_dir``."""
+        """List of (username, napp_name) found in ``napps_dir``.
+
+        Ex: [('kytos', 'of_core'), ('kytos', 'of_lldp')]
+        """
         jsons = napps_dir.glob('*/*/kytos.json')
         return sorted(j.parts[-3:-1] for j in jsons)
 
-    def get_enabled(self):
+    def get_enabled_local(self):
         """Sorted list of (username, napp_name) of enabled napps."""
         return self._get_napps(self._enabled)
 
-    def get_installed(self):
+    def get_installed_local(self):
         """Sorted list of (username, napp_name) of installed napps."""
         return self._get_napps(self._installed)
+
+    def get_enabled(self):
+        """Sorted list of (username, napp_name) of enabled napps."""
+        uri = self._kytos_api + self._NAPPS_ENABLED
+
+        try:
+            response = urllib.request.urlopen(uri)
+            if response.getcode() != 200:
+                msg = "Error calling Kytos to check enabled NApps."
+                raise KytosException(msg)
+
+            content = json.loads(response.read())
+            return sorted((c[0], c[1]) for c in content['napps'])
+        except urllib.error.URLError as exception:
+            LOG.error("Error checking installed NApps. Is Kytos running?")
+            raise KytosException(exception)
+
+    def get_installed(self):
+        """Sorted list of (username, napp_name) of installed napps."""
+        uri = self._kytos_api + self._NAPPS_INSTALLED
+
+        try:
+            response = urllib.request.urlopen(uri)
+            if response.getcode() != 200:
+                msg = "Error calling Kytos to check installed NApps."
+                raise KytosException(msg)
+
+            content = json.loads(response.read())
+            return sorted((c[0], c[1]) for c in content['napps'])
+        except urllib.error.URLError as exception:
+            LOG.error("Error checking installed NApps. Is Kytos running?")
+            raise KytosException(exception)
 
     def is_installed(self):
         """Whether a NApp is installed."""
@@ -164,18 +196,38 @@ class NAppsManager:
             user = self.user
         if napp is None:
             napp = self.napp
-        kytos_json = self._installed / user / napp / 'kytos.json'
-        try:
-            with kytos_json.open() as file_descriptor:
-                meta = json.load(file_descriptor)
-                return meta[key]
-        except (FileNotFoundError, json.JSONDecodeError, KeyError):
-            return ''
+
+        uri = self._kytos_api + self._NAPP_METADATA
+        uri = uri.format(user, napp, key)
+
+        meta = json.loads(urllib.request.urlopen(uri).read())
+        return meta[key]
 
     def disable(self):
         """Disable a NApp if it is enabled."""
-        core_napps_manager = CoreNAppsManager(base_path=self._enabled)
-        core_napps_manager.disable(self.user, self.napp)
+        uri = self._kytos_api + self._NAPP_DISABLE
+        uri = uri.format(self.user, self.napp)
+
+        try:
+            json.loads(urllib.request.urlopen(uri).read())
+        except urllib.error.HTTPError as exception:
+            if exception.code == HTTPStatus.BAD_REQUEST.value:
+                LOG.error("NApp is not installed. Check the NApp list.")
+            else:
+                LOG.error("Error disabling the NApp")
+
+    def enable(self):
+        """Enable a NApp if not already enabled."""
+        uri = self._kytos_api + self._NAPP_ENABLE
+        uri = uri.format(self.user, self.napp)
+
+        try:
+            json.loads(urllib.request.urlopen(uri).read())
+        except urllib.error.HTTPError as exception:
+            if exception.code == HTTPStatus.BAD_REQUEST.value:
+                LOG.error("NApp is not installed. Check the NApp list.")
+            else:
+                LOG.error("Error enabling the NApp")
 
     def enabled_dir(self):
         """Return the enabled dir from current napp."""
@@ -185,29 +237,22 @@ class NAppsManager:
         """Return the installed dir from current napp."""
         return self._installed / self.user / self.napp
 
-    def enable(self):
-        """Enable a NApp if not already enabled.
-
-        Raises:
-            FileNotFoundError: If NApp is not installed.
-            PermissionError: No filesystem permission to enable NApp.
-
-        """
-        core_napps_manager = CoreNAppsManager(base_path=self._enabled)
-        core_napps_manager.enable(self.user, self.napp)
-
     def is_enabled(self):
         """Whether a NApp is enabled."""
         return (self.user, self.napp) in self.get_enabled()
 
-    def uninstall(self):
+    def remote_uninstall(self):
         """Delete code inside NApp directory, if existent."""
-        if self.is_installed():
-            installed = self.installed_dir()
-            if installed.is_symlink():
-                installed.unlink()
+        uri = self._kytos_api + self._NAPP_UNINSTALL
+        uri = uri.format(self.user, self.napp)
+
+        try:
+            json.loads(urllib.request.urlopen(uri).read())
+        except urllib.error.HTTPError as exception:
+            if exception.code == HTTPStatus.BAD_REQUEST.value:
+                LOG.error("Check if the NApp is installed.")
             else:
-                shutil.rmtree(str(installed))
+                LOG.error("Error uninstalling the NApp")
 
     @staticmethod
     def valid_name(username):
@@ -289,52 +334,18 @@ class NAppsManager:
                         return kytos_json.parent
         raise FileNotFoundError('kytos.json not found.')
 
-    def install_remote(self):
-        """Download, extract and install NApp."""
-        package, pkg_folder = None, None
+    def remote_install(self):
+        """Ask kytos server to install NApp."""
+        uri = self._kytos_api + self._NAPP_INSTALL
+        uri = uri.format(self.user, self.napp)
+
         try:
-            package = self._download()
-            pkg_folder = self._extract(package)
-            napp_folder = self._get_local_folder(pkg_folder)
-            dst = self._installed / self.user / self.napp
-            self._check_module(dst.parent)
-            shutil.move(str(napp_folder), str(dst))
-        finally:
-            # Delete temporary files
-            if package:
-                Path(package).unlink()
-            if pkg_folder and pkg_folder.exists():
-                shutil.rmtree(str(pkg_folder))
-
-    def _download(self):
-        """Download NApp package from server.
-
-        Return:
-            str: Downloaded temp filename.
-
-        Raises:
-            urllib.error.HTTPError: If download is not successful.
-
-        """
-        repo = self._config.get('napps', 'repo')
-        napp_id = '{}/{}-{}.napp'.format(self.user, self.napp, self.version)
-        uri = os.path.join(repo, napp_id)
-        return urllib.request.urlretrieve(uri)[0]
-
-    @staticmethod
-    def _extract(filename):
-        """Extract package to a temporary folder.
-
-        Return:
-            pathlib.Path: Temp dir with package contents.
-
-        """
-        random_string = '{:0d}'.format(randint(0, 10**6))
-        tmp = '/tmp/kytos-napp-' + Path(filename).stem + '-' + random_string
-        os.mkdir(tmp)
-        with tarfile.open(filename, 'r:xz') as tar:
-            tar.extractall(tmp)
-        return Path(tmp)
+            json.loads(urllib.request.urlopen(uri).read())
+        except urllib.error.HTTPError as exception:
+            if exception.code == HTTPStatus.BAD_REQUEST.value:
+                LOG.error("NApp is not installed. Check the NApp list.")
+            else:
+                LOG.error("Error installing the NApp.")
 
     @classmethod
     def create_napp(cls, meta_package=False):

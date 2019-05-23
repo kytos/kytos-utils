@@ -12,7 +12,7 @@ Options:
 
 Common user subcommands:
 
-  create        Register a new user to upload napps to Napps Server.
+  register        Register a new user to upload napps to Napps Server.
 
 """
 import sys

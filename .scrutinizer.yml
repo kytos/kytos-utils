@@ -5,12 +5,20 @@ checks:
 filter:
     paths: ['kytos/*', 'tests/*']
     excluded_paths:
-        - 'kytos/web-ui/*'
+        - 'bin/*'
 build:
     environment:
         python: 3.6.0
         postgresql: false
         redis: false
     dependencies:
+        before:
+            - pip install coverage
+    tests:
         override:
-            - true
+            -
+                command: 'tox'
+                coverage:
+                    file: '.coverage'
+                    config_file: '.coveragerc'
+                    format: 'py-cc'
