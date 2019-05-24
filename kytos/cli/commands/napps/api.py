@@ -140,6 +140,8 @@ class NAppsAPI:
                     # Try to install all NApps, even if
                     # some of them fail.
                     cls.install_napp(mgr)
+
+                    # Enable the NApp
                     if not mgr.is_enabled():
                         cls.enable_napp(mgr)
                         napp_dependencies = mgr.dependencies()
@@ -147,7 +149,7 @@ class NAppsAPI:
                             LOG.info('Installing Dependencies:')
                             cls.install_napps(napp_dependencies)
                     else:
-                        LOG.warning('  Napp already enabled.')
+                        LOG.info('    Enabled.')
                 else:
                     LOG.warning('  Napp already installed.')
             except KytosException:
