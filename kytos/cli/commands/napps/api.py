@@ -65,7 +65,12 @@ class NAppsAPI:
             if not mgr.is_enabled():
                 LOG.info('    Enabling...')
                 mgr.enable()
-            LOG.info('    Enabled.')
+
+            # Check if NApp is enabled
+            if mgr.is_enabled():
+                LOG.info('    Enabled.')
+            else:
+                LOG.error('    Error enabling NApp.')
         except (FileNotFoundError, PermissionError) as exception:
             LOG.error('  %s', exception)
 
