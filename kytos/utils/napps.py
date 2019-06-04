@@ -464,7 +464,11 @@ class NAppsManager:
                 package that will be POSTed to the napp server.
 
         """
-        files = os.listdir()
+        files = []
+        path = '/'.join(os.path.abspath(__file__).split('/')[:-1])+'/'
+        for (dirpath, dirnames, filenames) in os.walk(path):
+            files.extend([dirpath +'/'+ file for file in filenames])
+
         ignored_files = [".git"]
         with open(".gitignore", 'r') as kytosignore:
             for line in kytosignore:
