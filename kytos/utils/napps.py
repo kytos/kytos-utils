@@ -466,8 +466,8 @@ class NAppsManager:
         """
         files = []
         path = '/'.join(os.path.abspath(__file__).split('/')[:-1])+'/'
-        for (dirpath, dirnames, filenames) in os.walk(path):
-            files.extend([dirpath +'/'+ file for file in filenames])
+        for dir_file in os.walk(path):
+            files.extend([dir_file[0] + '/' + file for file in dir_file[2]])
 
         ignored_files = [".git"]
         with open(".gitignore", 'r') as kytosignore:
