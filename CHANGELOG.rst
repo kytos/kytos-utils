@@ -7,6 +7,38 @@ UNRELEASED - Under development
 ******************************
 
 
+[2019.1b2] - "fafa" beta3 - 2019-06-12
+**************************************
+Added
+=====
+  - New service to get NApps metadata through Kytos/core
+  - New unity tests to Napps.Manager
+  - Coverage configuration file
+
+Changed
+=======
+  - Kytos/core API Uninstall
+  - Updated requirements versions
+  - Scruntinizer configuration
+
+Deprecated
+==========
+
+Removed
+=======
+  - Kytos dependencies from dev.in
+
+Fixed
+=====
+  - Call to list NApps
+  - Linter issues
+  - Ignore files on .gitignore
+
+
+Security
+========
+
+
 [2019.1b2] - "fafa" beta2 - 2019-05-03
 **************************************
 
