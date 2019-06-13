@@ -73,9 +73,10 @@ class NAppsManager:
             uri = self._kytos_api + 'api/kytos/core/config/'
             try:
                 options = json.loads(urllib.request.urlopen(uri).read())
-            except urllib.error.URLError:
-                print('Kytos is not running.')
-                sys.exit()
+            except urllib.error.URLError as err:
+                msg = f'Error connecting to Kytos daemon: {uri} {err.reason}'
+                print(msg)
+                sys.exit(1)
             self.__local_enabled = Path(options.get('napps'))
             self.__local_installed = Path(options.get('installed_napps'))
 
