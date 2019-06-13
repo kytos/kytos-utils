@@ -11,28 +11,32 @@ UNRELEASED - Under development
 **************************************
 Added
 =====
-  - New service to get NApps metadata through Kytos/core
+  - New service to get NApps metadata through Kytos/core instead of kytos.json file
   - New unity tests to Napps.Manager
   - Coverage configuration file
+  - Added a .gitignore file
 
 Changed
 =======
   - Kytos/core API Uninstall
   - Updated requirements versions
   - Scruntinizer configuration
+  - Updated Kytos error message when connecting to kytosd
 
 Deprecated
 ==========
 
 Removed
 =======
-  - Kytos dependencies from dev.in
+  - Removed kytos dependencies from dev.in
 
 Fixed
 =====
-  - Call to list NApps
+  - Call to list installed NApps
+  - Call to list enabled NApps
   - Linter issues
-  - Ignore files on .gitignore
+  - Fixed code to ignore files on .gitignore
+  - Fixed messages for enable NApps command
 
 
 Security
