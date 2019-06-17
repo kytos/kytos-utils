@@ -7,40 +7,32 @@ UNRELEASED - Under development
 ******************************
 
 
-[2019.1b2] - "fafa" beta3 - 2019-06-12
+[2019.1b3] - "fafa" beta3 - 2019-06-17
 **************************************
 Added
 =====
-  - New service to get NApps metadata through Kytos/core instead of kytos.json file
-  - New unity tests to Napps.Manager
+  - kytos-utils now can be installed on a remote machine
+  - New unit tests in order to cover Napps.Manager
   - Coverage configuration file
-  - Added a .gitignore file
 
 Changed
 =======
-  - Kytos/core API Uninstall
-  - Updated requirements versions
-  - Scruntinizer configuration
-  - Updated Kytos error message when connecting to kytosd
-
-Deprecated
-==========
+  - When packaging a NApp, kytos-utils will ignore files listed on .gitignore,
+    creating smaller NApps
+  - Improved Scrutinizer configuration
+  - Better error message when connecting to kytosd
 
 Removed
 =======
-  - Removed kytos dependencies from dev.in
+  - Removed kytos-core dependency in order to allow standalone installation
 
 Fixed
 =====
-  - Call to list installed NApps
-  - Call to list enabled NApps
-  - Linter issues
-  - Fixed code to ignore files on .gitignore
-  - Fixed messages for enable NApps command
-
+  - Few Linter issues
 
 Security
 ========
+  - Updated requirements versions in order to fix some security bugs
 
 
 [2019.1b2] - "fafa" beta2 - 2019-05-03
