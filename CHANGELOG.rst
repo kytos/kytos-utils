@@ -7,6 +7,42 @@ UNRELEASED - Under development
 ******************************
 
 
+[2019.1b2] - "fafa" beta3 - 2019-06-12
+**************************************
+Added
+=====
+  - New service to get NApps metadata through Kytos/core instead of kytos.json file
+  - New unity tests to Napps.Manager
+  - Coverage configuration file
+  - Added a .gitignore file
+
+Changed
+=======
+  - Kytos/core API Uninstall
+  - Updated requirements versions
+  - Scruntinizer configuration
+  - Updated Kytos error message when connecting to kytosd
+
+Deprecated
+==========
+
+Removed
+=======
+  - Removed kytos dependencies from dev.in
+
+Fixed
+=====
+  - Call to list installed NApps
+  - Call to list enabled NApps
+  - Linter issues
+  - Fixed code to ignore files on .gitignore
+  - Fixed messages for enable NApps command
+
+
+Security
+========
+
+
 [2019.1b2] - "fafa" beta2 - 2019-05-03
 **************************************
 
