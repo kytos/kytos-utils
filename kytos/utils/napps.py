@@ -503,7 +503,6 @@ class NAppsManager:
 
         return file_payload
 
-
     @staticmethod
     def create_metadata(*args, **kwargs):  # pylint: disable=unused-argument
         """Generate the metadata to send the napp package."""
