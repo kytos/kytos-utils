@@ -112,11 +112,12 @@ class NAppsClient(CommonClient):
         """Upload the napp from the current directory to the napps server."""
         endpoint = os.path.join(self._config.get('napps', 'api'), 'napps', '')
         metadata['token'] = self._config.get('auth', 'token')
-        request = self.make_request(endpoint, json=metadata, package=package,
-                                    method="POST")
-        if request.status_code != 201:
+        response = self.make_request(endpoint, json=metadata, package=package,
+                                     method="POST")
+        if response.status_code != 201:
             KytosConfig().clear_token()
-            LOG.error("%s: %s", request.status_code, request.reason)
+            LOG.error("%s: %s - %s", response.status_code, response.reason,
+                      response.content.decode('utf-8'))
             sys.exit(1)
 
         # WARNING: this will change in future versions, when 'author' will get
