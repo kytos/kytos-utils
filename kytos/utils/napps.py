@@ -466,9 +466,12 @@ class NAppsManager:
 
         """
         files = []
-        path = '/'.join(os.path.abspath(__file__).split('/')[:-1])+'/'
+        path = os.getcwd()
+
         for dir_file in os.walk(path):
             files.extend([dir_file[0] + '/' + file for file in dir_file[2]])
+
+        files = list(filter(lambda x: napp_name in x, files))
 
         ignored_files = [".git"]
         with open(".gitignore", 'r') as kytosignore:
@@ -486,11 +489,10 @@ class NAppsManager:
                 if re.search(ignored+"$", filename):
                     files.remove(filename)
                     break
-
         # Create the '.napp' package
         napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
         for local_f in files:
-            napp_file.add(local_f)
+            napp_file.add(local_f.replace(path+'/', ''))
         napp_file.close()
 
         # Get the binary payload of the package
@@ -500,6 +502,7 @@ class NAppsManager:
         os.remove(napp_name + '.napp')
 
         return file_payload
+
 
     @staticmethod
     def create_metadata(*args, **kwargs):  # pylint: disable=unused-argument
