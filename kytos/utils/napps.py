@@ -471,6 +471,10 @@ class NAppsManager:
         for dir_file in os.walk(path):
             files.extend([dir_file[0] + '/' + file for file in dir_file[2]])
 
+        # Filter the files with the napp_name in their path
+        # Example: home/user/napps/kytos/, napp_name = kronos
+        # This filter will get all files from:
+        # home/user/napps/kytos/kronos/*
         files = list(filter(lambda x: napp_name in x, files))
 
         ignored_files = [".git"]
@@ -492,6 +496,7 @@ class NAppsManager:
         # Create the '.napp' package
         napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
         for local_f in files:
+            # remove the path name from the file name
             napp_file.add(local_f.replace(path+'/', ''))
         napp_file.close()
 
