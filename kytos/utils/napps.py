@@ -496,7 +496,7 @@ class NAppsManager:
         # Create the '.napp' package
         napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
         for local_f in files:
-            # remove the path name from the file name
+            # Add relative paths instead of absolute paths
             napp_file.add(local_f.replace(path+'/', ''))
         napp_file.close()
 
