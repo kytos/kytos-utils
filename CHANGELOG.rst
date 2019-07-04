@@ -6,6 +6,16 @@ This is a log of changes made to the *kytos-utils* project.
 UNRELEASED - Under development
 ******************************
 
+[2019.1rc1] - "fafa" rc1 - 2019-07-05
+**************************************
+Changed
+=======
+  - A better log message when bad requests on REST API 
+ 
+Fixed
+=====
+  - Fixed Napp package structure  
+
 
 [2019.1b3] - "fafa" beta3 - 2019-06-17
 **************************************
