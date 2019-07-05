@@ -2,12 +2,12 @@
 import json
 import logging
 import os
+import pathlib
 import re
 import sys
 import tarfile
 import urllib
 from http import HTTPStatus
-from pathlib import Path
 
 # Disable pylint import checks that conflict with isort
 # pylint: disable=ungrouped-imports,wrong-import-order
@@ -72,13 +72,13 @@ class NAppsManager:
         if self.__local_enabled is None:
             uri = self._kytos_api + 'api/kytos/core/config/'
             try:
-                options = json.loads(urllib.request.urlopen(uri).read())
+                ops = json.loads(urllib.request.urlopen(uri).read())
             except urllib.error.URLError as err:
                 msg = f'Error connecting to Kytos daemon: {uri} {err.reason}'
                 print(msg)
                 sys.exit(1)
-            self.__local_enabled = Path(options.get('napps'))
-            self.__local_installed = Path(options.get('installed_napps'))
+            self.__local_enabled = pathlib.Path(ops.get('napps'))
+            self.__local_installed = pathlib.Path(ops.get('installed_napps'))
 
     def set_napp(self, user, napp, version=None):
         """Set info about NApp.
@@ -312,19 +312,19 @@ class NAppsManager:
         Search for kytos.json in _./_ folder and _./user/napp_.
 
         Args:
-            root (pathlib.Path): Where to begin searching.
+            root (pathlib.pathlib.Path): Where to begin searching.
 
         Return:
-            pathlib.Path: NApp root folder.
+            pathlib.pathlib.Path: NApp root folder.
 
         Raises:
             FileNotFoundError: If there is no such local NApp.
 
         """
         if root is None:
-            root = Path()
+            root = pathlib.Path()
         for folders in ['.'], [self.user, self.napp]:
-            kytos_json = root / Path(*folders) / 'kytos.json'
+            kytos_json = root / pathlib.Path(*folders) / 'kytos.json'
             if kytos_json.exists():
                 with kytos_json.open() as file_descriptor:
                     meta = json.load(file_descriptor)
@@ -446,7 +446,7 @@ class NAppsManager:
         """Create module folder with empty __init__.py if it doesn't exist.
 
         Args:
-            folder (pathlib.Path): Module path.
+            folder (pathlib.pathlib.Path): Module path.
         """
         if not folder.exists():
             folder.mkdir(parents=True, exist_ok=True, mode=0o755)
@@ -466,9 +466,19 @@ class NAppsManager:
 
         """
         files = []
-        path = '/'.join(os.path.abspath(__file__).split('/')[:-1])+'/'
+        path = os.getcwd()
+
         for dir_file in os.walk(path):
-            files.extend([dir_file[0] + '/' + file for file in dir_file[2]])
+            dirname, _, arc = dir_file
+            files.extend([os.path.join(dirname, f) for f in arc])
+
+        # Allow the user to run `kytos napps upload` from outside the
+        # napp directory.
+        # Filter the files with the napp_name in their path
+        # Example: home/user/napps/kytos/, napp_name = kronos
+        # This filter will get all files from:
+        # home/user/napps/kytos/kronos/*
+        files = list(filter(lambda x: napp_name in x, files))
 
         ignored_files = [".git"]
         with open(".gitignore", 'r') as kytosignore:
@@ -482,15 +492,15 @@ class NAppsManager:
                 line = re.sub(r"^([*]|/)|(/|\n)$", '', line)
                 ignored_files.append(line)
         for filename in files.copy():
-            for ignored in ignored_files:
-                if re.search(ignored+"$", filename):
+            for line in ignored_files:
+                if re.search(line+"$", filename):
                     files.remove(filename)
                     break
-
         # Create the '.napp' package
         napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
         for local_f in files:
-            napp_file.add(local_f)
+            # Add relative paths instead of absolute paths
+            napp_file.add(pathlib.PurePosixPath(local_f).relative_to(path))
         napp_file.close()
 
         # Get the binary payload of the package
@@ -525,7 +535,7 @@ class NAppsManager:
 
         try:
             yaml = YAML(typ='safe')
-            openapi_dict = yaml.load(Path('openapi.yml').open())
+            openapi_dict = yaml.load(pathlib.Path('openapi.yml').open())
             openapi = json.dumps(openapi_dict)
         except FileNotFoundError:
             openapi = ''
@@ -560,7 +570,7 @@ class NAppsManager:
     def prepare(cls):
         """Prepare NApp to be uploaded by creating openAPI skeleton."""
         if cls._ask_openapi():
-            napp_path = Path()
+            napp_path = pathlib.Path()
             tpl_path = SKEL_PATH / 'napp-structure/username/napp'
             OpenAPI(napp_path, tpl_path).render_template()
             print('Please, update your openapi.yml file.')
@@ -569,7 +579,7 @@ class NAppsManager:
     @staticmethod
     def _ask_openapi():
         """Return whether we should create a (new) skeleton."""
-        if Path('openapi.yml').exists():
+        if pathlib.Path('openapi.yml').exists():
             question = 'Override local openapi.yml with a new skeleton? (y/N) '
             default = False
         else:
