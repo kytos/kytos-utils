@@ -10,11 +10,11 @@ UNRELEASED - Under development
 **************************************
 Changed
 =======
-  - A better log message when bad requests on REST API 
+  - A better log message when bad requests are sent over REST API 
  
 Fixed
 =====
-  - Fixed Napp package structure  
+  - Fixed NApp package structure  
 
 
 [2019.1b3] - "fafa" beta3 - 2019-06-17
