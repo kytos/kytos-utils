@@ -2,12 +2,12 @@
 import json
 import logging
 import os
+import pathlib
 import re
 import sys
 import tarfile
 import urllib
 from http import HTTPStatus
-import pathlib
 
 # Disable pylint import checks that conflict with isort
 # pylint: disable=ungrouped-imports,wrong-import-order
