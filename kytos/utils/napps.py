@@ -377,6 +377,7 @@ class NAppsManager:
         if not meta_package:
             NAppsManager.create_ui_structure(username, napp_name,
                                              ui_templates_path, context)
+            NAppsManager.create_requirements_structure(username, napp_name)
 
         print()
         print(f'Congratulations! Your NApp has been bootstrapped!\nNow you '
@@ -401,6 +402,15 @@ class NAppsManager:
                 content = cls.render_template(ui_templates_path, tmp,
                                               context)
                 file.write(content)
+
+    @classmethod
+    def create_requirements_structure(cls, username, napp_name):
+        """Create the requirements directory structure."""
+        os.makedirs(os.path.join(username, napp_name, 'requirements'))
+        for file_name in ['run.in']:
+            file = open(os.path.join(username, napp_name, 'requirements',
+                                     file_name), 'w')
+            file.close()
 
     @staticmethod
     def _check_module(folder):
