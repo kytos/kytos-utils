@@ -6,6 +6,12 @@ This is a log of changes made to the *kytos-utils* project.
 UNRELEASED - Under development
 ******************************
 
+[2019.1] - "fafa" stable - 2019-07-12
+*************************************
+
+ - This is the stable version based on the last beta pre-releases.
+   No changes since the last rc1.
+
 [2019.1rc1] - "fafa" rc1 - 2019-07-05
 **************************************
 Changed
