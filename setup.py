@@ -167,7 +167,7 @@ class DevelopMode(develop, CommonInstall):
 
 
 setup(name='kytos-utils',
-      version='2019.1b3',
+      version='2019.1',
       description='Command line utilities to use with Kytos.',
       url='http://github.com/kytos/kytos-utils',
       author='Kytos Team',
