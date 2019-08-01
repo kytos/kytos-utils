@@ -169,24 +169,19 @@ class NAppsAPI:
             KytosException: If a NApp hasn't been found.
 
         """
+        LOG.info('    Downloading from NApps Server...')
         try:
-            LOG.info('    Searching local NApp...')
-            mgr.install_local()
-            LOG.info('    Found and installed.')
-        except FileNotFoundError:
-            LOG.info('    Not found. Downloading from NApps Server...')
-            try:
-                mgr.remote_install()
-                LOG.info('    Downloaded and installed.')
-                return
-            except HTTPError as exception:
-                if exception.code == 404:
-                    LOG.error('    NApp not found.')
-                else:
-                    LOG.error('    NApps Server error: %s', exception)
-            except URLError as exception:
-                LOG.error('    NApps Server error: %s', str(exception.reason))
-            raise KytosException("NApp not found.")
+            mgr.remote_install()
+            LOG.info('    Downloaded and installed.')
+            return
+        except HTTPError as exception:
+            if exception.code == 404:
+                LOG.error('    NApp not found.')
+            else:
+                LOG.error('    NApps Server error: %s', exception)
+        except URLError as exception:
+            LOG.error('    NApps Server error: %s', str(exception.reason))
+        raise KytosException("NApp not found.")
 
     @classmethod
     def search(cls, args):

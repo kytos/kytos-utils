@@ -87,6 +87,7 @@ class NAppsManager:
             user (str): NApps Server username.
             napp (str): NApp name.
             version (str): NApp version.
+
         """
         self.user = user
         self.napp = napp
@@ -280,6 +281,7 @@ class NAppsManager:
 
         Args:
             pattern (str): Python regular expression.
+
         """
         def match(napp):
             """Whether a NApp metadata matches the pattern."""
@@ -293,47 +295,6 @@ class NAppsManager:
 
         napps = NAppsClient().get_napps()
         return [napp for napp in napps if match(napp)]
-
-    def install_local(self):
-        """Make a symlink in install folder to a local NApp.
-
-        Raises:
-            FileNotFoundError: If NApp is not found.
-
-        """
-        folder = self._get_local_folder()
-        installed = self.installed_dir()
-        self._check_module(installed.parent)
-        installed.symlink_to(folder.resolve())
-
-    def _get_local_folder(self, root=None):
-        """Return local NApp root folder.
-
-        Search for kytos.json in _./_ folder and _./user/napp_.
-
-        Args:
-            root (pathlib.pathlib.Path): Where to begin searching.
-
-        Return:
-            pathlib.pathlib.Path: NApp root folder.
-
-        Raises:
-            FileNotFoundError: If there is no such local NApp.
-
-        """
-        if root is None:
-            root = pathlib.Path()
-        for folders in ['.'], [self.user, self.napp]:
-            kytos_json = root / pathlib.Path(*folders) / 'kytos.json'
-            if kytos_json.exists():
-                with kytos_json.open() as file_descriptor:
-                    meta = json.load(file_descriptor)
-                    # WARNING: This will change in future versions, when
-                    # 'author' will be removed.
-                    username = meta.get('username', meta.get('author'))
-                    if username == self.user and meta.get('name') == self.napp:
-                        return kytos_json.parent
-        raise FileNotFoundError('kytos.json not found.')
 
     def remote_install(self):
         """Ask kytos server to install NApp."""
@@ -447,6 +408,7 @@ class NAppsManager:
 
         Args:
             folder (pathlib.pathlib.Path): Module path.
+
         """
         if not folder.exists():
             folder.mkdir(parents=True, exist_ok=True, mode=0o755)
