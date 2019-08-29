@@ -5,7 +5,34 @@ This is a log of changes made to the *kytos-utils* project.
 
 UNRELEASED - Under development
 ******************************
+Added
+=====
 
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+
+Fixed
+=====
+
+Security
+========
+
+[2019.2b1] - "" beta1 - 2019-08-30
+**********************************
+Changed
+=======
+- Enable Scrutinizer coverage stats.
+
+Removed
+=======
+ - Removed Napps installation, now this is done by kytos core.
+ 
 [2019.1] - "fafa" stable - 2019-07-12
 *************************************
 
