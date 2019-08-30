@@ -176,20 +176,9 @@ setup(name='kytos-utils',
       test_suite='tests',
       include_package_data=True,
       scripts=['bin/kytos'],
-      install_requires=[
-          'docopt',
-          'requests',
-          'jinja2>=2.9.5',
-          'ruamel.yaml',
-      ],
-      extras_require={
-          'dev': [
-              'tox',
-              'coverage',
-              'pip-tools',
-              'yala'
-          ]
-      },
+      install_requires=[line.strip()
+                        for line in open("requirements/run.txt").readlines()
+                        if not line.startswith('#')],
       packages=find_packages(exclude=['tests']),
       cmdclass={
           'ci': CITest,
