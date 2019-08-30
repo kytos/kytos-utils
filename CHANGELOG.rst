@@ -23,15 +23,18 @@ Fixed
 Security
 ========
 
-[2019.2b1] - "" beta1 - 2019-08-30
-**********************************
+
+[2019.2b1] - "gil" beta1 - 2019-08-30
+*************************************
 Changed
 =======
-- Enable Scrutinizer coverage stats.
+ - Improved installation of dependencies - pinned versions for dependencies
+   in the production and developer install modes.
 
 Removed
 =======
- - Removed Napps installation, now this is done by kytos core.
+ - Removed local NApp installation - now this is done by Kytos core.
+
  
 [2019.1] - "fafa" stable - 2019-07-12
 *************************************
