@@ -5,7 +5,37 @@ This is a log of changes made to the *kytos-utils* project.
 
 UNRELEASED - Under development
 ******************************
+Added
+=====
 
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+
+Fixed
+=====
+
+Security
+========
+
+
+[2019.2b1] - "gil" beta1 - 2019-08-30
+*************************************
+Changed
+=======
+ - Improved installation of dependencies - pinned versions for dependencies
+   in the production and developer install modes.
+
+Removed
+=======
+ - Removed local NApp installation - now this is done by Kytos core.
+
+ 
 [2019.1] - "fafa" stable - 2019-07-12
 *************************************
 
