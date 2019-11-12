@@ -15,6 +15,8 @@ from setuptools import Command, find_packages, setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
+from kytos import __version__
+
 if 'VIRTUAL_ENV' in os.environ:
     BASE_ENV = os.environ['VIRTUAL_ENV']
 else:
@@ -167,7 +169,7 @@ class DevelopMode(develop, CommonInstall):
 
 
 setup(name='kytos-utils',
-      version='2019.2b2',
+      version=__version__,
       description='Command line utilities to use with Kytos.',
       url='http://github.com/kytos/kytos-utils',
       author='Kytos Team',

@@ -27,25 +27,41 @@ See 'kytos <command> -h|--help' for more information on a specific command.
 """
 import logging
 from docopt import docopt
+from kytos.core.metadata import __version__ as __kytos_version__
+
+from kytos import __version__ as __kytosutils_version__
 
 logging.basicConfig(format='%(levelname)-5s %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
-    args = docopt(__doc__,
-                  version='kytos command line, version 2019.2b2',
-                  options_first=True)
+    args = docopt(
+        __doc__,
+        version='kytos command line, version '+__kytosutils_version__,
+        options_first=True,
+    )
     command = args['<command>']
     command_args = args['<args>']
     argv = [command] + command_args
-
+    if __kytos_version__ != __kytosutils_version__:
+        logger = logging.getLogger()
+        logger.warning(
+            "kytos ("
+            + __kytos_version__
+            + ") and kytos utils ("
+            + __kytosutils_version__
+            + ") versions are not equal!"
+        )
     if command == 'napps':
         from kytos.cli.commands.napps.parser import parse
+
         parse(argv)
     elif command == 'users':
         from kytos.cli.commands.users.parser import parse
+
         parse(argv)
     elif command == 'web':
         from kytos.cli.commands.web.parser import parse
+
         parse(argv)
     else:
         print("Error: Invalid syntax")
