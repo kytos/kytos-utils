@@ -5,7 +5,6 @@ import sys
 from getpass import getpass
 
 import requests
-
 from kytos.utils.config import KytosConfig
 
 LOG = logging.getLogger(__name__)
