@@ -27,30 +27,23 @@ See 'kytos <command> -h|--help' for more information on a specific command.
 """
 import logging
 from docopt import docopt
-from kytos.core.metadata import __version__ as __kytos_version__
+from kytos.core.metadata import __version__ as kytos_version
 
-from kytos import __version__ as __kytosutils_version__
+from kytos import __version__ as kutils_version
 
 logging.basicConfig(format='%(levelname)-5s %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
-    args = docopt(
-        __doc__,
-        version='kytos command line, version '+__kytosutils_version__,
-        options_first=True,
-    )
+    args = docopt(__doc__,
+                  version='kytos command line, version %s' % kutils_version,
+                  options_first=True)
     command = args['<command>']
     command_args = args['<args>']
     argv = [command] + command_args
-    if __kytos_version__ != __kytosutils_version__:
+    if kytos_version != kutils_version:
         logger = logging.getLogger()
-        logger.warning(
-            "kytos ("
-            + __kytos_version__
-            + ") and kytos utils ("
-            + __kytosutils_version__
-            + ") versions are not equal!"
-        )
+        logger.warning('kytos (%s) and kytos utils (%s) versions '
+                       'are not equal.', kytos_version, kutils_version)
     if command == 'napps':
         from kytos.cli.commands.napps.parser import parse
 

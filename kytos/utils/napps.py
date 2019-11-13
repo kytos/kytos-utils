@@ -12,12 +12,13 @@ from http import HTTPStatus
 # Disable pylint import checks that conflict with isort
 # pylint: disable=ungrouped-imports,wrong-import-order
 from jinja2 import Environment, FileSystemLoader
+from ruamel.yaml import YAML
+
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 from kytos.utils.exceptions import KytosException
 from kytos.utils.openapi import OpenAPI
 from kytos.utils.settings import SKEL_PATH
-from ruamel.yaml import YAML
 
 LOG = logging.getLogger(__name__)
 

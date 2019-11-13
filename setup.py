@@ -26,23 +26,15 @@ ETC_KYTOS = 'etc/kytos'
 KYTOS_SKEL_PATH = 'etc/kytos/skel'
 USERNAME_PATH = os.path.join(KYTOS_SKEL_PATH, 'napp-structure/username')
 NAPP_PATH = os.path.join(USERNAME_PATH, 'napp')
-ETC_FILES = [
-    (
-        os.path.join(BASE_ENV, USERNAME_PATH),
-        [os.path.join(USERNAME_PATH, '__init__.py')],
-    ),
-    (
-        os.path.join(BASE_ENV, NAPP_PATH),
-        [
-            os.path.join(NAPP_PATH, '__init__.py.template'),
-            os.path.join(NAPP_PATH, 'kytos.json.template'),
-            os.path.join(NAPP_PATH, 'openapi.yml.template'),
-            os.path.join(NAPP_PATH, 'main.py.template'),
-            os.path.join(NAPP_PATH, 'README.rst.template'),
-            os.path.join(NAPP_PATH, 'settings.py.template'),
-        ],
-    ),
-]
+ETC_FILES = [(os.path.join(BASE_ENV, USERNAME_PATH),
+              [os.path.join(USERNAME_PATH, '__init__.py')]),
+             (os.path.join(BASE_ENV, NAPP_PATH),
+              [os.path.join(NAPP_PATH, '__init__.py.template'),
+               os.path.join(NAPP_PATH, 'kytos.json.template'),
+               os.path.join(NAPP_PATH, 'openapi.yml.template'),
+               os.path.join(NAPP_PATH, 'main.py.template'),
+               os.path.join(NAPP_PATH, 'README.rst.template'),
+               os.path.join(NAPP_PATH, 'settings.py.template')])]
 
 
 class SimpleCommand(Command):

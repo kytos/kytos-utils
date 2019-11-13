@@ -6,6 +6,7 @@ import re
 from urllib.error import HTTPError, URLError
 
 import requests
+
 from kytos.utils.exceptions import KytosException
 from kytos.utils.napps import NAppsManager
 
