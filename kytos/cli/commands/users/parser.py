@@ -20,6 +20,7 @@ import sys
 from docopt import docopt
 
 from kytos.cli.commands.users.api import UsersAPI
+from kytos.utils.config import KytosConfig
 from kytos.utils.exceptions import KytosException
 
 
@@ -35,5 +36,6 @@ def parse(argv):
 
 def call(subcommand, args):
     """Call a subcommand passing the args."""
+    KytosConfig.check_versions()
     func = getattr(UsersAPI, subcommand)
     func(args)

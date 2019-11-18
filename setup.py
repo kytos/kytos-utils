@@ -4,6 +4,7 @@ Run "python3 setup --help-commands" to list all available commands and their
 descriptions.
 """
 import os
+import re
 import shutil
 import sys
 from abc import abstractmethod
@@ -14,8 +15,6 @@ from subprocess import CalledProcessError, call, check_call
 from setuptools import Command, find_packages, setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-
-from kytos import __version__
 
 if 'VIRTUAL_ENV' in os.environ:
     BASE_ENV = os.environ['VIRTUAL_ENV']
@@ -165,13 +164,19 @@ class DevelopMode(develop, CommonInstall):
         self._create_data_files_directory(True)
 
 
+# We are parsing the metadata file as if it was a text file because if we
+# import it as a python module, necessarily the kytos.utils module would be
+# initialized.
+META_FILE = open("kytos/utils/metadata.py").read()
+METADATA = dict(re.findall(r"(__[a-z]+__)\s*=\s*'([^']+)'", META_FILE))
+
 setup(name='kytos-utils',
-      version=__version__,
-      description='Command line utilities to use with Kytos.',
-      url='http://github.com/kytos/kytos-utils',
-      author='Kytos Team',
-      author_email='devel@lists.kytos.io',
-      license='MIT',
+      version=METADATA.get('__version__'),
+      description=METADATA.get('__description__'),
+      url=METADATA.get('__url__'),
+      author=METADATA.get('__author__'),
+      author_email=METADATA.get('__author_email__'),
+      license=METADATA.get('__license__'),
       test_suite='tests',
       include_package_data=True,
       scripts=['bin/kytos'],

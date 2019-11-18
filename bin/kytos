@@ -26,24 +26,24 @@ The most commonly used kytos commands are:
 See 'kytos <command> -h|--help' for more information on a specific command.
 """
 import logging
-from docopt import docopt
-from kytos.core.metadata import __version__ as kytos_version
+import os
 
-from kytos import __version__ as kutils_version
+from docopt import docopt
+from kytos.utils.config import KytosConfig
 
 logging.basicConfig(format='%(levelname)-5s %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
+    metadata = KytosConfig().get_metadata()
+    version = metadata.get('__version__')
+
     args = docopt(__doc__,
-                  version='kytos command line, version %s' % kutils_version,
+                  version='kytos command line, version %s' % version,
                   options_first=True)
     command = args['<command>']
     command_args = args['<args>']
     argv = [command] + command_args
-    if kytos_version != kutils_version:
-        logger = logging.getLogger()
-        logger.warning('kytos (%s) and kytos utils (%s) versions '
-                       'are not equal.', kytos_version, kutils_version)
+
     if command == 'napps':
         from kytos.cli.commands.napps.parser import parse
 

@@ -41,6 +41,7 @@ import sys
 from docopt import docopt
 
 from kytos.cli.commands.napps.api import NAppsAPI
+from kytos.utils.config import KytosConfig
 from kytos.utils.exceptions import KytosException
 
 
@@ -56,6 +57,7 @@ def parse(argv):
 
 def call(subcommand, args):
     """Call a subcommand passing the args."""
+    KytosConfig.check_versions()
     args['<napp>'] = parse_napps(args['<napp>'])
     func = getattr(NAppsAPI, subcommand)
     func(args)
