@@ -26,13 +26,19 @@ The most commonly used kytos commands are:
 See 'kytos <command> -h|--help' for more information on a specific command.
 """
 import logging
+import os
+
 from docopt import docopt
+from kytos.utils.config import KytosConfig
 
 logging.basicConfig(format='%(levelname)-5s %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
+    metadata = KytosConfig().get_metadata()
+    version = metadata.get('__version__')
+
     args = docopt(__doc__,
-                  version='kytos command line, version 2019.2b2',
+                  version='kytos command line, version %s' % version,
                   options_first=True)
     command = args['<command>']
     command_args = args['<args>']
@@ -40,12 +46,15 @@ if __name__ == '__main__':
 
     if command == 'napps':
         from kytos.cli.commands.napps.parser import parse
+
         parse(argv)
     elif command == 'users':
         from kytos.cli.commands.users.parser import parse
+
         parse(argv)
     elif command == 'web':
         from kytos.cli.commands.web.parser import parse
+
         parse(argv)
     else:
         print("Error: Invalid syntax")

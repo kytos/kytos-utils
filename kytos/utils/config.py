@@ -6,8 +6,11 @@
 # Authors:
 #    Beraldo Leal <beraldo AT ncc DOT unesp DOT br>
 
+import json
 import logging
 import os
+import re
+import urllib.request
 from collections import namedtuple
 from configparser import ConfigParser
 
@@ -24,7 +27,7 @@ class KytosConfig():
     def __init__(self, config_file='~/.kytosrc'):
         """Init method.
 
-        Receive the confi_file as argument.
+        Receive the config_file as argument.
         """
         self.config_file = os.path.expanduser(config_file)
         self.debug = False
@@ -123,3 +126,33 @@ class KytosConfig():
         with open(filename, 'w') as out_file:
             os.chmod(filename, 0o0600)
             new_config.write(out_file)
+
+    @classmethod
+    def get_metadata(cls):
+        """Return kytos-utils metadata."""
+        meta_path = ("%s/metadata.py" % os.path.dirname(__file__))
+        meta_file = open(meta_path).read()
+        metadata = dict(re.findall(r"(__[a-z]+__)\s*=\s*'([^']+)'", meta_file))
+        return metadata
+
+    @classmethod
+    def get_remote_metadata(cls):
+        """Return kytos metadata."""
+        kytos_api = KytosConfig().config.get('kytos', 'api')
+        meta_uri = kytos_api + 'api/kytos/core/metadata/'
+        meta_file = urllib.request.urlopen(meta_uri).read()
+        metadata = json.loads(meta_file)
+        return metadata
+
+    @classmethod
+    def check_versions(cls):
+        """Check if kytos and kytos-utils metadata are compatible."""
+        kytos_metadata = cls.get_remote_metadata()
+        kutils_metadata = cls.get_metadata()
+        kytos_version = kytos_metadata.get('__version__')
+        kutils_version = kutils_metadata.get('__version__')
+
+        if kytos_version != kutils_version:
+            logger = logging.getLogger()
+            logger.warning('kytos (%s) and kytos utils (%s) versions '
+                           'are not equal.', kytos_version, kutils_version)

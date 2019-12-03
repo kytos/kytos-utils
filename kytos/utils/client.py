@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 
 
 class CommonClient:
-    """Generic class used to make request the Napss server."""
+    """Generic class used to make request the NApps server."""
 
     def __init__(self, config=None):
         """Set Kytos config."""
