@@ -1,11 +1,12 @@
-prepare:
-	pip3.7 install --upgrade pip setuptools wheel twine
+build: clean prepare
+	python3.6 setup.py sdist
+	ls -l dist/
 
 clean:
 	rm -rf build/ dist/ *.egg-info/
 
-build: clean
-	python3.7 setup.py sdist bdist_wheel
+prepare:
+	pip3.6 install --upgrade pip setuptools wheel twine
 
 testupload: build
 	twine upload -r pypitest dist/*
