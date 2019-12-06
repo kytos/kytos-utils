@@ -23,6 +23,13 @@ Fixed
 Security
 ========
 
+[2019.2b3] - "gil" beta3 - 2019-12-06
+*************************************
+Added
+=====
+- Added a warning to alert users when there's a version mismatch
+  between kytos-utils and kytos core.
+
 
 [2019.2b2] - "gil" beta2 - 2019-10-18
 **************************************
