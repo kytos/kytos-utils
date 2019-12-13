@@ -23,6 +23,13 @@ Fixed
 Security
 ========
 
+
+[2019.2rc1] - "gil" release candidate 1 - 2019-12-13
+****************************************************
+
+No major changes since the last pre-release.
+
+
 [2019.2b3] - "gil" beta3 - 2019-12-06
 *************************************
 Added
