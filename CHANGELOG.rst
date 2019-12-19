@@ -24,6 +24,13 @@ Security
 ========
 
 
+[2019.2] - "gil" stable - 2019-12-20
+************************************
+Fixed
+=====
+- Fixed problem when packaging a NApp, now kytos-utils will ignore all files
+  listed on .gitignore.
+
 [2019.2rc1] - "gil" release candidate 1 - 2019-12-13
 ****************************************************
 
