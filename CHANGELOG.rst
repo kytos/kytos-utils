@@ -24,6 +24,16 @@ Security
 ========
 
 
+[2019.2] - "gil" stable - 2019-12-20
+************************************
+
+This is the stable version based on the last beta pre-releases.
+
+Fixed
+=====
+- Fixed a problem on the `.gitignore` parser when packaging a NApp.
+
+
 [2019.2rc1] - "gil" release candidate 1 - 2019-12-13
 ****************************************************
 
