@@ -11,6 +11,7 @@ from http import HTTPStatus
 
 # Disable pylint import checks that conflict with isort
 # pylint: disable=ungrouped-imports,wrong-import-order
+import pathspec
 from jinja2 import Environment, FileSystemLoader
 from ruamel.yaml import YAML
 
@@ -427,6 +428,20 @@ class NAppsManager:
                 package that will be POSTed to the napp server.
 
         """
+        def get_matches(path):
+            """Return all NApp files matching any .gitignore pattern."""
+            ignored_files = [".git"]
+            with open(".gitignore", 'r') as kytosignore:
+                ignored_files.extend(kytosignore.readlines())
+
+            # Define Wildmatch pattern (default gitignore pattern)
+            pattern = pathspec.patterns.GitWildMatchPattern
+            spec = pathspec.PathSpec.from_lines(pattern, ignored_files)
+            # Get tree containing all matching files
+            match_tree = spec.match_tree(path)
+            # Create list with all absolute paths of match tree
+            return ["%s/%s" % (path, match) for match in match_tree]
+
         files = []
         path = os.getcwd()
 
@@ -442,22 +457,12 @@ class NAppsManager:
         # home/user/napps/kytos/kronos/*
         files = list(filter(lambda x: napp_name in x, files))
 
-        ignored_files = [".git"]
-        with open(".gitignore", 'r') as kytosignore:
-            for line in kytosignore:
-                # continue if the line starts with # or contains only spaces
-                # or nothing
-                if re.search(r"^(#+|\s*$)", line):
-                    continue
-                # replace to '' if the character is * or / in the begin or
-                # / or \n in the end of line.
-                line = re.sub(r"^([*]|/)|(/|\n)$", '', line)
-                ignored_files.append(line)
+        matches = get_matches(path)
+
         for filename in files.copy():
-            for line in ignored_files:
-                if re.search(line+"$", filename):
-                    files.remove(filename)
-                    break
+            if filename in matches:
+                files.remove(filename)
+
         # Create the '.napp' package
         napp_file = tarfile.open(napp_name + '.napp', 'x:xz')
         for local_f in files:
