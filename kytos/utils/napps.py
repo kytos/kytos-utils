@@ -431,8 +431,14 @@ class NAppsManager:
         def get_matches(path):
             """Return all NApp files matching any .gitignore pattern."""
             ignored_files = [".git"]
-            with open(".gitignore", 'r') as kytosignore:
-                ignored_files.extend(kytosignore.readlines())
+            with open(".gitignore", 'r') as local_gitignore:
+                ignored_files.extend(local_gitignore.readlines())
+
+            user_gitignore_path = pathlib.Path("%s/.gitignore" %
+                                               pathlib.Path.home())
+            if user_gitignore_path.exists():
+                with open(user_gitignore_path, 'r') as user_gitignore:
+                    ignored_files.extend(user_gitignore.readlines())
 
             # Define Wildmatch pattern (default gitignore pattern)
             pattern = pathspec.patterns.GitWildMatchPattern
