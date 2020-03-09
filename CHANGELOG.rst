@@ -24,7 +24,7 @@ Security
 ========
 
 
-[2020.1b1] - "" beta1 - 2020-03-06
+[2020.1b1] - "helena" beta1 - 2020-03-09
 **********************************
 
 Added
@@ -33,11 +33,12 @@ Added
 
 Changed
 =======
-- Now, matches present in user's `.gitignore` aren't packaging.
-- kytos-utils can run any command even if kytos isn't running.
+- `kytos napps upload` also ignores patterns listed inside
+  user's `.gitignore`.
 
 Fixed
 =====
+- kytos-utils can run any command even if kytos isn't running.
 - Fixed Scrutinizer coverage error.
 
 
