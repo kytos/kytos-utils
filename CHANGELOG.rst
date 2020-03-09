@@ -24,6 +24,24 @@ Security
 ========
 
 
+[2020.1b1] - "helena" beta1 - 2020-03-09
+****************************************
+
+Added
+=====
+- Added long description field for display in pypi.org.
+
+Changed
+=======
+- `kytos napps upload` also ignores patterns listed inside
+  user's `.gitignore`.
+
+Fixed
+=====
+- kytos-utils can run any command even if kytos isn't running.
+- Fixed Scrutinizer coverage error.
+
+
 [2019.2] - "gil" stable - 2019-12-20
 ************************************
 
