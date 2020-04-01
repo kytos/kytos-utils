@@ -3,7 +3,6 @@
 Run "python3 setup --help-commands" to list all available commands and their
 descriptions.
 """
-import os
 import re
 import shutil
 # import sys
@@ -13,27 +12,6 @@ from distutils.command.clean import clean  # pylint: disable=E0401,E0611
 from subprocess import CalledProcessError, call, check_call
 
 from setuptools import Command, find_packages, setup
-from setuptools.command.develop import develop
-from setuptools.command.install import install
-
-if 'VIRTUAL_ENV' in os.environ:
-    BASE_ENV = os.environ['VIRTUAL_ENV']
-else:
-    BASE_ENV = '/'
-
-ETC_KYTOS = 'etc/kytos'
-KYTOS_SKEL_PATH = 'etc/kytos/skel'
-USERNAME_PATH = os.path.join(KYTOS_SKEL_PATH, 'napp-structure/username')
-NAPP_PATH = os.path.join(USERNAME_PATH, 'napp')
-ETC_FILES = [(os.path.join(BASE_ENV, USERNAME_PATH),
-              [os.path.join(USERNAME_PATH, '__init__.py')]),
-             (os.path.join(BASE_ENV, NAPP_PATH),
-              [os.path.join(NAPP_PATH, '__init__.py.template'),
-               os.path.join(NAPP_PATH, 'kytos.json.template'),
-               os.path.join(NAPP_PATH, 'openapi.yml.template'),
-               os.path.join(NAPP_PATH, 'main.py.template'),
-               os.path.join(NAPP_PATH, 'README.rst.template'),
-               os.path.join(NAPP_PATH, 'settings.py.template')])]
 
 
 class SimpleCommand(Command):
@@ -114,60 +92,6 @@ class Linter(SimpleCommand):
             # sys.exit(-1)
 
 
-class CommonInstall:
-    """Class with common procedures to install the package."""
-
-    @staticmethod
-    def _create_data_files_directory(symlink=False):
-        """Install data_files in the /etc directory."""
-        current_directory = os.path.abspath(os.path.dirname(__file__))
-
-        etc_kytos = os.path.join(BASE_ENV, ETC_KYTOS)
-
-        if not os.path.exists(etc_kytos):
-            os.makedirs(etc_kytos)
-
-        src = os.path.join(current_directory, KYTOS_SKEL_PATH)
-        dst = os.path.join(BASE_ENV, KYTOS_SKEL_PATH)
-
-        if os.path.exists(dst):
-            if not os.listdir(dst):
-                # Path already exists but it's empty, so we'll populate it
-                # We remove it first to avoid an exception from copytree
-                os.rmdir(dst)
-                shutil.copytree(src, dst)
-        else:
-            # It doesn't exist yet, so we should symlink or copy contents
-            if symlink:
-                os.symlink(src, dst)
-            else:
-                shutil.copytree(src, dst)
-
-
-class InstallMode(install, CommonInstall):
-    """Procedures to install the package."""
-
-    def run(self):
-        """Install the package in a developer mode."""
-        super().run()
-        self._create_data_files_directory()
-
-
-# pylint: disable=too-many-ancestors
-class DevelopMode(develop, CommonInstall):
-    """Recommended setup for kytos-utils developers.
-
-    Instead of copying the files to the expected directories, a symlink is
-    created on the system aiming the current source code.
-    """
-
-    def run(self):
-        """Install the package in a developer mode."""
-        super().run()
-        self._create_data_files_directory(True)
-# pylint: enable=too-many-ancestors
-
-
 # We are parsing the metadata file as if it was a text file because if we
 # import it as a python module, necessarily the kytos.utils module would be
 # initialized.
@@ -193,8 +117,6 @@ setup(name='kytos-utils',
           'ci': CITest,
           'clean': Cleaner,
           'coverage': TestCoverage,
-          'develop': DevelopMode,
-          'install': InstallMode,
           'lint': Linter
       },
       zip_safe=False)
