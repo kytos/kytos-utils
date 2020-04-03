@@ -31,7 +31,7 @@ def parse(argv):
         call(sys.argv[2], args)
     except KytosException as exception:
         print("Error parsing args: {}".format(exception))
-        exit()
+        sys.exit()
 
 
 def call(subcommand, args):

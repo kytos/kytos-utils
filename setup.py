@@ -151,6 +151,7 @@ class InstallMode(install, CommonInstall):
         self._create_data_files_directory()
 
 
+# pylint: disable=too-many-ancestors
 class DevelopMode(develop, CommonInstall):
     """Recommended setup for kytos-utils developers.
 
@@ -162,6 +163,7 @@ class DevelopMode(develop, CommonInstall):
         """Install the package in a developer mode."""
         super().run()
         self._create_data_files_directory(True)
+# pylint: enable=too-many-ancestors
 
 
 # We are parsing the metadata file as if it was a text file because if we
