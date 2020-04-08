@@ -10,12 +10,38 @@ import json
 import logging
 import os
 import re
+import shutil
 from collections import namedtuple
 from configparser import ConfigParser
+from pathlib import Path
 from urllib.error import URLError
 from urllib.request import urlopen
 
 LOG = logging.getLogger(__name__)
+
+
+def create_skel_dir():
+    """Install data_files in the /etc directory."""
+    base_env = os.environ.get('VIRTUAL_ENV', '/')
+    etc_kytos = os.path.join(base_env, 'etc/kytos')
+    kytos_skel_path = 'templates/skel'
+    parent_dir = Path(os.path.abspath(os.path.dirname(__file__))).parent
+
+    if not os.path.exists(etc_kytos):
+        os.makedirs(etc_kytos)
+
+    src = os.path.join(parent_dir, kytos_skel_path)
+    skel = kytos_skel_path.replace('templates/', '')
+    dst = os.path.join(etc_kytos, skel)
+
+    if os.path.exists(dst):
+        if not os.listdir(dst):
+            # Path already exists but it's empty, so we'll populate it
+            # We remove it first to avoid an exception from copytree
+            os.rmdir(dst)
+            shutil.copytree(src, dst)
+    else:
+        shutil.copytree(src, dst)
 
 
 class KytosConfig():
@@ -30,6 +56,7 @@ class KytosConfig():
 
         Receive the config_file as argument.
         """
+        create_skel_dir()
         self.config_file = os.path.expanduser(config_file)
         self.debug = False
         if self.debug:

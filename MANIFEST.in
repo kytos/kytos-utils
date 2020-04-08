@@ -1,4 +1,4 @@
 include *.rst
 include LICENSE
-recursive-include etc/ *
+recursive-include kytos/templates *
 include requirements/*
