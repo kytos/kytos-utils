@@ -23,11 +23,14 @@ Fixed
 Security
 ========
 
-[2020.1b2] - "helena" beta2 - UNRELEASED
+
+[2020.1b2] - "helena" beta2 - 2020-04-08
 ****************************************
+
 Changed
 =======
 - Upgraded versions for all dependencies
+- Change config files creation to run time
 
 
 [2020.1b1] - "helena" beta1 - 2020-03-09
