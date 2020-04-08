@@ -10,6 +10,9 @@ Authors
 - Humberto Diógenes <hdiogenes AT gmail DOT com>
 - Lucas Felix <lucasgsfelix AT gmail DOT com>
 - Rogerio Motitsuki <rogerio.motitsuki AT gmail DOT com>
+- Carlos Magno Barbosa <cmagnobarbosa AT gmail DOT com>
+- José Mauro <zemauror AT gmail DOT com>
+
 
 Contributors
 ------------
@@ -17,4 +20,3 @@ Contributors
 - Luan Gonçalves <luanlg.cco AT gmail DOT com>
 - Erick Vermot <erick.vermot AT gmail DOT com>
 - Vinicius Arcanjo <viniciusarcanjov AT gmail DOT com>
-- Carlos Magno Barbosa <cmagnobarbosa AT gmail DOT com>
