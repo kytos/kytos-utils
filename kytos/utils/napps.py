@@ -9,12 +9,12 @@ import tarfile
 import urllib
 from http import HTTPStatus
 
-from jinja2 import Environment, FileSystemLoader
-from ruamel.yaml import YAML
-
 # Disable pylint import checks that conflict with isort
 # pylint: disable=ungrouped-imports,wrong-import-order
 import pathspec
+from jinja2 import Environment, FileSystemLoader
+from ruamel.yaml import YAML
+
 from kytos.utils.client import NAppsClient
 from kytos.utils.config import KytosConfig
 from kytos.utils.exceptions import KytosException
