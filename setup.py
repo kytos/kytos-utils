@@ -4,8 +4,7 @@ Run "python3 setup --help-commands" to list all available commands and their
 descriptions.
 """
 import re
-import shutil
-# import sys
+import sys
 from abc import abstractmethod
 # Disabling checks due to https://github.com/PyCQA/pylint/issues/73
 from distutils.command.clean import clean  # pylint: disable=E0401,E0611
@@ -87,9 +86,7 @@ class Linter(SimpleCommand):
             print('No linter error found.')
         except CalledProcessError:
             print('Linter check failed. Fix the error(s) above and try again.')
-            # disable error exit: same isort version giving different results
-            # on local machine vs. Scrutinizer
-            # sys.exit(-1)
+            sys.exit(-1)
 
 
 # We are parsing the metadata file as if it was a text file because if we
