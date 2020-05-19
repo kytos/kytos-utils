@@ -23,6 +23,15 @@ Fixed
 Security
 ========
 
+[2020.1b3] - "helena" beta3 - 2020-05-19
+****************************************
+Added
+=====
+- Enabled Travis CI.
+
+Fixed
+=====
+- Fixed some linter issues.
 
 [2020.1b2] - "helena" beta2 - 2020-04-08
 ****************************************
@@ -91,7 +100,7 @@ Removed
 =======
  - Removed local NApp installation - now this is done by Kytos core.
 
- 
+
 [2019.1] - "fafa" stable - 2019-07-12
 *************************************
 
@@ -102,11 +111,11 @@ Removed
 **************************************
 Changed
 =======
-  - A better log message when bad requests are sent over REST API 
- 
+  - A better log message when bad requests are sent over REST API
+
 Fixed
 =====
-  - Fixed NApp package structure  
+  - Fixed NApp package structure
 
 
 [2019.1b3] - "fafa" beta3 - 2019-06-17
