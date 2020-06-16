@@ -177,7 +177,10 @@ class NAppsAPI:
         except HTTPError as exception:
             if exception.code == 404:
                 LOG.error('    NApp not found.')
-            else:
+                LOG.info("    If you are trying to install a local NApp, you h"
+                         "ave to use the command 'python setup.py install' ins"
+                         "ide of the 'user/napp' directory.")
+            elif exception.code == 400:
                 LOG.error('    NApps Server error: %s', exception)
         except URLError as exception:
             LOG.error('    NApps Server error: %s', str(exception.reason))
