@@ -304,7 +304,6 @@ class NAppsManager:
 
         json.loads(urllib.request.urlopen(uri).read())
 
-
     @classmethod
     def create_napp(cls, meta_package=False):
         """Bootstrap a basic NApp structure for you to develop your NApp.
