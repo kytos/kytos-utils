@@ -23,6 +23,14 @@ Fixed
 Security
 ========
 
+
+[2020.1rc1] - "helena" release candidate 1 - 2020-06-17
+*******************************************************
+Added
+=====
+- New unit tests: improved coverage from 22% to 92%.
+
+
 [2020.1b3] - "helena" beta3 - 2020-05-19
 ****************************************
 Added
