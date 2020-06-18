@@ -193,12 +193,17 @@ class TestNAppsAPI(unittest.TestCase):
 
         mock_print.assert_called_with({(('kytos', 'mef_eline'), '')})
 
+    @patch('os.popen')
     @patch('builtins.print')
     @patch('kytos.cli.commands.napps.api.NAppsManager')
     def test_print_napps(self, *args):
         """Test _print_napps method."""
-        (mock_napps_manager, mock_print) = args
+        (mock_napps_manager, mock_print, mock_popen) = args
         napps = [('kytos', 'mef_eline')]
+
+        mock_test = MagicMock()
+        mock_test.read.return_value = '1000 1000'
+        mock_popen.return_value = mock_test
 
         mgr = MagicMock()
         mgr.get_enabled.return_value = napps
