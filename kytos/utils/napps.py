@@ -129,7 +129,7 @@ class NAppsManager:
             content = json.loads(response.read())
             return sorted((c[0], c[1]) for c in content['napps'])
         except urllib.error.URLError as exception:
-            LOG.error("Error checking installed NApps. Is Kytos running?")
+            LOG.error("Error checking enabled NApps. Is Kytos running?")
             raise KytosException(exception)
 
     def get_installed(self):
