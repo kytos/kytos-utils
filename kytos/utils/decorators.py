@@ -28,28 +28,30 @@ class kytos_auth:  # pylint: disable=invalid-name
 
     def __call__(self, *args, **kwargs):
         """Code run when func is called."""
-        if not (self.config.has_option('napps', 'api') and
-                self.config.has_option('napps', 'repo')):
+        if not (
+            self.config.has_option("napps", "api")
+            and self.config.has_option("napps", "repo")
+        ):
             uri = input("Enter the kytos napps server address: ")
-            self.config.set('napps', 'api', os.path.join(uri, 'api', ''))
-            self.config.set('napps', 'repo', os.path.join(uri, 'repo', ''))
+            self.config.set("napps", "api", os.path.join(uri, "api", ""))
+            self.config.set("napps", "repo", os.path.join(uri, "repo", ""))
 
-        if not self.config.has_option('auth', 'user'):
+        if not self.config.has_option("auth", "user"):
             user = input("Enter the username: ")
-            self.config.set('auth', 'user', user)
+            self.config.set("auth", "user", user)
         else:
-            user = self.config.get('auth', 'user')
+            user = self.config.get("auth", "user")
 
-        if not self.config.has_option('auth', 'token'):
+        if not self.config.has_option("auth", "token"):
             token = self.authenticate()
         else:
-            token = self.config.get('auth', 'token')
+            token = self.config.get("auth", "token")
 
         # Ignore private attribute warning. We don't wanna make it public only
         # because of a decorator.
         config = self.obj._config  # pylint: disable=protected-access
-        config.set('auth', 'user', user)
-        config.set('auth', 'token', token)
+        config.set("auth", "user", user)
+        config.set("auth", "token", token)
         self.func.__call__(self.obj, *args, **kwargs)
 
     def __get__(self, instance, owner):
@@ -61,28 +63,32 @@ class kytos_auth:  # pylint: disable=invalid-name
 
     def authenticate(self):
         """Check the user authentication."""
-        endpoint = os.path.join(self.config.get('napps', 'api'), 'auth', '')
-        username = self.config.get('auth', 'user')
+        endpoint = os.path.join(self.config.get("napps", "api"), "auth", "")
+        username = self.config.get("auth", "user")
         password = getpass("Enter the password for {}: ".format(username))
         response = requests.get(endpoint, auth=(username, password))
         if response.status_code == 401:
-            invTokenStr = "{\"error\":\"Token not sent or expired: Signature has expired\"}\n"
-            #invTokenStr =  "{\"error\":\"Invalid authentication: User not found.\"}\n"
-            if (invTokenStr == str(response.content, encoding="UTF-8")):
-                print("Seems the token was not set or is expired! Please run \"kytos napps upload\" again.")
+            invTokenStr = (
+                '{"error":"Token not sent or expired: Signature has expired"}\n'
+            )
+            # invTokenStr =  "{\"error\":\"Invalid authentication: User not found.\"}\n"
+            if invTokenStr == str(response.content, encoding="UTF-8"):
+                print(
+                    'Seems the token was not set or is expired! Please run "kytos napps upload" again.'
+                )
                 LOG.error(response.content)
-                LOG.error('ERROR: %s: %s', response.status_code, response.reason)
+                LOG.error("ERROR: %s: %s", response.status_code, response.reason)
                 print("Press Ctrl+C or CTRL+Z to stop the process.")
                 user = input("Enter the username: ")
-                self.config.set('auth', 'user', user)
+                self.config.set("auth", "user", user)
                 self.authenticate()
-                #sys.exit(1)
-        
+                # sys.exit(1)
+
         if response.status_code != 201:
             LOG.error(response.content)
-            LOG.error('ERROR: %s: %s', response.status_code, response.reason)
+            LOG.error("ERROR: %s: %s", response.status_code, response.reason)
             sys.exit(1)
         else:
             data = response.json()
-            KytosConfig().save_token(username, data.get('hash'))
-            return data.get('hash')
+            KytosConfig().save_token(username, data.get("hash"))
+            return data.get("hash")
