@@ -334,56 +334,61 @@ class NAppsManager:
         print(' - at least three characters')
         print('--------------------------------------------------------------')
         print('')
-        while not cls.valid_name(username):
-            username = input('Please, insert your NApps Server username: ')
+        try:
 
-        while not cls.valid_name(napp_name):
-            napp_name = input('Please, insert your NApp name: ')
+            while not cls.valid_name(username):
+                username = input('Please, insert your NApps Server username: ')
 
-        description = input('Please, insert a brief description for your'
-                            'NApp [optional]: ')
-        if not description:
-            # pylint: disable=fixme
-            description = '# TODO: <<<< Insert your NApp description here >>>>'
-            # pylint: enable=fixme
+            while not cls.valid_name(napp_name):
+                napp_name = input('Please, insert your NApp name: ')
 
-        context = {'username': username, 'napp': napp_name,
-                   'description': description}
+            description = input('Please, insert a brief description for your'
+                                'NApp [optional]: ')
+            if not description:
+                # pylint: disable=fixme
+                description = '# TODO: <<<< Insert your NApp description here >>>>'
+                # pylint: enable=fixme
 
-        #: Creating the directory structure (username/napp_name)
-        os.makedirs(username, exist_ok=True)
+            context = {'username': username, 'napp': napp_name,
+                       'description': description}
 
-        #: Creating ``__init__.py`` files
-        with open(os.path.join(username, '__init__.py'), 'w') as init_file:
-            init_file.write(f'"""Napps for the user {username}.""""')
+            #: Creating the directory structure (username/napp_name)
+            os.makedirs(username, exist_ok=True)
 
-        os.makedirs(os.path.join(username, napp_name))
+            #: Creating ``__init__.py`` files
+            with open(os.path.join(username, '__init__.py'), 'w') as init_file:
+                init_file.write(f'"""Napps for the user {username}.""""')
 
-        #: Creating the other files based on the templates
-        templates = os.listdir(templates_path)
-        templates.remove('ui')
-        templates.remove('openapi.yml.template')
+            os.makedirs(os.path.join(username, napp_name))
 
-        if meta_package:
-            templates.remove('main.py.template')
-            templates.remove('settings.py.template')
+            #: Creating the other files based on the templates
+            templates = os.listdir(templates_path)
+            templates.remove('ui')
+            templates.remove('openapi.yml.template')
 
-        for tmp in templates:
-            fname = os.path.join(username, napp_name,
-                                 tmp.rsplit('.template')[0])
-            with open(fname, 'w') as file:
-                content = cls.render_template(templates_path, tmp, context)
-                file.write(content)
+            if meta_package:
+                templates.remove('main.py.template')
+                templates.remove('settings.py.template')
 
-        if not meta_package:
-            NAppsManager.create_ui_structure(username, napp_name,
-                                             ui_templates_path, context)
+            for tmp in templates:
+                fname = os.path.join(username, napp_name,
+                                     tmp.rsplit('.template')[0])
+                with open(fname, 'w') as file:
+                    content = cls.render_template(templates_path, tmp, context)
+                    file.write(content)
 
-        print()
-        print(f'Congratulations! Your NApp has been bootstrapped!\nNow you '
-              'can go to the directory {username}/{napp_name} and begin to '
-              'code your NApp.')
-        print('Have fun!')
+            if not meta_package:
+                NAppsManager.create_ui_structure(username, napp_name,
+                                                 ui_templates_path, context)
+
+            print()
+            print(f'Congratulations! Your NApp has been bootstrapped!\nNow you '
+                  'can go to the directory {username}/{napp_name} and begin to '
+                  'code your NApp.')
+            print('Have fun!')
+        except KeyboardInterrupt:
+            print("User canceled napps creation.")
+            sys.exit(0)
 
     @classmethod
     def create_ui_structure(cls, username, napp_name, ui_templates_path,
