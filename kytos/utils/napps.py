@@ -346,7 +346,8 @@ class NAppsManager:
                                 'NApp [optional]: ')
             if not description:
                 # pylint: disable=fixme
-                description = '# TODO: <<<< Insert your NApp description here >>>>'
+                description = '# TODO: <<<< Insert your NApp'
+                'description here >>>>'
                 # pylint: enable=fixme
 
             context = {'username': username, 'napp': napp_name,
@@ -382,9 +383,10 @@ class NAppsManager:
                                                  ui_templates_path, context)
 
             print()
-            print(f'Congratulations! Your NApp has been bootstrapped!\nNow you '
-                  'can go to the directory {username}/{napp_name} and begin to '
-                  'code your NApp.')
+            print(f'Congratulations! Your NApp has been'
+                  ' bootstrapped!\nNow you can go to the'
+                  ' directory {username}/{napp_name} and'
+                  ' begin to code your NApp.')
             print('Have fun!')
         except KeyboardInterrupt:
             print("User canceled napps creation.")
