@@ -345,7 +345,7 @@ class NAppsManager:
             description = input('Please, insert a brief description for your'
                                 'NApp [optional]: ')
             if not description:
-                # pylint: disable=fixme
+                # pylint: disable=fixme, pointless-string-statement
                 description = '# TODO: <<<< Insert your NApp'
                 'description here >>>>'
                 # pylint: enable=fixme
