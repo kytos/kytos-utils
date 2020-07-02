@@ -68,7 +68,7 @@ class kytos_auth:  # pylint: disable=invalid-name
         if response.status_code == 401:
             invTokenStr = "{\"error\":\"Token not sent or expired: " \
                           "Signature has expired\"}\n"
-            # pylint disable=superfluous-parens
+            # pylint: disable=superfluous-parens
             if (invTokenStr == str(response.content, encoding="UTF-8")):
                 print("Seems the token was not set or is expired!"
                       "Please run \"kytos napps upload\" again.")
