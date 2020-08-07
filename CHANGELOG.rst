@@ -23,6 +23,16 @@ Fixed
 Security
 ========
 
+[2020.1] - "helena" stable - 2020-08-07
+***************************************
+Added
+=====
+- Added tags decorator to run tests by type and size.
+
+Fixed
+=====
+- Fixed message error in get_enabled method.
+
 
 [2020.1rc1] - "helena" release candidate 1 - 2020-06-17
 *******************************************************
