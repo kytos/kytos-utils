@@ -32,6 +32,8 @@ Added
 Fixed
 =====
 - Fixed message error in get_enabled method.
+- Fixed Travis false positive message.
+- Fixed lzma module error when Scrutinizer run unit tests.
 
 
 [2020.1rc1] - "helena" release candidate 1 - 2020-06-17
