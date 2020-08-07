@@ -121,7 +121,7 @@ class TestCoverage(Test):
             check_call(cmd, shell=True)
         except CalledProcessError as exc:
             print(exc)
-            print('Coverate tests failed. Fix the errors above and try again.')
+            print('Coverage tests failed. Fix the errors above and try again.')
             sys.exit(-1)
 
 
