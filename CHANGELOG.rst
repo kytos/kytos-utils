@@ -27,13 +27,13 @@ Security
 ***************************************
 Added
 =====
-- Added tags decorator to run tests by type and size.
+- Added ``@tags`` decorator to run tests by type and size.
 
 Fixed
 =====
-- Fixed message error in get_enabled method.
-- Fixed Travis false positive message.
-- Fixed lzma module error when Scrutinizer run unit tests.
+- Fixed error message in the ``get_enabled`` method.
+- Fixed Travis false positive when tests failed.
+- Fixed lzma module error when Scrutinizer runs unit tests.
 
 
 [2020.1rc1] - "helena" release candidate 1 - 2020-06-17
