@@ -8,11 +8,12 @@ filter:
         - 'bin/*'
 build:
     environment:
-        python: 3.6.3
+        python: 3.6.9
         postgresql: false
         redis: false
     dependencies:
         before:
+            - pip install tox
             - pip install coverage
     tests:
         override:
