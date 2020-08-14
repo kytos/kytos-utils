@@ -445,20 +445,6 @@ class TestNapps(unittest.TestCase):
 
         mock_urlopen.assert_called_with(uri)
 
-    @patch('kytos.utils.napps.LOG')
-    @patch('urllib.request.urlopen')
-    def test_remote_install__error(self, *args):
-        """Test remote_install method to error case."""
-        (mock_urlopen, mock_logger) = args
-        http_errors = [HTTPError('url', 400, 'msg', 'hdrs', MagicMock()),
-                       HTTPError('url', 500, 'msg', 'hdrs', MagicMock())]
-        mock_urlopen.side_effect = http_errors
-
-        self.napps_manager.remote_install()
-        self.napps_manager.remote_install()
-
-        self.assertEqual(mock_logger.error.call_count, 2)
-
     def test_valid_name(self):
         """Test valid_name method."""
         valid_name = self.napps_manager.valid_name('username')

@@ -1,10 +1,12 @@
 """kytos.cli.commands.napps.api.NAppsAPI tests."""
 import unittest
 from unittest.mock import MagicMock, call, patch
+from urllib.error import HTTPError
 
 import requests
 
 from kytos.cli.commands.napps.api import NAppsAPI
+from kytos.utils.exceptions import KytosException
 
 
 # pylint: disable=too-many-public-methods
@@ -179,6 +181,35 @@ class TestNAppsAPI(unittest.TestCase):
         self.napps_api.install_napp(mgr)
 
         mgr.remote_install.assert_called()
+
+    @patch('kytos.utils.napps.NAppsManager')
+    def test_install_napp_error_404(self, mgr):
+        """Test install_napp method."""
+        mgr = MagicMock()
+
+        url = 'www.napps.kytos.io'
+        msg = 'The NApp were not found at server.'
+        code = 404
+        hdrs = 'The HTTP response headers'
+        filep = None
+        mgr.remote_install.side_effect = HTTPError(url, code, msg, hdrs, filep)
+        with self.assertRaises(KytosException):
+            self.napps_api.install_napp(mgr)
+
+    @patch('kytos.utils.napps.NAppsManager')
+    def test_install_napp_error_400(self, mgr):
+        """Test install_napp method."""
+        mgr = MagicMock()
+
+        url = 'www.napps.kytos.io'
+        msg = 'The NApp were not found at server.'
+        code = 400
+        hdrs = 'The HTTP response headers'
+        filep = None
+        mgr.remote_install.side_effect = HTTPError(url, code, msg, hdrs, filep)
+
+        with self.assertRaises(KytosException):
+            self.napps_api.install_napp(mgr)
 
     @patch('kytos.cli.commands.napps.api.NAppsManager.search')
     @patch('kytos.cli.commands.napps.api.NAppsAPI._print_napps')
