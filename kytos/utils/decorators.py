@@ -1,7 +1,6 @@
 """Decorators for Kytos-utils."""
 import logging
 import os
-import sys
 from getpass import getpass
 
 import requests
@@ -59,16 +58,24 @@ class kytos_auth:  # pylint: disable=invalid-name
 
         return self.__call__
 
+    # pylint: disable=inconsistent-return-statements
     def authenticate(self):
         """Check the user authentication."""
         endpoint = os.path.join(self.config.get('napps', 'api'), 'auth', '')
         username = self.config.get('auth', 'user')
         password = getpass("Enter the password for {}: ".format(username))
         response = requests.get(endpoint, auth=(username, password))
+        if response.status_code == 401:
+            print("Seems the token was not set, is expired, or credentials"
+                  " were incorrect (401 error)! Please run \"kytos "
+                  "napps upload\" again.")
         if response.status_code != 201:
             LOG.error(response.content)
             LOG.error('ERROR: %s: %s', response.status_code, response.reason)
-            sys.exit(1)
+            print("Press Ctrl+C or CTRL+Z to stop the process.")
+            user = input("Enter the username: ")
+            self.config.set('auth', 'user', user)
+            self.authenticate()
         else:
             data = response.json()
             KytosConfig().save_token(username, data.get('hash'))
