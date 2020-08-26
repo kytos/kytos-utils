@@ -187,7 +187,7 @@ class TestNAppsAPI(unittest.TestCase):
         """Test install_napp method."""
         mgr = MagicMock()
 
-        url = 'www.napps.kytos.io'
+        url = 'napps.kytos.io'
         msg = 'The NApp were not found at server.'
         code = 404
         hdrs = 'The HTTP response headers'
@@ -201,7 +201,7 @@ class TestNAppsAPI(unittest.TestCase):
         """Test install_napp method."""
         mgr = MagicMock()
 
-        url = 'www.napps.kytos.io'
+        url = 'napps.kytos.io'
         msg = 'The NApp were not found at server.'
         code = 400
         hdrs = 'The HTTP response headers'

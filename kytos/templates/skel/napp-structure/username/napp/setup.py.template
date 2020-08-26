@@ -12,20 +12,16 @@ from subprocess import call, check_call
 
 from setuptools import Command, setup
 from setuptools.command.develop import develop
-from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
 if 'bdist_wheel' in sys.argv:
     raise RuntimeError("This setup.py does not support wheels")
 
 # Paths setup with virtualenv detection
-if 'VIRTUAL_ENV' in os.environ:
-    BASE_ENV = Path(os.environ['VIRTUAL_ENV'])
-else:
-    BASE_ENV = Path('/')
+BASE_ENV = Path(os.environ.get('VIRTUAL_ENV', '/'))
 
 NAPP_NAME = '{{napp}}'
-NAPP_VERSION = '0.0'
+NAPP_VERSION = '0.1'
 
 # Kytos var folder
 VAR_PATH = BASE_ENV / 'var' / 'lib' / 'kytos'
@@ -99,7 +95,7 @@ class CITest(SimpleCommand):
 
     def run(self):
         """Run unit tests with coverage, doc tests and linter."""
-        cmds = ['python3.6 setup.py ' + cmd
+        cmds = ['python3 setup.py ' + cmd
                 for cmd in ('coverage', 'lint')]
         cmd = ' && '.join(cmds)
         check_call(cmd, shell=True)
@@ -117,22 +113,6 @@ class KytosInstall:
             src = ENABLED_PATH / napp_path
             dst = INSTALLED_PATH / napp_path
             symlink_if_different(src, dst)
-
-
-class EggInfo(egg_info):
-    """Prepare files to be packed."""
-
-    def run(self):
-        """Build css."""
-        # self._install_deps_wheels()
-        super().run()
-
-    # @staticmethod
-    # def _install_deps_wheels():
-    #    """Python wheels are much faster (no compiling)."""
-    #    print('Installing dependencies...')
-    #    check_call([sys.executable, '-m', 'pip', 'install', '-r',
-    #                'requirements/run.in'])
 
 
 class InstallMode(install):
@@ -245,12 +225,11 @@ setup(name=f'kytos_{NAPP_NAME}',
           'develop': DevelopMode,
           'install': InstallMode,
           'lint': Linter,
-          'egg_info': EggInfo,
       },
       zip_safe=False,
       classifiers=[
           'License :: OSI Approved :: MIT License',
           'Operating System :: POSIX :: Linux',
-          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3',
           'Topic :: System :: Networking',
       ])
