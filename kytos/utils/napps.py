@@ -311,6 +311,7 @@ class NAppsManager:
                 LOG.error("Error installing the NApp.")
 
     @classmethod
+    # pylint: disable=too-many-statements
     def create_napp(cls, meta_package=False):
         """Bootstrap a basic NApp structure for you to develop your NApp.
 
