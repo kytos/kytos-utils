@@ -351,8 +351,8 @@ class NAppsManager:
             description = input('Please, insert a brief description for your'
                                 'NApp [optional]: ')
         except KeyboardInterrupt:
-                print("\nUser cancelled napps creation.")
-                sys.exit(0)
+            print("\nUser cancelled napps creation.")
+            sys.exit(0)
 
         if not description:
             # pylint: disable=fixme
@@ -393,8 +393,8 @@ class NAppsManager:
 
         print()
         print(f'Congratulations! Your NApp has been bootstrapped!\nNow  '
-               'you can go to the directory {username}/{napp_name} and '
-               ' begin to code your NApp.')
+              'you can go to the directory {username}/{napp_name} and '
+              ' begin to code your NApp.')
         print('Have fun!')
 
     @classmethod
