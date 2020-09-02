@@ -334,61 +334,68 @@ class NAppsManager:
         print(' - at least three characters')
         print('--------------------------------------------------------------')
         print('')
-
-        try:
-            while not cls.valid_name(username):
+        while not cls.valid_name(username):
+            try:
                 username = input('Please, insert your NApps Server username: ')
+            except KeyboardInterrupt:
+                print("\nUser cancelled napps creation.")
+                sys.exit(0)
 
-            while not cls.valid_name(napp_name):
+        while not cls.valid_name(napp_name):
+            try:
                 napp_name = input('Please, insert your NApp name: ')
-
+            except KeyboardInterrupt:
+                print("\nUser cancelled napps creation.")
+                sys.exit(0)
+        try:
             description = input('Please, insert a brief description for your'
                                 'NApp [optional]: ')
-            if not description:
-                # pylint: disable=fixme
-                description = '# TODO: << Insert your NApp description here >>'
-                # pylint: enable=fixme
-
-            context = {'username': username, 'napp': napp_name,
-                       'description': description}
-
-            #: Creating the directory structure (username/napp_name)
-            os.makedirs(username, exist_ok=True)
-
-            #: Creating ``__init__.py`` files
-            with open(os.path.join(username, '__init__.py'), 'w') as init_file:
-                init_file.write(f'"""Napps for the user {username}.""""')
-
-            os.makedirs(os.path.join(username, napp_name))
-
-            #: Creating the other files based on the templates
-            templates = os.listdir(templates_path)
-            templates.remove('ui')
-            templates.remove('openapi.yml.template')
-
-            if meta_package:
-                templates.remove('main.py.template')
-                templates.remove('settings.py.template')
-
-            for tmp in templates:
-                fname = os.path.join(username, napp_name,
-                                     tmp.rsplit('.template')[0])
-                with open(fname, 'w') as file:
-                    content = cls.render_template(templates_path, tmp, context)
-                    file.write(content)
-
-            if not meta_package:
-                NAppsManager.create_ui_structure(username, napp_name,
-                                                 ui_templates_path, context)
-
-            print()
-            print(f'Congratulations! Your NApp has been bootstrapped!\nNow  '
-                  'you can go to the directory {username}/{napp_name} and '
-                  ' begin to code your NApp.')
-            print('Have fun!')
         except KeyboardInterrupt:
-            print("User canceled napps creation.")
-            sys.exit(0)
+                print("\nUser cancelled napps creation.")
+                sys.exit(0)
+
+        if not description:
+            # pylint: disable=fixme
+            description = '# TODO: <<<< Insert your NApp description here >>>>'
+            # pylint: enable=fixme
+
+        context = {'username': username, 'napp': napp_name,
+                   'description': description}
+
+        #: Creating the directory structure (username/napp_name)
+        os.makedirs(username, exist_ok=True)
+
+        #: Creating ``__init__.py`` files
+        with open(os.path.join(username, '__init__.py'), 'w') as init_file:
+            init_file.write(f'"""Napps for the user {username}.""""')
+
+        os.makedirs(os.path.join(username, napp_name))
+
+        #: Creating the other files based on the templates
+        templates = os.listdir(templates_path)
+        templates.remove('ui')
+        templates.remove('openapi.yml.template')
+
+        if meta_package:
+            templates.remove('main.py.template')
+            templates.remove('settings.py.template')
+
+        for tmp in templates:
+            fname = os.path.join(username, napp_name,
+                                 tmp.rsplit('.template')[0])
+            with open(fname, 'w') as file:
+                content = cls.render_template(templates_path, tmp, context)
+                file.write(content)
+
+        if not meta_package:
+            NAppsManager.create_ui_structure(username, napp_name,
+                                             ui_templates_path, context)
+
+        print()
+        print(f'Congratulations! Your NApp has been bootstrapped!\nNow  '
+               'you can go to the directory {username}/{napp_name} and '
+               ' begin to code your NApp.')
+        print('Have fun!')
 
     @classmethod
     def create_ui_structure(cls, username, napp_name, ui_templates_path,
