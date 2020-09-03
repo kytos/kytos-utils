@@ -324,6 +324,7 @@ class NAppsManager:
 
         username = None
         napp_name = None
+        keyint_error = "\nUser cancelled napps creation."
 
         print('--------------------------------------------------------------')
         print('Welcome to the bootstrap process of your NApp.')
@@ -339,20 +340,20 @@ class NAppsManager:
             try:
                 username = input('Please, insert your NApps Server username: ')
             except KeyboardInterrupt:
-                print("\nUser cancelled napps creation.")
+                print(keyint_error)
                 sys.exit(0)
 
         while not cls.valid_name(napp_name):
             try:
                 napp_name = input('Please, insert your NApp name: ')
             except KeyboardInterrupt:
-                print("\nUser cancelled napps creation.")
+                print(keyint_error)
                 sys.exit(0)
         try:
             description = input('Please, insert a brief description for your'
                                 'NApp [optional]: ')
         except KeyboardInterrupt:
-            print("\nUser cancelled napps creation.")
+            print(keyint_error)
             sys.exit(0)
 
         if not description:
