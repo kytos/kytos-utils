@@ -66,23 +66,16 @@ class kytos_auth:  # pylint: disable=invalid-name
         password = getpass("Enter the password for {}: ".format(username))
         response = requests.get(endpoint, auth=(username, password))
         if response.status_code == 401:
-            invTokenStr = "{\"error\":\"Token not sent or expired: " \
-                          "Signature has expired\"}\n"
-            # pylint: disable=superfluous-parens
-            if (invTokenStr == response.content.decode()):
-                print("Seems the token was not set or is expired!"
-                      "Please run \"kytos napps upload\" again.")
-                LOG.error(response.content)
-                LOG.error('ERROR: %s: %s', response.status_code,
-                          response.reason)
-                print("Press Ctrl+C or CTRL+Z to stop the process.")
-                user = input("Enter the username: ")
-                self.config.set('auth', 'user', user)
-                self.authenticate()
-                # sys.exit(1)
+                print("Seems the token was not set, is expired, or credentials"
+                      " were incorrect (401 error)! Please run \"kytos "
+                      "napps upload\" again.")
         if response.status_code != 201:
             LOG.error(response.content)
             LOG.error('ERROR: %s: %s', response.status_code, response.reason)
+            print("Press Ctrl+C or CTRL+Z to stop the process.")
+            user = input("Enter the username: ")
+            self.config.set('auth', 'user', user)
+            self.authenticate()
             sys.exit(1)
         else:
             data = response.json()
