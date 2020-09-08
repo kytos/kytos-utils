@@ -302,13 +302,7 @@ class NAppsManager:
         uri = self._kytos_api + self._NAPP_INSTALL
         uri = uri.format(self.user, self.napp)
 
-        try:
-            json.loads(urllib.request.urlopen(uri).read())
-        except urllib.error.HTTPError as exception:
-            if exception.code == HTTPStatus.BAD_REQUEST.value:
-                LOG.error("NApp is not installed. Check the NApp list.")
-            else:
-                LOG.error("Error installing the NApp.")
+        json.loads(urllib.request.urlopen(uri).read())
 
     @classmethod
     def create_napp(cls, meta_package=False):
