@@ -23,6 +23,19 @@ Fixed
 Security
 ========
 
+[2020.2b1] - "itamar" beta1 - 2020-09-08
+****************************************
+Added
+=====
+- Added a template for setup.py to be used in NApp creation.
+
+Changed
+=======
+- Updated how to contribute link on README.rst.
+- Updated setup.py template.
+- Updated module kytos/cli/commands/napps/api.py to handle with http code 400.
+- Updated tests to install_napp method.
+
 [2020.1] - "helena" stable - 2020-08-07
 ***************************************
 Added
