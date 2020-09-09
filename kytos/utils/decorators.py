@@ -1,7 +1,6 @@
 """Decorators for Kytos-utils."""
 import logging
 import os
-import sys
 from getpass import getpass
 
 import requests
@@ -59,6 +58,7 @@ class kytos_auth:  # pylint: disable=invalid-name
 
         return self.__call__
 
+    # pylint: disable=inconsistent-return-statements
     def authenticate(self):
         """Check the user authentication."""
         endpoint = os.path.join(self.config.get('napps', 'api'), 'auth', '')
