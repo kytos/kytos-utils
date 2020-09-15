@@ -334,7 +334,7 @@ class NAppsManager:
         while not cls.valid_name(napp_name):
             napp_name = input('Please, insert your NApp name: ')
 
-        description = input('Please, insert a brief description for your'
+        description = input('Please, insert a brief description for your '
                             'NApp [optional]: ')
         if not description:
             # pylint: disable=fixme
