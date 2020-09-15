@@ -374,9 +374,9 @@ class NAppsManager:
                                              ui_templates_path, context)
 
         print()
-        print(f'Congratulations! Your NApp has been bootstrapped!\nNow you '
-              'can go to the directory {username}/{napp_name} and begin to '
-              'code your NApp.')
+        print(f'Congratulations! Your NApp has been bootstrapped!\n'
+              f'Now you can go to the "{username}/{napp_name}" directory '
+              f'and begin to code your NApp.')
         print('Have fun!')
 
     @classmethod
