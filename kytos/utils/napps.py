@@ -321,8 +321,8 @@ class NAppsManager:
         print('--------------------------------------------------------------')
         print('Welcome to the bootstrap process of your NApp.')
         print('--------------------------------------------------------------')
-        print('In order to answer both the username and the napp name,')
-        print('You must follow this naming rules:')
+        print('In order to answer both the username and the NApp name,')
+        print('You must follow these naming rules:')
         print(' - name starts with a letter')
         print(' - name contains only letters, numbers or underscores')
         print(' - at least three characters')
@@ -349,7 +349,7 @@ class NAppsManager:
 
         #: Creating ``__init__.py`` files
         with open(os.path.join(username, '__init__.py'), 'w') as init_file:
-            init_file.write(f'"""Napps for the user {username}.""""')
+            init_file.write(f'"""NApps for the user {username}.""""')
 
         os.makedirs(os.path.join(username, napp_name))
 
@@ -374,9 +374,9 @@ class NAppsManager:
                                              ui_templates_path, context)
 
         print()
-        print(f'Congratulations! Your NApp has been bootstrapped!\nNow you '
-              'can go to the directory {username}/{napp_name} and begin to '
-              'code your NApp.')
+        print(f'Congratulations! Your NApp has been bootstrapped!\n'
+              f'Now you can go to the "{username}/{napp_name}" directory '
+              f'and begin to code your NApp.')
         print('Have fun!')
 
     @classmethod
