@@ -11,7 +11,7 @@ from napps.{{username}}.{{napp}} import settings
 class Main(KytosNApp):
     """Main class of {{username}}/{{napp}} NApp.
 
-    This class is the entry point for this napp.
+    This class is the entry point for this NApp.
     """
 
     def setup(self):
@@ -35,7 +35,7 @@ class Main(KytosNApp):
         pass
 
     def shutdown(self):
-        """Run when your napp is unloaded.
+        """Run when your NApp is unloaded.
 
         If you have some cleanup procedure, insert it here.
         """

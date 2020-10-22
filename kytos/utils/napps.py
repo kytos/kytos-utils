@@ -302,13 +302,7 @@ class NAppsManager:
         uri = self._kytos_api + self._NAPP_INSTALL
         uri = uri.format(self.user, self.napp)
 
-        try:
-            json.loads(urllib.request.urlopen(uri).read())
-        except urllib.error.HTTPError as exception:
-            if exception.code == HTTPStatus.BAD_REQUEST.value:
-                LOG.error("NApp is not installed. Check the NApp list.")
-            else:
-                LOG.error("Error installing the NApp.")
+        json.loads(urllib.request.urlopen(uri).read())
 
     @classmethod
     # pylint: disable=too-many-statements
@@ -329,8 +323,8 @@ class NAppsManager:
         print('--------------------------------------------------------------')
         print('Welcome to the bootstrap process of your NApp.')
         print('--------------------------------------------------------------')
-        print('In order to answer both the username and the napp name,')
-        print('You must follow this naming rules:')
+        print('In order to answer both the username and the NApp name,')
+        print('You must follow these naming rules:')
         print(' - name starts with a letter')
         print(' - name contains only letters, numbers or underscores')
         print(' - at least three characters')
@@ -356,6 +350,8 @@ class NAppsManager:
             print(keyint_error)
             sys.exit(0)
 
+        description = input('Please, insert a brief description for your '
+                            'NApp [optional]: ')
         if not description:
             # pylint: disable=fixme
             description = '# TODO: <<<< Insert your NApp description here >>>>'
@@ -369,7 +365,7 @@ class NAppsManager:
 
         #: Creating ``__init__.py`` files
         with open(os.path.join(username, '__init__.py'), 'w') as init_file:
-            init_file.write(f'"""Napps for the user {username}.""""')
+            init_file.write(f'"""NApps for the user {username}.""""')
 
         os.makedirs(os.path.join(username, napp_name))
 
@@ -394,6 +390,7 @@ class NAppsManager:
                                              ui_templates_path, context)
 
         print()
+
         print(f'Congratulations! Your NApp has been bootstrapped!\nNow  '
               'you can go to the directory {username}/{napp_name} and '
               ' begin to code your NApp.')
