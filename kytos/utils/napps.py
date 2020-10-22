@@ -344,14 +344,12 @@ class NAppsManager:
                 print(keyint_error)
                 sys.exit(0)
         try:
-            description = input('Please, insert a brief description for your'
+            description = input('Please, insert a brief description for your '
                                 'NApp [optional]: ')
         except KeyboardInterrupt:
             print(keyint_error)
             sys.exit(0)
 
-        description = input('Please, insert a brief description for your '
-                            'NApp [optional]: ')
         if not description:
             # pylint: disable=fixme
             description = '# TODO: <<<< Insert your NApp description here >>>>'
@@ -392,7 +390,7 @@ class NAppsManager:
         print()
 
         print(f'Congratulations! Your NApp has been bootstrapped!\nNow  '
-              'you can go to the directory {username}/{napp_name} and '
+              'you can go to the directory "{username}/{napp_name}" and '
               ' begin to code your NApp.')
         print('Have fun!')
 
