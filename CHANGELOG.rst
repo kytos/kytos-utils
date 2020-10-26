@@ -23,6 +23,18 @@ Fixed
 Security
 ========
 
+
+[2020.2b2] - "itamar" beta2 - 2020-10-23
+****************************************
+Changed
+=======
+- Updated NApp template
+
+Fixed
+=====
+- Fixed "NApp created" messages 
+
+
 [2020.2b1] - "itamar" beta1 - 2020-09-08
 ****************************************
 Added
