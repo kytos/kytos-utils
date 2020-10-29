@@ -14,8 +14,8 @@ QuickStart
 Installing
 ==========
 
-We use python3.6. So in order to use this software please install python3.6
-into your environment beforehand.
+In order to use this software please install python3.6 or greater into your 
+environment beforehand.
 
 We are doing a huge effort to make Kytos and its components available on all
 common distros. So, we recommend you to download it from your distro repository.
@@ -36,7 +36,7 @@ procedure:
 .. code-block:: shell
 
    $ cd kytos-utils
-   $ sudo python3.6 setup.py install
+   $ sudo python3 setup.py install
 
 Usage
 *****
