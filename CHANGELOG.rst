@@ -23,6 +23,16 @@ Fixed
 Security
 ========
 
+[2020.2b3] - "itamar" beta3 - 2020-11-20
+****************************************
+Changed
+=======
+- Changed ``setup.py`` to use ``python3`` instead of ``python3.6``
+
+Removed
+=======
+- Removed ``python3.6`` references from ``README.rst`` and ``Makefile``
+
 
 [2020.2b2] - "itamar" beta2 - 2020-10-23
 ****************************************
