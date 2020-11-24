@@ -64,7 +64,7 @@ License
 This software is under *MIT-License*. For more information please read
 ``LICENSE`` file.
 
-.. |Experimental| image:: https://img.shields.io/badge/stability-experimental-orange.svg
+.. |Experimental| image:: https://img.shields.io/badge/stability-beta-orange.svg
 .. |Tag| image:: https://img.shields.io/github/tag/kytos/kytos-utils.svg
    :target: https://github.com/kytos/kytos-utils/tags
 .. |Release| image:: https://img.shields.io/github/release/kytos/kytos-utils.svg
