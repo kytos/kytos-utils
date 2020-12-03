@@ -22,26 +22,26 @@ LOG = logging.getLogger(__name__)
 
 def create_skel_dir():
     """Install data_files in the /etc directory."""
-    base_env = os.environ.get('VIRTUAL_ENV', '/')
-    etc_kytos = os.path.join(base_env, 'etc/kytos')
-    kytos_skel_path = 'templates/skel'
-    parent_dir = Path(os.path.abspath(os.path.dirname(__file__))).parent
+    base_env = Path(os.environ.get('VIRTUAL_ENV', '/'))
+    etc_kytos = base_env / 'etc' / 'kytos'
 
-    if not os.path.exists(etc_kytos):
+    # kytos-utils/kytos/utils/config.py -> kytos-utils/kytos
+    parent_dir = Path(__file__).resolve().parent.parent
+
+    if not etc_kytos.exists():
         os.makedirs(etc_kytos)
 
-    src = os.path.join(parent_dir, kytos_skel_path)
-    skel = kytos_skel_path.replace('templates/', '')
-    dst = os.path.join(etc_kytos, skel)
+    src = parent_dir / 'templates' / 'skel'
+    dst = etc_kytos / 'skel'
 
-    if os.path.exists(dst):
-        if not os.listdir(dst):
+    if dst.exists():
+        if not next(dst.iterdir(), None):
             # Path already exists but it's empty, so we'll populate it
             # We remove it first to avoid an exception from copytree
-            os.rmdir(dst)
-            shutil.copytree(src, dst)
+            dst.rmdir()
+            shutil.copytree(str(src), str(dst))
     else:
-        shutil.copytree(src, dst)
+        shutil.copytree(str(src), str(dst))
 
 
 class KytosConfig():
