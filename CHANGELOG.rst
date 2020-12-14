@@ -7,6 +7,8 @@ UNRELEASED - Under development
 ******************************
 Added
 =====
+- Added a `kytos bug-report` command that prints environment information
+  for bug reports.
 
 Changed
 =======
