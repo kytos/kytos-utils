@@ -9,12 +9,8 @@ Usage:
 Options:
 
   -h, --help    Show this screen.
-
-Common napps subcommands:
-
-   bug-report Display a datailed information about the kytos environment
-
 """
+
 from docopt import docopt
 
 from kytos.cli.commands.bug_report.api import BugReportAPI

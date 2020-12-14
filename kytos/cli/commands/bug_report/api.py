@@ -7,13 +7,13 @@ class BugReportAPI:
     """Retrieve Kytos environment information.
 
     Collect system information, python environment, python packages and
-    installed napps to print this report to the user aiming improve bug
-    reports.
+    installed NApps to print this report to the user, aiming to improve
+    bug reports.
     """
 
     @classmethod
-    def bug_report(cls, args):  # pylint: disable=unused-argument
-        """Run all bug report."""
+    def bug_report(cls, _):
+        """Run all reports."""
         cls.system_report()
         cls.python_environment()
         cls.python_packages_report()
