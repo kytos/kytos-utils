@@ -102,8 +102,7 @@ class Test(TestCommand):
         cmd = 'python setup.py pytest %s' % self.get_args()
         try:
             check_call(cmd, shell=True)
-        except CalledProcessError as exc:
-            print(exc)
+        except CalledProcessError:
             print('Unit tests failed. Fix the error(s) above and try again.')
             sys.exit(-1)
 

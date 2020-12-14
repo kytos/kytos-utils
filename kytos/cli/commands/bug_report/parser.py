@@ -11,6 +11,8 @@ Options:
   -h, --help    Show this screen.
 """
 
+import sys
+
 from docopt import docopt
 
 from kytos.cli.commands.bug_report.api import BugReportAPI
@@ -24,4 +26,4 @@ def parse(argv):
         BugReportAPI.bug_report(args)
     except KytosException as exception:
         print("Error parsing args: {}".format(exception))
-        exit()
+        sys.exit(-1)
