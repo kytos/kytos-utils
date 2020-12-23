@@ -7,8 +7,6 @@ UNRELEASED - Under development
 ******************************
 Added
 =====
-- Added a `kytos bug-report` command that prints environment information
-  for bug reports.
 
 Changed
 =======
@@ -24,6 +22,19 @@ Fixed
 
 Security
 ========
+
+[2020.2rc1] - "itamar" release candidate 1 - 2020-12-23
+*******************************************************
+
+Added
+=====
+- Added a ``kytos bug-report`` command that prints environment information
+  for bug reports.
+
+Fixed
+=====
+- Fixed path error to create ``skel`` files in ``python3.8``
+
 
 [2020.2b3] - "itamar" beta3 - 2020-11-20
 ****************************************
