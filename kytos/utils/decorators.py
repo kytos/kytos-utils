@@ -66,9 +66,12 @@ class kytos_auth:  # pylint: disable=invalid-name
         password = getpass("Enter the password for {}: ".format(username))
         response = requests.get(endpoint, auth=(username, password))
         if response.status_code == 401:
-            print("Seems the token was not set, is expired, or credentials"
-                  " were incorrect (401 error)! Please run \"kytos "
-                  "napps upload\" again.")
+            print(
+                f' Seems the token was not set, expired or',
+                f'credentials were incorrect.\n',
+                f'Status Code: {response.status_code}.\n',
+                'Please run \"kytos napps upload\" again.'
+            )
         if response.status_code != 201:
             LOG.error(response.content)
             LOG.error('ERROR: %s: %s', response.status_code, response.reason)
