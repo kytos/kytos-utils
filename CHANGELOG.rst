@@ -28,7 +28,7 @@ Security
 
 Added
 =====
-- Added a `kytos bug-report` command that prints environment information
+- Added a ``kytos bug-report`` command that prints environment information
   for bug reports.
 
 Fixed
