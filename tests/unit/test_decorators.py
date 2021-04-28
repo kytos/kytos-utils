@@ -43,18 +43,27 @@ class TestKytosAuth(unittest.TestCase):
         mock_set.assert_any_call('auth', 'user', 'username')
         mock_set.assert_any_call('auth', 'token', 'hash')
 
-    @patch('sys.exit')
     @patch('requests.get')
     @patch('kytos.utils.config.KytosConfig.save_token')
+    @patch('builtins.input', return_value='username')
     @patch('kytos.utils.decorators.getpass', return_value='password')
-    def test_authenticate(self, *args):
-        """Test authenticate method."""
-        (_, mock_save_token, mock_requests_get, _) = args
-        mock_requests_get.return_value = self._expected_response(401)
+    def test_authenticate_success_and_fail(self, *args):
+        """Test authenticate method.
 
-        try:
-            self.kytos_auth.authenticate()
-        except OSError:
-            print("Handle unnecessary OSError")
+        This test check the fail and success cases. At the first, the 401
+        status code will cause a fail and after that the 201 status code will
+        test the success case. The authenticate has to be called twice, once
+        the test `test_authenticate_success_and_fail` calls `authenticate`
+        the first time, and the fail case will cause the second call."""
+        (_, _, _, mock_requests_get) = args
+        mock_requests_get.side_effect = [self._expected_response(401),
+                                         self._expected_response(201)]
 
-        mock_save_token.assert_not_called()
+        authenticate = self.kytos_auth.authenticate
+        self.kytos_auth.authenticate = MagicMock(side_effect=authenticate)
+
+        self.kytos_auth.authenticate()
+
+        call_count = self.kytos_auth.authenticate.call_count
+
+        self.assertEqual(call_count, 2)
