@@ -305,6 +305,7 @@ class NAppsManager:
         json.loads(urllib.request.urlopen(uri).read())
 
     @classmethod
+    # pylint: disable=too-many-statements
     def create_napp(cls, meta_package=False):
         """Bootstrap a basic NApp structure for you to develop your NApp.
 
@@ -317,7 +318,6 @@ class NAppsManager:
 
         username = None
         napp_name = None
-
         print('--------------------------------------------------------------')
         print('Welcome to the bootstrap process of your NApp.')
         print('--------------------------------------------------------------')
@@ -328,14 +328,18 @@ class NAppsManager:
         print(' - at least three characters')
         print('--------------------------------------------------------------')
         print('')
-        while not cls.valid_name(username):
-            username = input('Please, insert your NApps Server username: ')
+        try:
+            while not cls.valid_name(username):
+                username = input('Please, insert your NApps Server username: ')
 
-        while not cls.valid_name(napp_name):
-            napp_name = input('Please, insert your NApp name: ')
+            while not cls.valid_name(napp_name):
+                napp_name = input('Please, insert your NApp name: ')
 
-        description = input('Please, insert a brief description for your '
-                            'NApp [optional]: ')
+            description = input('Please, insert a brief description for your '
+                                'NApp [optional]: ')
+        except KeyboardInterrupt:
+            print("User cancelled NApp creation.")
+            sys.exit(0)
         if not description:
             # pylint: disable=fixme
             description = '# TODO: <<<< Insert your NApp description here >>>>'
@@ -373,10 +377,9 @@ class NAppsManager:
             NAppsManager.create_ui_structure(username, napp_name,
                                              ui_templates_path, context)
 
-        print()
-        print(f'Congratulations! Your NApp has been bootstrapped!\n'
-              f'Now you can go to the "{username}/{napp_name}" directory '
-              f'and begin to code your NApp.')
+        print('\nCongratulations! Your NApp has been bootstrapped!\nNow you'
+              f' can go to the directory "{username}/{napp_name}" and begin'
+              ' to code your NApp.')
         print('Have fun!')
 
     @classmethod
