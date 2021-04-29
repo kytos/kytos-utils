@@ -23,6 +23,19 @@ Fixed
 Security
 ========
 
+[2021.rc1] - stable release - 2021-04-30
+****************************************
+
+Added
+=====
+- Added friendly message when user stops NApp creation.
+- Added error handling for invalid token errors.
+
+Changed
+=======
+- Updated dependencies.
+
+
 [2020.2] - "itamar" stable release - 2020-12-30
 ***********************************************
 
