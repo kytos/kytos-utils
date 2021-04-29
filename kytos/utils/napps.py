@@ -318,8 +318,6 @@ class NAppsManager:
 
         username = None
         napp_name = None
-        keyint_error = "\nUser cancelled napps creation."
-
         print('--------------------------------------------------------------')
         print('Welcome to the bootstrap process of your NApp.')
         print('--------------------------------------------------------------')
@@ -333,14 +331,14 @@ class NAppsManager:
         try:
             while not cls.valid_name(username):
                 username = input('Please, insert your NApps Server username: ')
+
             while not cls.valid_name(napp_name):
                 napp_name = input('Please, insert your NApp name: ')
-                description = input(
-                    'Please, insert a brief description for your '
-                    'NApp [optional]: '
-                )
+
+            description = input('Please, insert a brief description for your '
+                                'NApp [optional]: ')
         except KeyboardInterrupt:
-            print(keyint_error)
+            print("User cancelled NApp creation.")
             sys.exit(0)
         if not description:
             # pylint: disable=fixme
@@ -355,7 +353,7 @@ class NAppsManager:
 
         #: Creating ``__init__.py`` files
         with open(os.path.join(username, '__init__.py'), 'w') as init_file:
-            init_file.write(f'"""Napps for the user {username}.""""')
+            init_file.write(f'"""NApps for the user {username}.""""')
 
         os.makedirs(os.path.join(username, napp_name))
 
@@ -379,10 +377,9 @@ class NAppsManager:
             NAppsManager.create_ui_structure(username, napp_name,
                                              ui_templates_path, context)
 
-        print()
-        print(f'Congratulations! Your NApp has been bootstrapped!\nNow  '
-              f'you can go to the directory "{username}/{napp_name}" and '
-              ' begin to code your NApp.')
+        print('\nCongratulations! Your NApp has been bootstrapped!\nNow you'
+              f' can go to the directory "{username}/{napp_name}" and begin'
+              ' to code your NApp.')
         print('Have fun!')
 
     @classmethod
