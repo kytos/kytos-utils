@@ -153,6 +153,9 @@ class Linter(SimpleCommand):
             sys.exit(-1)
 
 
+NEEDS_PYTEST = {'pytest', 'test', 'coverage'}.intersection(sys.argv)
+PYTEST_RUNNER = ['pytest-runner'] if NEEDS_PYTEST else []
+
 # We are parsing the metadata file as if it was a text file because if we
 # import it as a python module, necessarily the kytos.utils module would be
 # initialized.
@@ -173,7 +176,7 @@ setup(name='kytos-utils',
       install_requires=[line.strip()
                         for line in open("requirements/run.txt").readlines()
                         if not line.startswith('#')],
-      setup_requires=['pytest-runner'],
+      setup_requires=PYTEST_RUNNER,
       tests_require=['pytest'],
       packages=find_packages(exclude=['tests']),
       cmdclass={
