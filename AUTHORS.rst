@@ -20,3 +20,4 @@ Contributors
 - Luan Gonçalves <luanlg.cco AT gmail DOT com>
 - Erick Vermot <erick.vermot AT gmail DOT com>
 - Vinicius Arcanjo <viniciusarcanjov AT gmail DOT com>
+- Bárbara Boechat <barbs DOT boechat AT gmail DOT com>
