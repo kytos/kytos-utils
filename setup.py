@@ -6,12 +6,11 @@ descriptions.
 import re
 import sys
 from abc import abstractmethod
-# Disabling checks due to https://github.com/PyCQA/pylint/issues/73
-from distutils.command.clean import clean  # pylint: disable=E0401,E0611
 from subprocess import CalledProcessError, call, check_call
 
 from setuptools import Command, find_packages, setup
-
+# Disabling checks due to https://github.com/PyCQA/pylint/issues/73
+from distutils.command.clean import clean  # pylint: disable=E0401,E0611
 
 class SimpleCommand(Command):
     """Make Command implementation simpler."""
